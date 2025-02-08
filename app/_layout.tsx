@@ -1,6 +1,8 @@
 import { Stack, SplashScreen } from "expo-router";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/libs/tanstackQuery";
 import "./global.css";
 
 export default function RootLayout() {
@@ -25,5 +27,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Stack screenOptions={{ headerShown: true }} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Stack screenOptions={{ headerShown: true }} />
+    </QueryClientProvider>
+  );
 }
