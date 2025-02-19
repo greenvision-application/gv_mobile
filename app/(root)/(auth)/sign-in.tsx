@@ -13,11 +13,13 @@ const SignIn = () => {
         className="w-full h-3/5"
       />
       <View className="px-6 mt-6">
-        <Pressable className="bg-primary py-4 rounded-full shadow-md active:opacity-90">
-          <Text className="text-neutral font-inter-semibold text-xl text-center">
-            Đăng nhập
-          </Text>
-        </Pressable>
+        <Link href="/login-form" asChild>
+          <Pressable className="bg-primary py-4 rounded-full shadow-md active:opacity-90">
+            <Text className="text-neutral font-inter-semibold text-xl text-center">
+              Đăng nhập
+            </Text>
+          </Pressable>
+        </Link>
 
         <View className="flex-row items-center my-6 mx-8">
           <View className="flex-1 h-[1px] bg-neutral-400" />
