@@ -2,30 +2,11 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Link, router } from "expo-router";
-import { supabase } from "@/libs/supabase";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  // const [email, setEmail] = useState("");
+
   const [phone, setPhone] = useState("");
-
-  const handleSignIn = async () => {
-    console.log(phone);
-    const { data, error } = await supabase.auth.signInWithOtp({
-      // email: email,
-      phone,
-      // options: {
-      //   shouldCreateUser: false,
-      // },
-    });
-
-    if (error) {
-      console.log("Error:", error.message);
-    } else {
-      console.log("Success:", data);
-      router.push("/verify-otp");
-    }
-  };
 
   return (
     <View className="flex-1 w-full items-center justify-center bg-neutral">
@@ -71,10 +52,7 @@ export default function LoginForm() {
             </Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary"
-          onPress={handleSignIn}
-        >
+        <TouchableOpacity className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary">
           <Text className="text-neutral text-center font-bold text-lg">
             Tiếp tục
           </Text>

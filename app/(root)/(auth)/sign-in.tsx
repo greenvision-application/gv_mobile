@@ -1,10 +1,31 @@
-import { View, Text, SafeAreaView, Image, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Image,
+  Pressable,
+  Alert,
+} from "react-native";
+import { Link, Redirect } from "expo-router";
 import React from "react";
 import images from "@/constants/images";
 import icons from "@/constants/icons";
-import { Link } from "expo-router";
+import { useGlobalStore } from "@/store/global";
+import { login } from "@/libs/appwrite";
 
 const SignIn = () => {
+  const { loading, isLoggedIn, refetch } = useGlobalStore();
+  if (!loading && isLoggedIn) return <Redirect href="/" />;
+
+  const handleLogin = async () => {
+    const result = await login();
+    if (result) {
+      refetch();
+    } else {
+      Alert.alert("Error", "Failed to login");
+    }
+  };
+
   return (
     <SafeAreaView className="h-full bg-neutral">
       <Image
@@ -27,7 +48,10 @@ const SignIn = () => {
           <View className="flex-1 h-[1px] bg-neutral-400" />
         </View>
 
-        <Pressable className="bg-semantic-info py-4 rounded-full flex-row items-center justify-center space-x-3 mb-5 shadow-sm active:opacity-90">
+        <Pressable
+          onPress={handleLogin}
+          className="bg-semantic-info py-4 rounded-full flex-row items-center justify-center space-x-3 mb-5 shadow-sm active:opacity-90"
+        >
           <Image
             source={icons.googleIcon}
             className="w-7 h-7"
