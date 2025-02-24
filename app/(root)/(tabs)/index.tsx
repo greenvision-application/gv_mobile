@@ -1,17 +1,10 @@
 import { View, Text, Pressable, Alert } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-<<<<<<< HEAD
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useStore } from "@/store";
-import { fetchUsers, deleteUser, addUser } from "@/services/userService";
-import { queryClient } from "@/libs/tanstackQuery";
 import UserInfoForm from "@/components/UserInfoForm";
 import Navigation from "@/components/Navigation";
 
-=======
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
->>>>>>> dev
 
 const Home = () => {
   const { refetch } = useGlobalStore();
@@ -27,10 +20,8 @@ const Home = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1">
-<<<<<<< HEAD
         <Navigation />
         <UserInfoForm />
-=======
         <View>
           <Text>Home</Text>
           <Pressable
@@ -42,7 +33,6 @@ const Home = () => {
             </Text>
           </Pressable>
         </View>
->>>>>>> dev
       </SafeAreaView>
     </SafeAreaProvider>
   );

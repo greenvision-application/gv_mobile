@@ -1,10 +1,7 @@
 import { View, Text, TextInput, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useRef } from "react";
-import DateTimePicker, {
-  DateType,
-  getDefaultStyles,
-} from "react-native-ui-datepicker";
+import DateTimePicker, { DateType } from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -15,8 +12,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export default function UserInfoForm() {
-  const defaultStyles = getDefaultStyles();
-  let today = new Date();
   const [selected, setSelected] = useState<DateType>(); // Lưu ngày sinh
   const [openDatePicker, setOpenDatePicker] = useState(false); // Trạng thái hiển thị DatePicker
   const [gender, setGender] = useState(""); // Lưu giới tính
@@ -35,17 +30,16 @@ export default function UserInfoForm() {
             {/* Ô nhập tên người dùng */}
             <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
               <View className="flex flex-row items-center h-14">
-
                 <Ionicons name="id-card-sharp" size={25} color="#3CC18E" />
                 <TextInput
                   placeholder="Tên người dùng"
                   className=" w-5/6 ml-2 text-neutral-500 font-inter-medium text-md"
                   placeholderTextColor="#9CA3AF"
-                  />
-                </View>
-                <View>
-                  <Text className="text-semantic-error">*</Text>
-                </View>
+                />
+              </View>
+              <View>
+                <Text className="text-semantic-error">*</Text>
+              </View>
             </View>
 
             {/* Ô nhập địa chỉ */}
@@ -89,12 +83,10 @@ export default function UserInfoForm() {
           </View>
 
           {/* DatePicker Modal */}
-          {openDatePicker && (            
+          {openDatePicker && (
             <DateTimePicker
-              
               style={{ zIndex: 9999, position: "absolute" }}
               className="bg-[#3CC18E] border border-[#3CC18E] rounded-2xl"
-
               mode="single"
               date={selected || dayjs().tz("Asia/Ho_Chi_Minh").toDate()} // Ngày mặc định theo múi giờ Việt Nam
               onChange={({ date }) => {
@@ -104,7 +96,7 @@ export default function UserInfoForm() {
                 setOpenDatePicker(false);
               }}
               maxDate={dayjs().tz("Asia/Ho_Chi_Minh").toDate()} // Chỉ cho chọn ngày trong quá khứ
-            />            
+            />
           )}
         </View>
         {/* ActionSheet cho chọn giới tính */}
