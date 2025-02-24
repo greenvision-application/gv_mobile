@@ -1,6 +1,6 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, TouchableOpacity } from "react-native";
 import React from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 const Onboard = () => {
   return (
@@ -12,6 +12,17 @@ const Onboard = () => {
           <Text className="text-white font-semibold">Sign In</Text>
         </Pressable>
       </Link>
+
+      <View className="flex-1 justify-center items-center">
+        <TouchableOpacity
+          className="bg-primary px-8 py-4 rounded-full shadow-lg"
+          onPress={() => router.push("/onboard")}
+        >
+          <Text className="text-white font-semibold text-lg">
+            Go to Onboard
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
