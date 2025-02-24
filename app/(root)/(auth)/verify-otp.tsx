@@ -17,11 +17,11 @@ export default function VerifyOtp() {
           Xác minh OTP
         </Text>
 
-        <Text className="text-neutral-500 text-center mb-8">
-          Vui lòng nhập mã OTP đã được gửi đến số điện thoại của bạn
+        <Text className="text-neutral-500 text-center mb-8 px-14">
+          Vui lòng nhập mã xác minh OTP chúng đã gửi đến số điện thoại của bạn
         </Text>
 
-        <View className="flex flex-row justify-center gap-2 mb-8">
+        <View className="flex flex-row justify-center gap-2 mb-5">
           {otp.map((digit, index) => (
             <TextInput
               key={index}
@@ -34,18 +34,18 @@ export default function VerifyOtp() {
           ))}
         </View>
 
-        <View className="flex flex-row justify-center items-center mb-8">
-          <Text className="text-neutral-500">Không nhận được mã? </Text>
-          <TouchableOpacity>
-            <Text className="text-primary font-inter-bold">Gửi lại</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary">
+        <TouchableOpacity className="bg-neutral-300 p-4 rounded-full shadow-sm mb-8 mt-4 active:bg-primary">
           <Text className="text-neutral text-center font-bold text-lg">
             Xác nhận
           </Text>
         </TouchableOpacity>
+
+        <View className="flex flex-row justify-center items-center">
+          <Text className="text-neutral-500">Không nhận được mã? </Text>
+          <TouchableOpacity>
+            <Text className="text-primary font-inter-bold">Gửi lại (30s)</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
