@@ -29,7 +29,6 @@
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
-          "resizeMode": "cover",
           "enableFullScreenImage_legacy": true
         }
       ],
