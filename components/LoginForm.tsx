@@ -1,12 +1,16 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [phone, setPhone] = useState("");
+
+  const goOTP = () => {
+    router.replace("/verify-otp");
+  };
 
   return (
     <View className="flex-1 w-full items-center justify-center bg-neutral">
@@ -52,11 +56,16 @@ export default function LoginForm() {
             </Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary">
+
+        <TouchableOpacity
+          onPress={goOTP}
+          className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary"
+        >
           <Text className="text-neutral text-center font-bold text-lg">
             Tiếp tục
           </Text>
         </TouchableOpacity>
+
         <View className="mt-8 flex-row justify-center">
           <Text className="text-neutral-500">Bạn chưa có tài khoản? </Text>
           <TouchableOpacity>

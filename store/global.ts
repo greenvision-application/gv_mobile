@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { getCurrentUser } from "@/libs/appwrite";
+import { router } from "expo-router";
 
 interface User {
   $id: string;
@@ -23,11 +24,19 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   error: null,
 
   refetch: async () => {
+    console.log("🔄 Refetching user...");
     try {
       const user = await getCurrentUser();
-      console.log("Fetched user: ", user);
-      set({ user, isLoggedIn: !!user, loading: false });
+      console.log("✅ Fetched user:", user);
+
+      set({
+        user,
+        isLoggedIn: !!user,
+        loading: false,
+        error: null,
+      });
     } catch (error: any) {
+      console.error("❌ Refetch error:", error);
       set({
         user: null,
         isLoggedIn: false,

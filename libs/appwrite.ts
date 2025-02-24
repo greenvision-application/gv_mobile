@@ -2,6 +2,7 @@ import { Client, Avatars, Account, OAuthProvider } from "react-native-appwrite";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
 import variables from "@/constants/variables";
+import { router } from "expo-router";
 
 export const config = {
   platform: variables.PLATFORM,
@@ -65,19 +66,35 @@ export const logout = async () => {
 
 export const getCurrentUser = async () => {
   try {
+    console.log("📡 Calling account.get()...");
     const result = await account.get();
-    console.log("Get user:", result);
-    if (result.$id) {
-      const userAvatar = avatar.getInitials(result.name);
-      return {
-        ...result,
-        avatar: userAvatar.toString(),
-      };
+    console.log("👤 User data:", result);
+
+    if (!result?.$id) {
+      console.log("⚠️ No user found.");
+      return null;
     }
 
-    return null;
+    return { ...result, avatar: avatar.getInitials(result.name).toString() };
   } catch (error) {
-    console.log("Get user:", error);
-    throw error;
+    console.error("❌ Error fetching user:", error);
+    return null;
+  }
+};
+
+export const checkSession = async (onSessionFound?: () => void) => {
+  try {
+    const session = await account.getSession("current");
+    console.log("✅ Session found:", session);
+
+    if (session && onSessionFound) {
+      onSessionFound();
+    }
+
+    return session;
+  } catch (error) {
+    console.error("❌ No session found, redirecting to SignIn:", error);
+    router.push("/sign-in");
+    return null;
   }
 };
