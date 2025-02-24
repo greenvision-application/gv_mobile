@@ -5,6 +5,7 @@
   "scripts": {
     "start": "expo start",
     "start:tunnel": "expo start --tunnel",
+    "restart": "expo start -c",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -21,7 +22,6 @@
     "@react-native-community/netinfo": "^11.4.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
-    "@supabase/supabase-js": "^2.48.1",
     "@tanstack/react-query": "^5.66.0",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
@@ -43,6 +43,7 @@
     "react-native": "0.76.6",
     "react-native-actionsheet": "^2.4.2",
     "react-native-date-picker": "^5.0.10",
+    "react-native-appwrite": "^0.7.0",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-reanimated": "~3.16.1",
