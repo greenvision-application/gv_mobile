@@ -7,11 +7,21 @@ import { usePathname } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 
 const AppLayout = () => {
-  const { loading, isLoggedIn, user, refetch, error } = useGlobalStore();
-  const pathname = usePathname();
-  const route = useRouter();
+  // const { loading, isLoggedIn, user, refetch, error } = useGlobalStore();
+  // const pathname = usePathname();
+  // const route = useRouter();
 
-  console.log("Path name: ", pathname);
+  // useEffect(() => {
+  //   console.log("🔥 useEffect triggered in AppLayout");
+
+  //   if (!isLoggedIn && !loading) {
+  //     console.log("⏳ User chưa đăng nhập, refetch...");
+  //     refetch();
+  //   }
+  // }, [isLoggedIn, loading]);
+
+  // console.log("Path name: ", pathname);
+  // console.log("Store:", loading, isLoggedIn, user, error);
 
   // if (loading) {
   //   return (
@@ -29,7 +39,7 @@ const AppLayout = () => {
   //   );
   // }
 
-  // if (!isLoggedIn) {
+  // if (!user) {
   //   return <Redirect href="/sign-in" />;
   // }
 

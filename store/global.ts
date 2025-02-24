@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { getCurrentUser } from "@/libs/appwrite";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 
 interface User {
   $id: string;
