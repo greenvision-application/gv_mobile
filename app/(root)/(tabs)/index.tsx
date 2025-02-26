@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Alert } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import UserInfoForm from "@/components/UserInfoForm";
 import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
@@ -20,9 +20,9 @@ const Home = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1">
-        <Navigation />
-        <UserInfoForm />
-        <View>
+        {/* <Navigation /> */}
+        <Header />
+        {/* <View>
           <Text>Home</Text>
           <Pressable
             onPress={handleLogout}
@@ -32,7 +32,7 @@ const Home = () => {
               Đăng xuất
             </Text>
           </Pressable>
-        </View>
+        </View> */}
       </SafeAreaView>
     </SafeAreaProvider>
   );

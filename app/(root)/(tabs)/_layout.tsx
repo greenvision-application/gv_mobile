@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 import icons from "@/constants/icons";
+import Header from "@/components/Header";
 
 const TabIcon = ({
   focused,
@@ -32,6 +33,8 @@ const TabIcon = ({
 
 const TabsLayout = () => {
   return (
+    <>
+    {/* <Header /> */}
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
@@ -81,7 +84,7 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="garden"
         options={{
-          title: "Garden",
+          title: "vườn cây",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.garden} title="Vườn cây" />
@@ -89,6 +92,7 @@ const TabsLayout = () => {
         }}
       />
     </Tabs>
+    </>
   );
 };
 
