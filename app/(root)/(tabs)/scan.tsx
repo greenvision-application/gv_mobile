@@ -159,7 +159,7 @@ const Scan = () => {
             color="#4C85EA"
           />
           <Button
-            onPress={handleScanPlant}
+            onPress={() => router.push("/properties/ai-infor")}
             title={isLoading ? "Đang xử lý..." : "Nhận dạng cây"}
             color="#4CAF50"
             disabled={isLoading}
