@@ -162,7 +162,7 @@ const Home = () => {
     <SafeAreaProvider>
       <SafeAreaView className="flex-1">
         <Header />
-        <ScrollView className="px-3 flex-1 mb-10">
+        <ScrollView className="px-3 flex-1 mb-14">
           {/* Phổ biến */}
           <View className="flex flex-row justify-between items-center py-2">
             <Text className="text-2xl font-bold text-black">Phổ biến</Text>
