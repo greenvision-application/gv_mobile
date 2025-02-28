@@ -16,7 +16,7 @@ const TabIcon = ({
     <Image
       source={icon}
       tintColor={focused ? "#3CC18E" : "#777B84"}
-      resizeMode="contain"
+      // resizeMode="contain"
       className="size-7"
     />
     <Text

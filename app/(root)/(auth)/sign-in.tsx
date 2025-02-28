@@ -30,7 +30,7 @@ const SignIn = () => {
     <SafeAreaView className="h-full bg-neutral">
       <Image
         source={images.signIn}
-        resizeMode="contain"
+        // resizeMode="contain"
         className="w-full h-3/5"
       />
       <View className="px-6 mt-6">
@@ -55,7 +55,7 @@ const SignIn = () => {
           <Image
             source={icons.googleIcon}
             className="w-7 h-7"
-            resizeMode="contain"
+            // resizeMode="contain"
           />
           <Text className="text-neutral font-inter-semibold text-xl text-center ml-5">
             Tiếp tục với Google
@@ -66,7 +66,7 @@ const SignIn = () => {
           <Image
             source={icons.facebookIcon}
             className="w-8 h-8"
-            resizeMode="contain"
+            // resizeMode="contain"
           />
           <Text className="text-neutral font-inter-semibold text-xl text-center ml-5">
             Tiếp tục với Facebook
