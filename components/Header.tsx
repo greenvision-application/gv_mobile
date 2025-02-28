@@ -30,10 +30,13 @@ const Header = () => {
           <Ionicons name="search-outline" size={24} color="#B7BBC1" />
           <View className="flex flex-row items-center w-full justify-between pr-9">
             <TextInput
-              className="w-5/6 text-lg text-neutral-500 font-inter-semibold mx-2 py-2 truncate "
+              className="w-5/6 h-10 text-lg text-neutral-500 font-inter-semibold mx-2 leading-tight truncate"
               placeholder="Tìm kiếm"
               numberOfLines={1}
               placeholderTextColor="#9CA3AF"
+              multiline={false}
+              maxLength={30}
+              blurOnSubmit={true}
             />
             <Ionicons name="scan-outline" size={24} color="#B7BBC1" className=""/>
           </View>
@@ -46,5 +49,6 @@ const Header = () => {
     </View>
   );
 };
+
 
 export default Header;
