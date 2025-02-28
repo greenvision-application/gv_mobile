@@ -2,7 +2,7 @@ import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Link, router } from "expo-router";
-import { supabase } from "@/libs/supabase";
+
 export default function Navigation() {
     return (
         <View className="bg-neutral p-4">
