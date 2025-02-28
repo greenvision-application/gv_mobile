@@ -8,7 +8,10 @@ import { useRef, useState } from "react";
 import { Button, Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
 import { useRouter } from "expo-router";
+import { uploadImageFile, scanPlant } from "@/services/userService";
 
 const Scan = () => {
   const router = useRouter();
@@ -17,6 +20,9 @@ const Scan = () => {
   const [uri, setUri] = useState<string | null>(null);
   const [facing, setFacing] = useState<CameraType>("back");
   const [flash, setFlash] = useState<FlashMode>("off");
+  const [isLoading, setIsLoading] = useState(false);
+
+  console.log("File log: ", uri);
 
   if (!permission) {
     return null;
@@ -33,8 +39,50 @@ const Scan = () => {
     );
   }
 
+  const getFileInfo = (uri: string) => {
+    const fileName = uri.split("/").pop() || "";
+    const fileType = fileName.split(".").pop() || "";
+    return { fileName, fileType };
+  };
+
+  const resizeImage = async (uri: string) => {
+    const result = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return result.uri;
+  };
+
+  const getFileSize = async (uri: string) => {
+    const info = await FileSystem.getInfoAsync(uri);
+    return info.exists ? info.size : undefined;
+  };
+
+  const transferImageData = async () => {
+    try {
+      const resizedUri = await resizeImage(uri!);
+      const { fileName, fileType } = getFileInfo(resizedUri);
+
+      let formData = new FormData();
+      formData.append("file", {
+        uri: resizedUri,
+        name: fileName,
+        type: `image/${fileType}`,
+      } as any);
+
+      return formData;
+    } catch (error) {
+      console.error("Error transferring image data:", error);
+      throw error;
+    }
+  };
+
   const takePicture = async () => {
-    const photo = await ref.current?.takePictureAsync();
+    const photo = await ref.current?.takePictureAsync({
+      quality: 0.7,
+      base64: false,
+    });
     setUri(photo?.uri || null);
   };
 
@@ -68,6 +116,34 @@ const Scan = () => {
     });
   };
 
+  const handleScanPlant = async () => {
+    if (!uri) return;
+    const size = await getFileSize(uri);
+    if (size && size > 5 * 1024 * 1024) {
+      console.error("File quá lớn, vui lòng chọn ảnh nhỏ hơn 5MB.");
+      return;
+    }
+    console.log(1);
+    try {
+      setIsLoading(true);
+      const formData = await transferImageData();
+      console.log(2);
+
+      const uploadResult = await uploadImageFile(formData);
+      console.log(3);
+      if (!uploadResult.url) {
+        throw new Error("Không tìm thấy URL ảnh sau khi upload");
+      }
+      console.log(4);
+
+      const scanResult = await scanPlant(uploadResult.url);
+      console.log("Scan result:", scanResult);
+    } catch (error) {
+      console.error("Error scanning plant:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const renderPicture = () => {
     return (
       <View style={styles.pictureContainer}>
@@ -83,11 +159,10 @@ const Scan = () => {
             color="#4C85EA"
           />
           <Button
-            onPress={() => {
-              /* TODO: Add plant recognition logic */
-            }}
-            title="Nhận dạng cây"
+            onPress={handleScanPlant}
+            title={isLoading ? "Đang xử lý..." : "Nhận dạng cây"}
             color="#4CAF50"
+            disabled={isLoading}
           />
         </View>
       </View>
@@ -259,5 +334,4 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
 });
-
 export default Scan;
