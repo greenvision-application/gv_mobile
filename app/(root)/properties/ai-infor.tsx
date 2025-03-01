@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import PlantDetailsContent from "@/components/PlantDetailsContent";
+import { useGlobalStore } from "@/store/global";
+import { scanPlant } from "@/services/userService";
+import Loading from "@/components/Loading";
 
 const plantData = {
   plant_name: "Sen",
@@ -52,7 +55,36 @@ const plantData = {
 };
 
 const PlantDetailFromGemini = () => {
+  const { uploadedFileUrl } = useGlobalStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [plantInfo, setPlantInfo] = useState(plantData);
+
   const windowHeight = Dimensions.get("window").height;
+
+  useEffect(() => {
+    const fetchPlantInfo = async () => {
+      if (!uploadedFileUrl) return;
+
+      try {
+        setIsLoading(true);
+        const result = await scanPlant(uploadedFileUrl);
+        if (result) {
+          setPlantInfo(result);
+        }
+      } catch (error) {
+        console.error("Error scanning plant:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlantInfo();
+  }, [uploadedFileUrl]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <View className="flex-1 bg-neutral font-inter">
       <StatusBar barStyle="light-content" />
@@ -77,7 +109,7 @@ const PlantDetailFromGemini = () => {
           </View>
         </View>
       </View>
-      <PlantDetailsContent plantData={plantData} />
+      <PlantDetailsContent plantData={plantInfo} />
       {/* Add to Garden Button */}
       <View className="absolute bottom-0 w-full bg-neutral border-t border-neutral-300 p-5">
         <TouchableOpacity className="flex-row items-center justify-center bg-primary py-3.5 rounded-2xl shadow-lg">
@@ -87,4 +119,5 @@ const PlantDetailFromGemini = () => {
     </View>
   );
 };
+
 export default PlantDetailFromGemini;

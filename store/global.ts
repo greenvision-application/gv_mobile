@@ -14,7 +14,9 @@ interface GlobalState {
   loading: boolean;
   isLoggedIn: boolean;
   error: string | null;
+  uploadedFileUrl: string | null;
   refetch: () => Promise<void>;
+  setUploadedFileUrl: (url: string | null) => void;
 }
 
 export const useGlobalStore = create<GlobalState>((set) => ({
@@ -22,6 +24,11 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   loading: true,
   isLoggedIn: false,
   error: null,
+  uploadedFileUrl: null,
+
+  setUploadedFileUrl: (url: string | null) => {
+    set({ uploadedFileUrl: url });
+  },
 
   refetch: async () => {
     console.log("🔄 Refetching user...");

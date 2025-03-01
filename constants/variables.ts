@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://192.168.102.82:8080/api";
+const API_BASE_URL = "http://192.168.137.231:8080/api";
 // const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!;
 const PLATFORM = "greenvision.dev.com";
