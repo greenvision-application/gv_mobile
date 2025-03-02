@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Header, PopularPlants, SimilarPlants } from "@/components";
+import {
+  Header,
+  SearchHeader,
+  PopularPlants,
+  SimilarPlants,
+} from "@/components";
 import { popularPlants, similarPlants } from "@/libs/dataFake";
 
 const Home = () => {
@@ -19,10 +24,34 @@ const Home = () => {
     });
   };
 
+  const handleSearch = (text: string) => {
+    console.log("Searching for:", text);
+  };
+
+  const handleScan = () => {
+    console.log("Opening scanner");
+  };
+
+  const handleNotification = () => {
+    console.log("Opening notifications");
+  };
+
+  const handleSettings = () => {
+    console.log("Opening settings");
+  };
+
   return (
     <SafeAreaProvider>
       {/* Header */}
       <Header title="Trang chủ" />
+
+      {/* Search Header */}
+      <SearchHeader
+        onSearch={handleSearch}
+        onScan={handleScan}
+        onNotification={handleNotification}
+        onSettings={handleSettings}
+      />
 
       {/* Content */}
       <ScrollView className="flex-1 mb-20 bg-neutral px-2">

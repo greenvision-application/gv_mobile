@@ -12,6 +12,7 @@ import SimilarPlants from "./SimilarPlants";
 import SectionHeader from "./SectionHeader";
 import SignUpForm from "./SignUpForm";
 import UserInfoForm from "./UserInfoForm";
+import SearchHeader from "./SearchHeader";
 
 export {
   ErrorMessage,
@@ -28,4 +29,5 @@ export {
   SectionHeader,
   SignUpForm,
   UserInfoForm,
+  SearchHeader,
 };
