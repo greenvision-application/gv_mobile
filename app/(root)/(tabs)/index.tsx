@@ -2,7 +2,7 @@ import { View, Text, Pressable, Alert } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "@/components/Navigation";
 import Header from "@/components/Header";
-
+import { Link } from "expo-router";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
 
@@ -22,8 +22,7 @@ const Home = () => {
       <SafeAreaView className="flex-1">
         {/* <Navigation /> */}
         <Header />
-        {/* <View>
-          <Text>Home</Text>
+        <View>
           <Pressable
             onPress={handleLogout}
             className="bg-semantic-error py-4 rounded-full flex-row items-center justify-center space-x-3 mt-5 shadow-sm active:opacity-90"
@@ -32,7 +31,7 @@ const Home = () => {
               Đăng xuất
             </Text>
           </Pressable>
-        </View> */}
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );

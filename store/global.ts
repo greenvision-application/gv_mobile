@@ -31,10 +31,8 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   },
 
   refetch: async () => {
-    console.log("🔄 Refetching user...");
     try {
       const user = await getCurrentUser();
-      console.log("✅ Fetched user:", user);
 
       set({
         user,
@@ -43,13 +41,16 @@ export const useGlobalStore = create<GlobalState>((set) => ({
         error: null,
       });
     } catch (error: any) {
-      console.error("❌ Refetch error:", error);
-      set({
-        user: null,
-        isLoggedIn: false,
-        loading: false,
-        error: error.message,
-      });
+      if (error.code === 401) {
+        set({ user: null, isLoggedIn: false, loading: false, error: null });
+      } else {
+        set({
+          user: null,
+          isLoggedIn: false,
+          loading: false,
+          error: error.message || "Có lỗi xảy ra khi kiểm tra đăng nhập",
+        });
+      }
     }
   },
 }));

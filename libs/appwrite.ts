@@ -66,19 +66,20 @@ export const logout = async () => {
 
 export const getCurrentUser = async () => {
   try {
-    console.log("📡 Calling account.get()...");
     const result = await account.get();
-    console.log("👤 User data:", result);
 
-    if (!result?.$id) {
-      console.log("⚠️ No user found.");
-      return null;
+    if (result.$id) {
+      const userAvatar = avatar.getInitials(result.name);
+
+      return {
+        ...result,
+        avatar: userAvatar.toString(),
+      };
     }
 
-    return { ...result, avatar: avatar.getInitials(result.name).toString() };
-  } catch (error) {
-    console.error("❌ Error fetching user:", error);
     return null;
+  } catch (error) {
+    throw error;
   }
 };
 
