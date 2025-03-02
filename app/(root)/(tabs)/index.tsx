@@ -1,15 +1,15 @@
 import { View, Text, Pressable, Alert } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import Navigation from "@/components/Navigation";
 import Header from "@/components/Header";
-import { Link } from "expo-router";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
+import helper from "@/libs/helper";
 
 const Home = () => {
   const { refetch } = useGlobalStore();
   const handleLogout = async () => {
     const result = await logout();
+    await helper.removeItem("onboarded");
     if (result) {
       Alert.alert("Success", "Logged out successfully");
       refetch();
