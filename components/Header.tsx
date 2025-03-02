@@ -1,52 +1,35 @@
-import { useEffect, useState } from "react";
-import { View, Text, TextInput } from "react-native";
-import { useRouter, useSegments } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { View, Text, StatusBar, Platform, Dimensions } from "react-native";
 
-const Header = () => {
-  const segments = useSegments();
-  const [title, setTitle] = useState("Trang chủ");
+interface HeaderProps {
+  title: string;
+}
 
-  useEffect(() => {
-    const titles: Record<string, string> = {
-      index: "Trang chủ",
-      timeline: "Lịch trình",
-      scan: "Scan",
-      garden: "Vườn cây",
-    };
-
-    setTitle(titles[segments[0]] || "Trang chủ");
-  }, [segments]);
+const Header: React.FC<HeaderProps> = ({ title }) => {
+  const windowHeight = Dimensions.get("window").height;
 
   return (
-    <View className="h-36 bg-[#3CC18E]">
-      <View className="h-16 flex items-center justify-center">
-        <Text className="text-3xl font-bold text-neutral-100 font-inter-semibold">
-          {title}
-        </Text>
-      </View>
-      <View className="flex flex-row items-center justify-between w-full px-3">
-        <View className="flex flex-row items-center  rounded-md p-1 bg-neutral-100 w-80">
-          <Ionicons name="search-outline" size={24} color="#B7BBC1" />
-          <View className="flex flex-row items-center w-full justify-between pr-9">
-            <TextInput
-              className="w-5/6 h-12 text-lg text-neutral-500 font-inter-semibold mx-2 truncate"
-              placeholder="Tìm kiếm"
-              numberOfLines={1}
-              placeholderTextColor="#9CA3AF"
-              maxLength={20}
-            />
-            <Ionicons name="scan-outline" size={24} color="#B7BBC1" className=""/>
+    <>
+      <StatusBar barStyle="light-content" />
+      <View
+        className="relative w-full bg-primary shadow-lg"
+        style={{ height: windowHeight / 8 }}
+      >
+        <View
+          className="absolute left-4 right-4"
+          style={{
+            top: Platform.OS === "ios" ? 60 : 20,
+          }}
+        >
+          <View className="flex flex-row items-center w-full justify-center">
+            <Text className="text-neutral text-2xl font-inter-semibold tracking-wide">
+              {title}
+            </Text>
           </View>
         </View>
-        <View className="flex flex-row justify-between py-5 items-center w-20 ">
-          <Ionicons name="notifications-outline" size={30} color="white" />
-          <Ionicons name="settings-sharp" size={30} color="white" />
-        </View>
       </View>
-    </View>
+    </>
   );
 };
-
 
 export default Header;

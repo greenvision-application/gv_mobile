@@ -2,7 +2,7 @@ import { View, Pressable, SafeAreaView, Text } from "react-native";
 import React, { useState } from "react";
 import { router } from "expo-router";
 import images from "@/constants/images";
-import OnboardingContent from "@/components/onboard";
+import OnboardingContent from "@/components/Onboard";
 import { useGlobalStore } from "@/store/global";
 
 const onboardData = [
