@@ -30,7 +30,7 @@ const SignIn = () => {
     <SafeAreaView className="h-full bg-neutral">
       <Image
         source={images.signIn}
-        // resizeMode="contain"
+        resizeMode="contain"
         className="w-full h-3/5"
       />
       <View className="px-6 mt-6">
