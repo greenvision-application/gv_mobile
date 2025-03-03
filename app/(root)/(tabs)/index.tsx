@@ -8,11 +8,16 @@ import {
   SimilarPlants,
 } from "@/components";
 import { popularPlants, similarPlants } from "@/libs/dataFake";
+import { logout } from "@/libs/appwrite";
+import { useGlobalStore } from "@/store/global";
+import { useRouter } from "expo-router";
 
 const Home = () => {
   const [showAllPopular, setShowAllPopular] = useState(false);
   const [showAllSimilar, setShowAllSimilar] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const { refetch } = useGlobalStore();
+  const route = useRouter();
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -29,15 +34,11 @@ const Home = () => {
   };
 
   const handleScan = () => {
-    console.log("Opening scanner");
+    route.replace("/(root)/(tabs)/scan");
   };
 
   const handleNotification = () => {
     console.log("Opening notifications");
-  };
-
-  const handleSettings = () => {
-    console.log("Opening settings");
   };
 
   const handleNotificationSettings = () => {
@@ -46,7 +47,6 @@ const Home = () => {
   };
 
   const handleLogout = () => {
-    // Hiển thị xác nhận trước khi đăng xuất
     Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
       {
         text: "Hủy",
@@ -54,7 +54,15 @@ const Home = () => {
       },
       {
         text: "Đăng xuất",
-        onPress: () => console.log("Logged out"),
+        onPress: async () => {
+          const result = await logout();
+          if (result) {
+            Alert.alert("Success", "Logged out successfully");
+            refetch();
+          } else {
+            Alert.alert("Error", "Failed to logout");
+          }
+        },
         style: "destructive",
       },
     ]);
