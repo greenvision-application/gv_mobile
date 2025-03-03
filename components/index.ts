@@ -3,7 +3,7 @@ import Header from "./Header";
 import Loading from "./Loading";
 import LoginForm from "./LoginForm";
 import Navigation from "./Navigation";
-import OnboardingContent from "./onboard";
+import OnboardingContent from "./Onboard";
 import PhotoPreviewSection from "./PhotoPreviewSection";
 import PlantCard from "./PlantCard";
 import PlantDetailsContent from "./PlantDetailsContent";
@@ -13,6 +13,7 @@ import SectionHeader from "./SectionHeader";
 import SignUpForm from "./SignUpForm";
 import UserInfoForm from "./UserInfoForm";
 import SearchHeader from "./SearchHeader";
+import SettingsMenu from "./SettingsMenu";
 
 export {
   ErrorMessage,

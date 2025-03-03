@@ -1,12 +1,14 @@
-import React from "react";
-import { View, TextInput, TouchableOpacity } from "react-native";
+import { useState, useRef } from "react";
+import { View, TextInput, TouchableOpacity, Dimensions } from "react-native";
 import { Icon } from "@rneui/themed";
+import SettingsMenu from "./SettingsMenu";
 
 interface SearchHeaderProps {
   onSearch?: (text: string) => void;
   onScan?: () => void;
   onNotification?: () => void;
-  onSettings?: () => void;
+  onNotificationSettings?: () => void;
+  onLogout?: () => void;
   placeholder?: string;
 }
 
@@ -14,9 +16,43 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
   onSearch,
   onScan,
   onNotification,
-  onSettings,
+  onNotificationSettings = () => console.log("Open notification settings"),
+  onLogout = () => console.log("Logging out"),
   placeholder = "Tìm kiếm",
 }) => {
+  const [settingsMenuVisible, setSettingsMenuVisible] = useState(false);
+  const settingsButtonRef = useRef(null);
+  const [settingsPosition, setSettingsPosition] = useState({ x: 0, y: 0 });
+  const handleOpenSettings = () => {
+    if (settingsButtonRef.current) {
+      (
+        settingsButtonRef.current as unknown as {
+          measure: (
+            callback: (
+              x: number,
+              y: number,
+              width: number,
+              height: number,
+              pageX: number,
+              pageY: number
+            ) => void
+          ) => void;
+        }
+      ).measure(
+        (
+          x: number,
+          y: number,
+          width: number,
+          height: number,
+          pageX: number,
+          pageY: number
+        ) => {
+          setSettingsPosition({ x: pageX, y: pageY + height });
+          setSettingsMenuVisible(true);
+        }
+      );
+    }
+  };
   return (
     <View className="flex flex-row items-center justify-between w-full px-3 py-3 bg-primary">
       {/* Search Bar */}
@@ -63,12 +99,21 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={onSettings}
+          onPress={() => setSettingsMenuVisible(true)}
           className="bg-primary-dark p-2 rounded-full"
         >
           <Icon name="settings-sharp" type="ionicon" size={25} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Settings Menu Modal */}
+      <SettingsMenu
+        visible={settingsMenuVisible}
+        onClose={() => setSettingsMenuVisible(false)}
+        onNotificationSettings={onNotificationSettings}
+        onLogout={onLogout}
+        position={settingsPosition}
+      />
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   Header,
@@ -40,6 +40,26 @@ const Home = () => {
     console.log("Opening settings");
   };
 
+  const handleNotificationSettings = () => {
+    console.log("Opening notification settings");
+    // Điều hướng đến màn hình cài đặt thông báo
+  };
+
+  const handleLogout = () => {
+    // Hiển thị xác nhận trước khi đăng xuất
+    Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
+      {
+        text: "Hủy",
+        style: "cancel",
+      },
+      {
+        text: "Đăng xuất",
+        onPress: () => console.log("Logged out"),
+        style: "destructive",
+      },
+    ]);
+  };
+
   return (
     <SafeAreaProvider>
       {/* Header */}
@@ -50,7 +70,8 @@ const Home = () => {
         onSearch={handleSearch}
         onScan={handleScan}
         onNotification={handleNotification}
-        onSettings={handleSettings}
+        onNotificationSettings={handleNotificationSettings}
+        onLogout={handleLogout}
       />
 
       {/* Content */}

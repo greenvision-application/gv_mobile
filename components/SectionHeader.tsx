@@ -13,7 +13,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onToggleShowAll,
 }) => {
   return (
-    <View className="flex flex-row justify-between items-center py-4">
+    <View className="flex flex-row justify-between items-center py-4 mx-2">
       <Text className="text-2xl font-inter-bold text-neutral-500">{title}</Text>
       <TouchableOpacity onPress={onToggleShowAll}>
         <Text className="text-primary text-base font-inter-medium">
