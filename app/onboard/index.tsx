@@ -2,7 +2,8 @@ import { View, Pressable, SafeAreaView, Text } from "react-native";
 import React, { useState } from "react";
 import { router } from "expo-router";
 import images from "@/constants/images";
-import OnboardingContent from "@/components/onboard";
+import OnboardingContent from "@/components/Onboard";
+import { useGlobalStore } from "@/store/global";
 
 const onboardData = [
   {
@@ -26,18 +27,19 @@ const onboardData = [
 ];
 
 const Onboard = () => {
+  const { completeOnboarding } = useGlobalStore();
   const [page, setPage] = useState(0);
 
   const handleNext = () => {
     if (page === onboardData.length - 1) {
-      router.push("/");
+      completeOnboarding();
     } else {
       setPage(page + 1);
     }
   };
 
   const handleSkip = () => {
-    router.push("/");
+    completeOnboarding();
   };
 
   return (
