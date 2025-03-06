@@ -34,7 +34,7 @@ const SignIn = () => {
         className="w-full h-3/5"
       />
       <View className="px-6 mt-6">
-        <Link href="/login-form" asChild>
+        <Link href="/(auth)/form" asChild>
           <Pressable className="bg-primary py-4 rounded-full shadow-md active:opacity-90">
             <Text className="text-neutral font-inter-semibold text-xl text-center">
               Đăng nhập
@@ -55,7 +55,7 @@ const SignIn = () => {
           <Image
             source={icons.googleIcon}
             className="w-7 h-7"
-            resizeMode="contain"
+            // resizeMode="contain"
           />
           <Text className="text-neutral font-inter-semibold text-xl text-center ml-5">
             Tiếp tục với Google
@@ -66,7 +66,7 @@ const SignIn = () => {
           <Image
             source={icons.facebookIcon}
             className="w-8 h-8"
-            resizeMode="contain"
+            // resizeMode="contain"
           />
           <Text className="text-neutral font-inter-semibold text-xl text-center ml-5">
             Tiếp tục với Facebook

@@ -1,39 +1,105 @@
-import { View, Text, Pressable, Alert } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import Navigation from "@/components/Navigation";
-import Header from "@/components/Header";
-
+import React, { useState } from "react";
+import { ScrollView, Alert } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  Header,
+  SearchHeader,
+  PopularPlants,
+  SimilarPlants,
+} from "@/components";
+import { popularPlants, similarPlants } from "@/libs/dataFake";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
+import { useRouter } from "expo-router";
 
 const Home = () => {
+  const [showAllPopular, setShowAllPopular] = useState(false);
+  const [showAllSimilar, setShowAllSimilar] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const { refetch } = useGlobalStore();
-  const handleLogout = async () => {
-    const result = await logout();
-    if (result) {
-      Alert.alert("Success", "Logged out successfully");
-      refetch();
-    } else {
-      Alert.alert("Error", "Failed to logout");
-    }
+  const route = useRouter();
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
   };
+
+  const handleSearch = (text: string) => {
+    console.log("Searching for:", text);
+  };
+
+  const handleScan = () => {
+    route.replace("/(root)/(tabs)/scan");
+  };
+
+  const handleNotification = () => {
+    route.replace("/(root)/notifications")
+  };
+
+  const handleNotificationSettings = () => {
+    console.log("Opening notification settings");
+    // Điều hướng đến màn hình cài đặt thông báo
+  };
+
+  const handleLogout = () => {
+    Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
+      {
+        text: "Hủy",
+        style: "cancel",
+      },
+      {
+        text: "Đăng xuất",
+        onPress: async () => {
+          const result = await logout();
+          if (result) {
+            Alert.alert("Success", "Logged out successfully");
+            refetch();
+          } else {
+            Alert.alert("Error", "Failed to logout");
+          }
+        },
+        style: "destructive",
+      },
+    ]);
+  };
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1">
-        {/* <Navigation /> */}
-        <Header />
-        {/* <View>
-          <Text>Home</Text>
-          <Pressable
-            onPress={handleLogout}
-            className="bg-semantic-error py-4 rounded-full flex-row items-center justify-center space-x-3 mt-5 shadow-sm active:opacity-90"
-          >
-            <Text className="text-neutral font-inter-semibold text-xl text-center">
-              Đăng xuất
-            </Text>
-          </Pressable>
-        </View> */}
-      </SafeAreaView>
+      {/* Header */}
+      <Header title="Trang chủ" />
+
+      {/* Search Header */}
+      <SearchHeader
+        onSearch={handleSearch}
+        onScan={handleScan}
+        onNotification={handleNotification}
+        onNotificationSettings={handleNotificationSettings}
+        onLogout={handleLogout}
+      />
+
+      {/* Content */}
+      <ScrollView className="flex-1 mb-20 bg-neutral px-2">
+        <PopularPlants
+          plants={popularPlants}
+          showAllPopular={showAllPopular}
+          setShowAllPopular={setShowAllPopular}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
+        />
+
+        <SimilarPlants
+          plants={similarPlants}
+          showAllSimilar={showAllSimilar}
+          setShowAllSimilar={setShowAllSimilar}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
+        />
+      </ScrollView>
     </SafeAreaProvider>
   );
 };

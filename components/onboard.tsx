@@ -18,7 +18,9 @@ const OnboardingContent: React.FC<OnboardingContentProps> = ({
 }) => {
   return (
     <View className="h-full bg-neutral px-5">
-      <Image source={image} resizeMode="contain" className="w-full h-3/5" />
+      <Image source={image} 
+      resizeMode="contain"
+      className="w-full h-3/5" />
       
       <Text className="font-bold text-2xl text-center m-4">{title}</Text>
       <Text className="text-center m-2 font-inter-semibold text-lg text-neutral-400 ">{description}</Text>
