@@ -38,7 +38,7 @@ const Home = () => {
   };
 
   const handleNotification = () => {
-    console.log("Opening notifications");
+    route.replace("/(root)/notifications")
   };
 
   const handleNotificationSettings = () => {
