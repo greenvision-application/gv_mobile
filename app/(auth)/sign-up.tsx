@@ -1,12 +1,8 @@
-import { View, Text } from "react-native";
 import React from "react";
+import { SignUpForm } from "@/components";
 
-const SingUp = () => {
-  return (
-    <View>
-      <Text>SingUp</Text>
-    </View>
-  );
+const SignUp = () => {
+  return <SignUpForm />;
 };
 
-export default SingUp;
+export default SignUp;

@@ -6,14 +6,17 @@ import { router } from "expo-router";
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
   const goOTP = () => {
     router.replace("/verify-otp");
   };
+  const goSignUp = () => {
+    router.replace("/sign-up");
+  };
 
   return (
-    <View className="flex-1 w-full items-center justify-center bg-neutral">
+    <View className="flex-1 w-full items-center justify-start bg-neutral pt-44">
       <View className="px-6 w-full">
         <Text className="text-4xl font-inter-bold mb-16 text-white text-center">
           Đăng nhập
@@ -23,11 +26,11 @@ export default function LoginForm() {
           <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300">
             <Ionicons name="person-sharp" size={25} color="#3CC18E" />
             <TextInput
-              placeholder="Email hoặc số điện thoại"
+              placeholder="Email email của bạn"
               className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
               placeholderTextColor="#9CA3AF"
-              value={phone}
-              onChangeText={(text) => setPhone(text.trim())}
+              value={email}
+              onChangeText={(text) => setEmail(text.trim())}
             />
           </View>
 
@@ -49,7 +52,7 @@ export default function LoginForm() {
           </View>
         </View>
 
-        <View className="flex flex-row justify-end items-center my-6">
+        <View className="flex flex-row justify-end items-center my-4">
           <TouchableOpacity>
             <Text className="text-primary text-md font-inter-light">
               Quên mật khẩu?
@@ -66,9 +69,9 @@ export default function LoginForm() {
           </Text>
         </TouchableOpacity>
 
-        <View className="mt-8 flex-row justify-center">
+        <View className="mt-4 flex-row justify-center">
           <Text className="text-neutral-500">Bạn chưa có tài khoản? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={goSignUp}>
             <Text className="text-primary font-inter-bold"> Đăng ký</Text>
           </TouchableOpacity>
         </View>

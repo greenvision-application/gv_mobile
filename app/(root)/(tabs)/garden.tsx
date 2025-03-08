@@ -130,7 +130,6 @@ const Garden = () => {
             </View>
           </View>
         </View>
-
         <View className="flex-row justify-around my-4">
           <TouchableOpacity
             onPress={() => setActiveTab("all")}

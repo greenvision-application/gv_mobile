@@ -1,12 +1,23 @@
 import { create } from "zustand";
 import { getCurrentUser, logout } from "@/libs/appwrite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import variables from "@/constants/variables";
 
 interface User {
   $id: string;
   name: string;
   email: string;
   avatar: string;
+}
+
+export interface FormData {
+  username?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  otp?: string;
+  gender?: string;
+  dayOfBirth?: string;
 }
 
 interface GlobalState {
@@ -16,6 +27,7 @@ interface GlobalState {
   error: string | null;
   uploadedFileUrl: string | null;
   onboarded: boolean;
+  formData: FormData | null;
 
   // Actions
   setUser: (user: User | null) => void;
@@ -27,6 +39,8 @@ interface GlobalState {
   completeOnboarding: () => void;
   refetch: () => Promise<void>;
   setUploadedFileUrl: (url: string | null) => void;
+  setFormData: (formData: Partial<FormData>) => void;
+  resetForm: () => void;
 }
 
 export const useGlobalStore = create<GlobalState>((set) => ({
@@ -36,6 +50,7 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   error: null,
   uploadedFileUrl: null,
   onboarded: false,
+  formData: null,
 
   setUser: (user) => set({ user, isLoggedIn: !!user }),
   setLoading: (loading) => set({ loading }),
@@ -49,7 +64,9 @@ export const useGlobalStore = create<GlobalState>((set) => ({
     try {
       set({ loading: true, error: null });
 
-      const onboardedStatus = await AsyncStorage.getItem("onboarded");
+      const onboardedStatus = await AsyncStorage.getItem(
+        variables.localStorage.onboarded
+      );
       set({ onboarded: onboardedStatus === "true" });
       const user = await getCurrentUser();
 
@@ -74,7 +91,18 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   },
 
   completeOnboarding: async () => {
-    await AsyncStorage.setItem("onboarded", "true");
+    await AsyncStorage.setItem(variables.localStorage.onboarded, "true");
     set({ onboarded: true });
   },
+
+  setFormData: (formData) => {
+    console.log("Form data:", formData);
+    set((state) => ({
+      formData: { ...state.formData, ...formData },
+    }));
+  },
+  resetForm: () =>
+    set({
+      formData: null,
+    }),
 }));

@@ -4,6 +4,24 @@ const PLATFORM = "greenvision.dev.com";
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const APPWRITE_PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!;
 
+const localStorage = {
+  accessToken: "accessToken",
+  onboarded: "onboarded",
+};
+
+const urls = {
+  register: "/auth/register",
+  login: "/auth/login",
+  otp: "/auth/verify-otp",
+};
+
+const methods = {
+  post: "POST",
+  get: "GET",
+  put: "PUT",
+  delete: "DELETE",
+  patch: "PATCH",
+};
 const ENUM_TRANSLATIONS = {
   PLANT_SITE: {
     INDOOR: "Trong nhà",
@@ -51,4 +69,7 @@ export default {
   APPWRITE_ENDPOINT,
   APPWRITE_PROJECT_ID,
   ENUM_TRANSLATIONS,
+  localStorage,
+  urls,
+  methods,
 };

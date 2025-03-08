@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import variables from "@/constants/variables";
 
 const getAllKeys = async () => {
   try {
@@ -78,6 +79,18 @@ const allKeyStorage = async () => {
   }
 };
 
+const setToken = async (token: string) => {
+  await setItem(variables.localStorage.accessToken, token);
+};
+
+const getToken = async () => {
+  return await getItem(variables.localStorage.accessToken);
+};
+
+const removeToken = async () => {
+  await removeItem(variables.localStorage.accessToken);
+};
+
 export default {
   getAllKeys,
   getItem,
@@ -86,4 +99,7 @@ export default {
   clearAll,
   getAllItems,
   allKeyStorage,
+  getToken,
+  setToken,
+  removeToken,
 };
