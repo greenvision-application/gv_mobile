@@ -11,19 +11,18 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import { useRouter } from "expo-router";
-import { uploadImageFile } from "@/services/userService";
 import { useGlobalStore } from "@/store/global";
 import Loading from "@/components/Loading";
 
 const Scan = () => {
   const router = useRouter();
+  const { setUploadedFile, uriImage } = useGlobalStore();
   const [permission, requestPermission] = useCameraPermissions();
   const ref = useRef<CameraView>(null);
-  const [uri, setUri] = useState<string | null>(null);
+  const [uri, setUri] = useState<string | null>(uriImage);
   const [facing, setFacing] = useState<CameraType>("back");
   const [flash, setFlash] = useState<FlashMode>("off");
   const [isLoading, setIsLoading] = useState(false);
-  const { setUploadedFileUrl } = useGlobalStore();
 
   if (!permission) {
     return null;
@@ -127,12 +126,7 @@ const Scan = () => {
     try {
       setIsLoading(true);
       const formData = await transferImageData();
-
-      const uploadResult = await uploadImageFile(formData);
-      if (!uploadResult.url) {
-        throw new Error("Không tìm thấy URL ảnh sau khi upload");
-      }
-      setUploadedFileUrl(uploadResult.url);
+      setUploadedFile(formData);
       router.push("/properties/ai-infor");
     } catch (error) {
       console.error("Error uploading plant:", error);

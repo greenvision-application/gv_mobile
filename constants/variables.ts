@@ -14,6 +14,7 @@ const urls = {
   login: "/auth/login",
   otp: "/auth/verify-otp",
   status: "/auth/status",
+  scan: "/gemini/upload-image",
 };
 
 const methods = {

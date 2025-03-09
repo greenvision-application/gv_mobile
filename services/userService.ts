@@ -1,9 +1,9 @@
 import variables from "@/constants/variables";
 import request from "@/libs/apiClient";
-import { FormData } from "@/store/global";
+import { FormInfoData } from "@/store/global";
 
 const handleRegister = async (
-  registerForm: FormData,
+  registerForm: FormInfoData,
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
 ) => {
@@ -20,7 +20,7 @@ const handleRegister = async (
 
 const handleVerifyOTP = async (
   otp: string,
-  dataForm: FormData,
+  dataForm: FormInfoData,
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
 ) => {
@@ -40,7 +40,7 @@ const handleVerifyOTP = async (
 };
 
 const handleLoginEmail = async (
-  loginForm: FormData,
+  loginForm: FormInfoData,
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
 ) => {
@@ -69,18 +69,5 @@ const getStatus = async (
     onError,
   });
 };
-// export const scanPlant = async (imageUrl: string) => {
-//   const response = await request.post("/plants/scan", { imageUrl });
-//   return response.data;
-// };
-
-// export const uploadImageFile = async (formData: FormData) => {
-//   const response = await request.post("/file-upload/supabase", formData, {
-//     headers: {
-//       "Content-Type": "multipart/form-data",
-//     },
-//   });
-//   return response.data;
-// };
 
 export { handleRegister, handleVerifyOTP, handleLoginEmail, getStatus };

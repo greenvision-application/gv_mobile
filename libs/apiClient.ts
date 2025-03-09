@@ -42,6 +42,7 @@ AXIOS.interceptors.response.use(
 
 interface RequestOptions {
   method: AxiosRequestConfig["method"];
+  headers?: Record<string, string>;
   url: string;
   data?: any;
   onSuccess?: (data: any) => void;
@@ -50,13 +51,19 @@ interface RequestOptions {
 
 const request = async ({
   method,
+  headers = {},
   url,
   data,
   onSuccess,
   onError,
 }: RequestOptions) => {
   try {
-    const response = await AXIOS({ method, url, data });
+    const response = await AXIOS({
+      method,
+      headers: { ...headers },
+      url,
+      data,
+    });
     onSuccess?.(response.data);
     return response.data;
   } catch (error) {

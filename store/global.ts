@@ -12,7 +12,7 @@ interface User {
   avatar: string;
 }
 
-export interface FormData {
+export interface FormInfoData {
   username?: string;
   email?: string;
   password?: string;
@@ -27,21 +27,23 @@ interface GlobalState {
   loading: boolean;
   isLoggedIn: boolean;
   error: string | null;
-  uploadedFileUrl: string | null;
+  uploadedFile: FormData | null;
+  uriImage: string | null;
   onboarded: boolean;
-  formData: FormData | null;
+  formData: FormInfoData | null;
 
   // Actions
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setOnboarded: (onboarded: boolean) => void;
+  setUri: (uri: string | null) => void;
 
   // Async actions
   completeOnboarding: () => void;
   refetch: () => Promise<void>;
-  setUploadedFileUrl: (url: string | null) => void;
-  setFormData: (formData: Partial<FormData>) => void;
+  setUploadedFile: (file: FormData | null) => void;
+  setFormData: (formData: Partial<FormInfoData>) => void;
   resetForm: () => void;
 }
 
@@ -50,7 +52,8 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   loading: true,
   isLoggedIn: false,
   error: null,
-  uploadedFileUrl: null,
+  uploadedFile: null,
+  uriImage: null,
   onboarded: false,
   formData: null,
 
@@ -58,9 +61,10 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
   setOnboarded: (onboarded) => set({ onboarded }),
-  setUploadedFileUrl: (url: string | null) => {
-    set({ uploadedFileUrl: url });
+  setUploadedFile: (file: FormData | null) => {
+    set({ uploadedFile: file });
   },
+  setUri: (uriImage: string | null) => set({ uriImage }),
 
   refetch: async () => {
     try {
