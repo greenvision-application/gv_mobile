@@ -11,6 +11,7 @@ import { popularPlants, similarPlants } from "@/libs/dataFake";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
 import { useRouter } from "expo-router";
+import helper from "@/libs/helper";
 
 const Home = () => {
   const [showAllPopular, setShowAllPopular] = useState(false);
@@ -38,7 +39,7 @@ const Home = () => {
   };
 
   const handleNotification = () => {
-    route.replace("/(root)/notifications")
+    route.replace("/(root)/notifications");
   };
 
   const handleNotificationSettings = () => {
@@ -55,12 +56,15 @@ const Home = () => {
       {
         text: "Đăng xuất",
         onPress: async () => {
-          const result = await logout();
+          const token = await helper.getToken();
+
+          const result = token ? await helper.removeToken() : await logout();
+
           if (result) {
-            Alert.alert("Success", "Logged out successfully");
+            Alert.alert("Thành công", "Đăng xuất thành công");
             refetch();
           } else {
-            Alert.alert("Error", "Failed to logout");
+            Alert.alert("Lỗi", "Lỗi khi đăng xuất");
           }
         },
         style: "destructive",

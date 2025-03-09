@@ -19,14 +19,15 @@ const handleRegister = async (
 };
 
 const handleVerifyOTP = async (
-  otpForm: FormData,
+  otp: string,
+  dataForm: FormData,
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
 ) => {
   const data = {
-    email: otpForm.email,
-    otp: otpForm.otp,
-    password: otpForm.password,
+    email: dataForm.email,
+    otp,
+    password: dataForm.password,
   };
 
   return request({
@@ -38,6 +39,36 @@ const handleVerifyOTP = async (
   });
 };
 
+const handleLoginEmail = async (
+  loginForm: FormData,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = {
+    usernameOrEmail: loginForm.email,
+    password: loginForm.password,
+  };
+
+  return request({
+    method: variables.methods.post,
+    url: variables.urls.login,
+    data,
+    onSuccess,
+    onError,
+  });
+};
+
+const getStatus = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.status,
+    onSuccess,
+    onError,
+  });
+};
 // export const scanPlant = async (imageUrl: string) => {
 //   const response = await request.post("/plants/scan", { imageUrl });
 //   return response.data;
@@ -52,4 +83,4 @@ const handleVerifyOTP = async (
 //   return response.data;
 // };
 
-export { handleRegister, handleVerifyOTP };
+export { handleRegister, handleVerifyOTP, handleLoginEmail, getStatus };

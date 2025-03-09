@@ -1,18 +1,43 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { router } from "expo-router";
+import { handleLoginEmail } from "@/services/userService";
+import { useGlobalStore } from "@/store/global";
+import helper from "@/libs/helper";
 
 export default function LoginForm() {
+  const { refetch, loading } = useGlobalStore();
   const [showPassword, setShowPassword] = useState(false);
-
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const goOTP = () => {
-    router.replace("/verify-otp");
+  const loginEmail = async () => {
+    await handleLoginEmail(
+      {
+        email,
+        password,
+      },
+      (response) => {
+        helper.setToken(response);
+        refetch();
+        router.push("/");
+      },
+      (error) => {
+        Alert.alert("Error", "Failed to login");
+      }
+    );
   };
+
   const goSignUp = () => {
-    router.replace("/sign-up");
+    router.push("/sign-up");
   };
 
   return (
@@ -41,6 +66,8 @@ export default function LoginForm() {
               className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
               placeholderTextColor="#9CA3AF"
               secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
@@ -61,12 +88,16 @@ export default function LoginForm() {
         </View>
 
         <TouchableOpacity
-          onPress={goOTP}
+          onPress={loginEmail}
           className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary"
         >
-          <Text className="text-neutral text-center font-bold text-lg">
-            Tiếp tục
-          </Text>
+          {loading ? (
+            <ActivityIndicator className="text-primary" size="small" />
+          ) : (
+            <Text className="text-neutral text-center font-bold text-lg">
+              Tiếp tục
+            </Text>
+          )}
         </TouchableOpacity>
 
         <View className="mt-4 flex-row justify-center">

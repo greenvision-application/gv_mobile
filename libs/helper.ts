@@ -88,7 +88,13 @@ const getToken = async () => {
 };
 
 const removeToken = async () => {
-  await removeItem(variables.localStorage.accessToken);
+  try {
+    const result = await removeItem(variables.localStorage.accessToken);
+    return result;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 };
 
 export default {

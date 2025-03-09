@@ -13,6 +13,7 @@ const urls = {
   register: "/auth/register",
   login: "/auth/login",
   otp: "/auth/verify-otp",
+  status: "/auth/status",
 };
 
 const methods = {

@@ -5,7 +5,7 @@ import { useGlobalStore } from "@/store/global";
 import { handleVerifyOTP, handleRegister } from "@/services/userService";
 
 export default function VerifyOtp() {
-  const { setFormData, formData } = useGlobalStore();
+  const { formData, resetForm } = useGlobalStore();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(60);
@@ -43,22 +43,18 @@ export default function VerifyOtp() {
     }
   };
 
-  const handleVerify = () => {
+  const callVerifyOTP = async () => {
     if (otp.some((digit) => digit === "")) {
       setError("Vui lòng nhập đầy đủ mã OTP");
       return;
     }
-  };
-
-  const calVerifyOTP = async () => {
-    handleVerify();
-
-    setFormData({ otp: otp.join("") });
 
     try {
       await handleVerifyOTP(
+        otp.join(""),
         formData!,
         (response) => {
+          resetForm();
           router.replace("/form");
         },
         (error) => {
@@ -129,7 +125,7 @@ export default function VerifyOtp() {
 
         <TouchableOpacity
           className="bg-neutral-300 p-4 rounded-full shadow-sm mb-8 mt-4 active:bg-primary"
-          onPress={calVerifyOTP}
+          onPress={callVerifyOTP}
         >
           <Text className="text-neutral text-center font-bold text-lg">
             Xác nhận

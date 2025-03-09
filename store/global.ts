@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { getCurrentUser, logout } from "@/libs/appwrite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import variables from "@/constants/variables";
+import helper from "@/libs/helper";
+import { getStatus } from "@/services/userService";
 
 interface User {
   $id: string;
@@ -68,7 +70,18 @@ export const useGlobalStore = create<GlobalState>((set) => ({
         variables.localStorage.onboarded
       );
       set({ onboarded: onboardedStatus === "true" });
-      const user = await getCurrentUser();
+      const token = await helper.getToken();
+
+      let user = null;
+
+      if (token) {
+        const response = await getStatus();
+        if (response) {
+          user = response;
+        }
+      } else {
+        user = await getCurrentUser();
+      }
 
       set({
         user,
@@ -96,7 +109,6 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   },
 
   setFormData: (formData) => {
-    console.log("Form data:", formData);
     set((state) => ({
       formData: { ...state.formData, ...formData },
     }));
@@ -104,5 +116,6 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   resetForm: () =>
     set({
       formData: null,
+      loading: false,
     }),
 }));
