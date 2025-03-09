@@ -14,6 +14,8 @@ import SignUpForm from "./SignUpForm";
 import UserInfoForm from "./UserInfoForm";
 import SearchHeader from "./SearchHeader";
 import SettingsMenu from "./SettingsMenu";
+import NoResults from "./NoResults";
+import AlertError from "./AlertError";
 
 export {
   ErrorMessage,
@@ -31,4 +33,7 @@ export {
   SignUpForm,
   UserInfoForm,
   SearchHeader,
+  SettingsMenu,
+  NoResults,
+  AlertError,
 };

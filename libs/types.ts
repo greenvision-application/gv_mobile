@@ -3,4 +3,5 @@ export interface Plant {
   name: string;
   image: string;
   favorite: boolean;
+  nickname?: string;
 }

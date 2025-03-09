@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import variables from "@/constants/variables";
+import { Plant } from "./types";
 
 const getAllKeys = async () => {
   try {
@@ -97,6 +98,17 @@ const removeToken = async () => {
   }
 };
 
+const mapApiDataToPlants = (data: any[]): Plant[] => {
+  return data.map((item) => ({
+    id: item.id,
+    name: item.plant_name,
+    image: item.image_url.length > 0 ? item.image_url[0] : null,
+    favorite: item.User_Plant.length > 0 ? item.User_Plant[0].favorite : false,
+    nickname:
+      item.User_Plant.length > 0 ? item.User_Plant[0].nickname : undefined,
+  }));
+};
+
 export default {
   getAllKeys,
   getItem,
@@ -108,4 +120,5 @@ export default {
   getToken,
   setToken,
   removeToken,
+  mapApiDataToPlants,
 };

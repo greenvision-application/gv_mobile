@@ -15,6 +15,7 @@ const urls = {
   otp: "/auth/verify-otp",
   status: "/auth/status",
   scan: "/gemini/upload-image",
+  popular: "/plants/client-plants",
 };
 
 const methods = {

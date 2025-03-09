@@ -1,8 +1,10 @@
 import React from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { Plant } from "@/libs/types";
 import PlantCard from "./PlantCard";
 import SectionHeader from "./SectionHeader";
+import NoResults from "./NoResults";
+import { useGlobalStore } from "@/store/global";
 
 interface PopularPlantsProps {
   plants: Plant[];
@@ -19,6 +21,7 @@ const PopularPlants: React.FC<PopularPlantsProps> = ({
   favorites,
   onToggleFavorite,
 }) => {
+  const { loading } = useGlobalStore();
   return (
     <>
       <SectionHeader
@@ -26,6 +29,10 @@ const PopularPlants: React.FC<PopularPlantsProps> = ({
         showAll={showAllPopular}
         onToggleShowAll={() => setShowAllPopular(!showAllPopular)}
       />
+      {loading && (
+        <ActivityIndicator size="large" className="text-primary-300 mt-5" />
+      )}
+      {!loading && plants.length === 0 && <NoResults />}
       <View className="flex-row flex-wrap">
         {plants.slice(0, showAllPopular ? plants.length : 4).map((plant) => (
           <PlantCard

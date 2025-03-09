@@ -1,24 +1,28 @@
-import React, { useState } from "react";
-import { ScrollView, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/libs/tanstackQuery";
 import {
   Header,
   SearchHeader,
   PopularPlants,
   SimilarPlants,
 } from "@/components";
-import { popularPlants, similarPlants } from "@/libs/dataFake";
+import { similarPlants } from "@/libs/dataFake";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
-import { useRouter } from "expo-router";
 import helper from "@/libs/helper";
+import { popularPlant } from "@/services/plantService";
+import { Plant } from "@/libs/types";
+import { queryKeys } from "@/libs/tanstackQuery";
 
 const Home = () => {
   const [showAllPopular, setShowAllPopular] = useState(false);
   const [showAllSimilar, setShowAllSimilar] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const { refetch } = useGlobalStore();
-  const route = useRouter();
+  const { refetch, setLoading } = useGlobalStore();
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -35,11 +39,11 @@ const Home = () => {
   };
 
   const handleScan = () => {
-    route.replace("/(root)/(tabs)/scan");
+    router.replace("/(root)/(tabs)/scan");
   };
 
   const handleNotification = () => {
-    route.replace("/(root)/notifications");
+    router.replace("/(root)/notifications");
   };
 
   const handleNotificationSettings = () => {
@@ -71,6 +75,26 @@ const Home = () => {
       },
     ]);
   };
+  const fetchPopularPlants = async (): Promise<Plant[]> => {
+    try {
+      const data = await new Promise<Plant[]>((resolve, reject) => {
+        popularPlant(
+          (res) => resolve(helper.mapApiDataToPlants(res)),
+          (err) => reject(new Error(err.message))
+        );
+      });
+      return data;
+    } catch (error) {
+      throw new Error("Đã xảy ra lỗi khi tải dữ liệu!");
+    }
+  };
+
+  const { data: popularPlants = [] } = useQuery({
+    queryKey: [queryKeys.popular],
+    queryFn: fetchPopularPlants,
+    staleTime: 1000,
+  });
+  console.log("popular data::::", popularPlants);
 
   return (
     <SafeAreaProvider>
