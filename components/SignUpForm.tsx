@@ -148,6 +148,13 @@ export default function SignUpForm() {
               autoCapitalize="none"
               blurOnSubmit={false}
             />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={25}
+                color="#B7BBC1"
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
