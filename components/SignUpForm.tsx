@@ -1,25 +1,37 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { CheckBox } from "@rneui/themed";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { handleRegister } from "@/services/userService";
 import { useGlobalStore } from "@/store/global";
+
+type RegisterFormType = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function SignUpForm() {
   const { setFormData } = useGlobalStore();
   const [checked, setChecked] = useState(false);
   const toggleCheckbox = () => setChecked(!checked);
   const [showPassword, setShowPassword] = useState(false);
-  const [registerForm, setRegisterForm] = useState({
+  const [registerForm, setRegisterForm] = useState<RegisterFormType>({
     email: "",
     password: "",
     confirmPassword: "",
   });
 
-  const router = useRouter();
-
-  const handleChange = (name: string, value: string) => {
+  const handleChange = (name: keyof RegisterFormType, value: string) => {
     setRegisterForm((prev) => ({
       ...prev,
       [name]: value,
@@ -32,23 +44,23 @@ export default function SignUpForm() {
       !registerForm.password ||
       !registerForm.confirmPassword
     ) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin");
       return false;
     }
     if (!registerForm.email.includes("@")) {
-      alert("Email không hợp lệ");
+      Alert.alert("Lỗi", "Email không hợp lệ");
       return false;
     }
     if (registerForm.password.length < 6) {
-      alert("Mật khẩu phải có ít nhất 6 ký tự");
+      Alert.alert("Lỗi", "Mật khẩu phải có ít nhất 6 ký tự");
       return false;
     }
     if (registerForm.password !== registerForm.confirmPassword) {
-      alert("Mật khẩu không khớp");
+      Alert.alert("Lỗi", "Mật khẩu không khớp");
       return false;
     }
     if (!checked) {
-      alert("Vui lòng đồng ý với điều khoản");
+      Alert.alert("Lỗi", "Vui lòng đồng ý với điều khoản");
       return false;
     }
     return true;
@@ -57,23 +69,19 @@ export default function SignUpForm() {
   const goOTP = async () => {
     if (!validateForm()) return;
 
-    setFormData({
-      email: registerForm.email,
-      password: registerForm.password,
-      confirmPassword: registerForm.confirmPassword,
-    });
+    setFormData(registerForm);
 
     try {
       await handleRegister(
         registerForm,
-        (response) => {
+        () => {
           router.push("/verify-otp");
         },
         (error) => {
           if (error?.statusCode === 409) {
-            alert("Email đã tồn tại, vui lòng chọn email khác.");
+            Alert.alert("Lỗi", "Email đã tồn tại, vui lòng chọn email khác.");
           } else {
-            alert("Đăng ký thất bại: " + error.message);
+            Alert.alert("Lỗi", "Đăng ký thất bại: " + error.message);
           }
         }
       );
@@ -82,41 +90,11 @@ export default function SignUpForm() {
     }
   };
 
-  const goSignIn = () => {
-    router.replace("/sign-in");
-  };
-
-  const PasswordInput = ({
-    placeholder,
-    value,
-    onChange,
-  }: {
-    placeholder: string;
-    value: string;
-    onChange: (text: string) => void;
-  }) => (
-    <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300">
-      <Ionicons name="lock-closed-sharp" size={25} color="#3CC18E" />
-      <TextInput
-        placeholder={placeholder}
-        className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
-        placeholderTextColor="#9CA3AF"
-        secureTextEntry={!showPassword}
-        value={value}
-        onChangeText={onChange}
-      />
-      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-        <Ionicons
-          name={showPassword ? "eye-off" : "eye"}
-          size={25}
-          color="#B7BBC1"
-        />
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
-    <View className="flex-1 w-full items-center justify-start pt-44 bg-neutral">
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1 w-full items-center justify-start pt-44 bg-neutral"
+    >
       <View className="px-6 w-full">
         <Text className="text-4xl font-inter-bold mb-16 text-white text-center">
           Đăng ký
@@ -133,20 +111,44 @@ export default function SignUpForm() {
               onChangeText={(text) => handleChange("email", text.trim())}
               keyboardType="email-address"
               autoCapitalize="none"
+              blurOnSubmit={false}
             />
           </View>
 
-          <PasswordInput
-            placeholder="Mật khẩu"
-            value={registerForm.password}
-            onChange={(text) => handleChange("password", text)}
-          />
+          <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300">
+            <Ionicons name="lock-closed-sharp" size={25} color="#3CC18E" />
+            <TextInput
+              placeholder="Mật khẩu"
+              className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry={!showPassword}
+              value={registerForm.password}
+              onChangeText={(text) => handleChange("password", text)}
+              autoCapitalize="none"
+              blurOnSubmit={false}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={25}
+                color="#B7BBC1"
+              />
+            </TouchableOpacity>
+          </View>
 
-          <PasswordInput
-            placeholder="Xác nhận mật khẩu"
-            value={registerForm.confirmPassword}
-            onChange={(text) => handleChange("confirmPassword", text)}
-          />
+          <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300">
+            <Ionicons name="lock-closed-sharp" size={25} color="#3CC18E" />
+            <TextInput
+              placeholder="Xác nhận mật khẩu"
+              className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry={!showPassword}
+              value={registerForm.confirmPassword}
+              onChangeText={(text) => handleChange("confirmPassword", text)}
+              autoCapitalize="none"
+              blurOnSubmit={false}
+            />
+          </View>
         </View>
 
         <View className="flex flex-row items-center my-4">
@@ -182,11 +184,11 @@ export default function SignUpForm() {
 
         <View className="mt-8 flex-row justify-center">
           <Text className="text-neutral-500">Bạn đã có tài khoản? </Text>
-          <TouchableOpacity onPress={goSignIn}>
+          <TouchableOpacity onPress={() => router.replace("/sign-in")}>
             <Text className="text-primary font-inter-bold"> Đăng nhập</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

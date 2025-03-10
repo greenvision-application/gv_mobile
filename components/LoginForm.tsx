@@ -19,19 +19,37 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidPassword = (password: string) => password.length >= 6;
+
   const loginEmail = async () => {
+    if (!isValidEmail(email)) {
+      Alert.alert("Lỗi", "Email không hợp lệ");
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      Alert.alert("Lỗi", "Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
+
     await handleLoginEmail(
-      {
-        email,
-        password,
-      },
+      { email, password },
       (response) => {
         helper.setToken(response);
         refetch();
         router.push("/");
       },
       (error) => {
-        Alert.alert("Error", "Failed to login");
+        if (error.statusCode === 401) {
+          Alert.alert("Lỗi", "Email hoặc mật khẩu không đúng");
+        } else {
+          Alert.alert("Lỗi", "Đăng nhập thất bại");
+        }
       }
     );
   };
@@ -39,6 +57,8 @@ export default function LoginForm() {
   const goSignUp = () => {
     router.push("/sign-up");
   };
+
+  const isFormValid = email.length > 0 && password.length > 0;
 
   return (
     <View className="flex-1 w-full items-center justify-start bg-neutral pt-44">
@@ -51,7 +71,7 @@ export default function LoginForm() {
           <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300">
             <Ionicons name="person-sharp" size={25} color="#3CC18E" />
             <TextInput
-              placeholder="Email email của bạn"
+              placeholder="Nhập email của bạn"
               className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
               placeholderTextColor="#9CA3AF"
               value={email}
@@ -62,7 +82,7 @@ export default function LoginForm() {
           <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300">
             <Ionicons name="lock-closed-sharp" size={25} color="#3CC18E" />
             <TextInput
-              placeholder="Mật khẩu"
+              placeholder="Nhập mật khẩu của bạn"
               className="flex-1 ml-2 text-neutral-500 font-inter-medium text-md"
               placeholderTextColor="#9CA3AF"
               secureTextEntry={!showPassword}
@@ -89,7 +109,10 @@ export default function LoginForm() {
 
         <TouchableOpacity
           onPress={loginEmail}
-          className="bg-neutral-300 p-4 rounded-full shadow-sm mt-4 active:bg-primary"
+          disabled={!isFormValid}
+          className={`p-4 rounded-full shadow-sm mt-4 ${
+            isFormValid ? "bg-primary" : "bg-neutral-300"
+          }`}
         >
           {loading ? (
             <ActivityIndicator className="text-primary" size="small" />

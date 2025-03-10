@@ -102,7 +102,7 @@ export default function VerifyOtp() {
         </Text>
 
         <Text className="text-neutral-500 text-center mb-8 px-14">
-          Vui lòng nhập mã xác minh OTP chúng đã gửi đến số điện thoại của bạn
+          Vui lòng nhập mã xác minh OTP chúng đã gửi đến email của bạn
         </Text>
 
         <View className="flex flex-row justify-center gap-2 mb-5">
