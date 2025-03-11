@@ -16,6 +16,7 @@ const urls = {
   status: "/auth/status",
   scan: "/gemini/upload-image",
   popular: "/plants/client-plants",
+  plantDetail: (id: string | string[]) => `/plants/${id}`,
 };
 
 const methods = {
