@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Header } from "@/components";
 
 const TimelineScreen = () => {
   const timelineData = [
@@ -64,25 +64,8 @@ const TimelineScreen = () => {
 
   return (
     <View className={` flex-1 pb-20`}>
-      {/* header */}
-      <View className="bg-[#3CC18E] p-2 py-4 flex flex-row items-center justify-between">
-        <TouchableOpacity
-          onPress={() => console.log("Back button pressed")}
-          className=""
-        >
-          <Ionicons name="chevron-back-sharp" size={30} color="white" />
-        </TouchableOpacity>
-        <Text className="text-neutral-100 text-2xl font-inter-bold ">
-          Lịch trình
-        </Text>
-        <TouchableOpacity
-          onPress={() => console.log("Setting button pressed")}
-          className=""
-        >
-          <Ionicons name="settings-sharp" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
-
+      {/* Header */}
+      <Header title="Lịch trình" />
       {/* Timeline List */}
       <FlatList
         data={timelineData}
@@ -101,11 +84,13 @@ const TimelineScreen = () => {
             {/* Đường dọc và chấm tròn */}
             <View className="items-center">
               <View className="w-6 h-6 border-2 border-[#3CC18E] rounded-full" />
-              {index !== timelineData.length - 1 && <View className="w-1 bg-neutral-300 h-24" />}
+              {index !== timelineData.length - 1 && (
+                <View className="w-1 bg-neutral-300 h-24" />
+              )}
             </View>
 
             {/* Nội dung sự kiện */}
-            <View className="min-h-24 flex-1 bg-[#3CC18E] p-4 rounded-lg ml-2 border border-neutral-300 my-2">
+            <View className="min-h-24 flex-1 bg-primary p-4 rounded-lg ml-2 border border-neutral-300 my-2">
               <Text className="font-bold">{item.title}</Text>
               <Text className="text-sm">{item.description}</Text>
             </View>

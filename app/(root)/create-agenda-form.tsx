@@ -7,45 +7,133 @@ import {
   Pressable,
 } from "react-native";
 import { useState, useRef } from "react";
+import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import {
   Ionicons,
   FontAwesome,
   FontAwesome6,
   MaterialCommunityIcons,
+  Entypo,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
-import ActionSheet from "react-native-actionsheet";
 import CustomSlider from "@/components/CustomSlider";
+import { Header } from "@/components";
+import variables from "@/constants/variables";
+
+const dropdownData = {
+  developStage: [
+    { label: "Mới gieo trồng", value: "Mới gieo trồng" },
+    { label: "Mới nảy mầm", value: "Mới nảy mầm" },
+    { label: "Phát triển thành cây non", value: "Phát triển thành cây non" },
+    { label: "Cây trưởng thành", value: "Cây trưởng thành" },
+  ],
+  placePlant: [
+    {
+      label: "Ban công",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.BALCONY,
+    },
+    {
+      label: "Phòng tắm",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.BATHROOM,
+    },
+    {
+      label: "Trong vườn",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.GARDEN,
+    },
+    {
+      label: "Nhà kính",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.GREENHOUSE,
+    },
+    {
+      label: "Thủy canh",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.HYDROPONICS,
+    },
+    {
+      label: "Trong nhà",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.INDOOR,
+    },
+    {
+      label: "Nhà bếp",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.KITCHEN,
+    },
+    {
+      label: "Văn phòng",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.OFFICE,
+    },
+    {
+      label: "Ngoài trời",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.OUTDOOR,
+    },
+    {
+      label: "Sân thượng",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.TERRACE,
+    },
+    {
+      label: "Vường treo",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.WALL_PLANTER,
+    },
+    {
+      label: "Bệ của sổ",
+      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.WINDOW_SILL,
+    },
+  ],
+  soilType: [
+    { label: "Đất đá vôi", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CHALK },
+    { label: "Đất set", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CLAY },
+    { label: "Đất mùn", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.LOAM },
+    {
+      label: "Đất than bùn",
+      value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.PEAT,
+    },
+    { label: "Đất cát", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SANDY },
+    { label: "Đất phù sa", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SILT },
+  ],
+  typeOfPlant: [
+    { label: "Cây cảnh", value: "Cây cảnh" },
+    { label: "Cây ăn qả", value: "Cây ăn qả" },
+    { label: "Cây thân gỗ", value: "Cây thân gỗ" },
+    { label: "Cây thủy sinh", value: "Cây thủy sinh" },
+  ],
+  careTimeOptions: [
+    { label: "Dưới 5 phút", value: "under_5" },
+    { label: "5 - 10 phút", value: "5_10" },
+    { label: "10 - 20 phút", value: "10_20" },
+    { label: "Trên 20 phút", value: "above_20" },
+  ],
+  careTasksOptions: [
+    { label: "Tưới nước", value: "watering" },
+    { label: "Bón phân", value: "fertilizing" },
+    { label: "Tỉa lá", value: "pruning" },
+    { label: "Kiểm tra sâu bệnh", value: "pest_check" },
+    { label: "Vệ sinh chậu và đất", value: "cleaning" },
+  ],
+  convenientTimesOptions: [
+    { label: "Sáng sớm (6h - 8h)", value: "morning" },
+    { label: "Buổi trưa (12h - 14h)", value: "noon" },
+    { label: "Buổi chiều (16h - 18h)", value: "afternoon" },
+    { label: "Buổi tối (20h - 22h)", value: "evening" },
+  ],
+};
 
 const CreateAgendaForm = () => {
-  // development stage
   const [developStage, setDevelopStage] = useState("");
-  const developStageActionSheet = useRef<ActionSheet>(null);
-  // place plant
   const [placePlant, setPlacePlant] = useState("");
-  const placePlantActionSheet = useRef<ActionSheet>(null);
-  // soil type
   const [soilType, setSoilType] = useState("");
-  const soilTypeActionSheet = useRef<ActionSheet>(null);
+  const [plantType, setPlantType] = useState("");
+  const [healthDescription, setHealthDescription] = useState("");
+  const [selectedConvenientTimes, setSelectedConvenientTimes] = useState<
+    string[]
+  >([]);
+  const [selectedCareTime, setSelectedCareTime] = useState("");
+  const [selectedCareTasks, setSelectedCareTasks] = useState<string[]>([]);
 
-  const [plant, setPlant] = useState({
-    image:
-      "https://hulatrees.com/wp-content/uploads/2022/03/cay-luoi-ho-la-ngan-vien-vang-04.jpg",
-    name: "Cây Lưỡi Hổ",
-    type: "Cây cảnh",
-  });
-
-  const [schedule, setSchedule] = useState({
-    water: 3,
-    sun: 4,
-    soil: 1,
-  });
   const plantData = {
     image:
       "https://hulatrees.com/wp-content/uploads/2022/03/cay-luoi-ho-la-ngan-vien-vang-04.jpg",
     name: "Cây Lưỡi Hổ",
     type: "Cây cảnh",
-    careLocation: "Chăm sóc trong nhà",
+    careLocation: "trong nhà",
     attributes: [
       { title: "Loại cây", value: "Cây cảnh trong nhà" },
       { title: "Giai đoạn phát triển", value: "Trưởng thành" },
@@ -84,70 +172,55 @@ const CreateAgendaForm = () => {
 
   return (
     <>
-      {/* header */}
-      <View className="bg-[#3CC18E] p-2 py-4 flex flex-row items-center justify-between">
-        <TouchableOpacity
-          onPress={() => console.log("Back button pressed")}
-          className=""
-        >
-          <Ionicons name="chevron-back-sharp" size={30} color="white" />
-        </TouchableOpacity>
-        <Text className="text-neutral-100 text-2xl font-inter-bold">
-          Chăm sóc
-        </Text>
-        <TouchableOpacity
-          onPress={() => console.log("Setting button pressed")}
-          className=""
-        >
-          <Ionicons name="settings-sharp" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
+      {/* Header */}
+      <Header title="Chăm sóc" />
 
-      <ScrollView className="bg-black px-2">
+      <ScrollView className="bg-neutral px-2">
         {/* Thông tin cây */}
-        <View className="bg-gray-100 p-2 px-4 pt-4 flex flex-row items-center justify-between">
+        <View className="bg-neutral px-2 pt-4 flex flex-row items-center gap-x-5">
+          <Image
+            source={{ uri: plantData.image }}
+            className="w-40 h-40 rounded-2xl"
+          />
           <View className="">
-            <Image
-              source={{ uri: plantData.image }}
-              className="w-36 h-36 rounded-xl"
-            />
-          </View>
-          <View className=" pr-4 flex flex-col justify-between h-24">
-            <Text className="text-2xl font-bold">{plantData.name}</Text>
-            <Text className="text-gray-500">
-              {plantData.type} - {plantData.careLocation}
+            <Text className="text-2xl font-inter-bold mb-4">
+              {plantData.name}
             </Text>
-            <Text className="text-[#3CC18E]">
-              Chăm sóc <Text className="font-bold"> trong nhà </Text>
+            <Text className="text-neutral-400 text-xl mb-4">
+              {plantData.type}
+            </Text>
+            <Text className="text-primary">
+              Chăm sóc{" "}
+              <Text className="font-inter-bold">{plantData.careLocation}</Text>
             </Text>
           </View>
         </View>
 
-        {/*thống kê  */}
+        {/*Thống kê  */}
         <View className="flex flex-row items-center justify-between px-4 py-4">
           <View className="flex flex-col items-center justify-center">
             <View className="border border-neutral-200 rounded-full w-16 h-16 bg-neutral-200 flex items-center justify-center">
               <Ionicons name="stats-chart-outline" size={24} color="black" />
             </View>
-            <Text className="mt-2">Trung bình</Text>
+            <Text className="mt-2 font-inter-light text-base">Trung bình</Text>
           </View>
           <View className="flex flex-col items-center justify-center">
             <View className="border border-neutral-200 rounded-full w-16 h-16 bg-neutral-200 flex items-center justify-center">
               <Ionicons name="location-outline" size={24} color="black" />
             </View>
-            <Text className="mt-2">Phòng khách</Text>
+            <Text className="mt-2 font-inter-light text-base">Phòng khách</Text>
           </View>
           <View className="flex flex-col items-center justify-center">
             <View className="border border-neutral-200 rounded-full w-16 h-16 bg-neutral-200 flex items-center justify-center">
               <FontAwesome name="thermometer-half" size={24} color="black" />
             </View>
-            <Text className="mt-2">13 - 35 C</Text>
+            <Text className="mt-2 font-inter-light text-base">13 - 35 C</Text>
           </View>
           <View className="flex flex-col items-center justify-center">
             <View className="border border-neutral-200 rounded-full w-16 h-16 bg-neutral-200 flex items-center justify-center">
               <FontAwesome6 name="ruler" size={24} color="black" />
             </View>
-            <Text className="mt-2">50 - 60cm</Text>
+            <Text className="mt-2 font-inter-light text-base">50 - 60cm</Text>
           </View>
         </View>
         {/* Slider */}
@@ -161,7 +234,7 @@ const CreateAgendaForm = () => {
               min={0}
               max={60}
               initialValue={80}
-              disabled={true}
+              disabled={false}
             />
           </View>
           <View className="w-1/12">
@@ -178,7 +251,7 @@ const CreateAgendaForm = () => {
               min={0}
               max={100}
               initialValue={50}
-              disabled={true}
+              disabled={false}
             />
           </View>
           <View className="w-1/12">
@@ -189,124 +262,173 @@ const CreateAgendaForm = () => {
         {/* Thuộc tính cây */}
         <View className="p-4 flex flex-col gap-4">
           {/* Tên cây */}
-          <View className="flex flex-col gap-4">
-            <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300 gap-4">
-              <FontAwesome name="tree" size={24} color="#3CC18E" />
-              <TextInput
-                placeholder="Tên cây"
-                className="flex-1 ml-2 text-[#3CC18E] font-inter-medium text-xl"
-                placeholderTextColor="#9CA3AF"
-                value="Cây Lưỡi Hổ"
-                readOnly
-              />
-            </View>
+          <View className="flex flex-row items-center rounded-2xl p-4 border border-neutral-300 gap-4">
+            <Ionicons name="card" size={25} color="#3CC18E" />
+            <TextInput
+              placeholder="Tên bạn muốn đặt cho cây"
+              className="flex-1 text-neutral-600 font-inter text-lg"
+              placeholderTextColor="#9CA3AF"
+              value="Cây Lưỡi Hổ"
+            />
           </View>
           {/* Loại cây */}
-          <View className="flex flex-col gap-4">
-            <View className="flex flex-row items-center rounded-2xl p-3 border border-neutral-300 gap-4">
-              <Ionicons name="leaf-sharp" size={25} color="#3CC18E" />
-              <TextInput
-                placeholder="Loại cây"
-                className="flex-1 ml-2 text-[#3CC18E] font-inter-medium text-xl"
-                placeholderTextColor="#9CA3AF"
-                readOnly
-                value="Cây Cảnh"
-              />
-            </View>
+          <View className="flex flex-row items-center rounded-2xl p-4 border border-neutral-300 gap-4">
+            <Entypo name="feather" size={25} color="#3CC18E" />
+            <Dropdown
+              data={dropdownData.typeOfPlant}
+              labelField="label"
+              valueField="value"
+              placeholder="Điều chỉnh loại cây"
+              value={plantType}
+              onChange={(item) => setPlantType(item.value)}
+              style={{ flex: 1 }}
+              placeholderStyle={{ color: "#9CA3AF" }}
+            />
           </View>
-          {/* Ô chọn giai đoạn phát triển cây */}
-          <Pressable
-            className="flex flex-row items-center rounded-2xl px-4 border border-neutral-300 py-5"
-            onPress={() => developStageActionSheet.current?.show()}
-          >
-            <FontAwesome6 name="sun-plant-wilt" size={25} color="#3CC18E" />
-            <Text
-              className={`${
-                developStage ? "text-[#3CC18E]" : "text-[#9CA3AF]"
-              } px-2 flex-1 ml-2 font-inter-medium text-xl`}
-            >
-              {developStage || "Giai đoạn phát triển của cây"}
-            </Text>
-          </Pressable>
-          {/* Ô chọn địa điểm trồng cây */}
-          <Pressable
-            className="flex flex-row items-center rounded-2xl px-4 border border-neutral-300 py-5 "
-            onPress={() => placePlantActionSheet.current?.show()}
-          >
-            <FontAwesome6 name="tree-city" size={25} color="#3CC18E" />
-            <Text
-              className={`${
-                placePlant ? "text-[#3CC18E]" : "text-[#9CA3AF]"
-              } px-2 flex-1 ml-2 font-inter-medium text-xl`}
-            >
-              {placePlant || "Chọn địa điểm trồng cây"}
-            </Text>
-          </Pressable>
-          {/* Chọn loại đất */}
-          <Pressable
-            className="flex flex-row items-center rounded-2xl px-4 border border-neutral-300 py-5 gap-2"
-            onPress={() => soilTypeActionSheet.current?.show()}
-          >
-            <Ionicons name="archive-sharp" size={25} color="#3CC18E" />
-            <Text
-              className={`${
-                soilType ? "text-[#3CC18E]" : "text-[#9CA3AF]"
-              } px-2 flex-1 ml-2 font-inter-medium text-xl`}
-            >
-              {soilType || "Loại đất"}
-            </Text>
-          </Pressable>
+          {/* Giai đoạn phát triển */}
+          <View className="flex flex-row items-center rounded-2xl p-4 border border-neutral-300 gap-4">
+            <FontAwesome6 name="chart-gantt" size={25} color="#3CC18E" />
+            <Dropdown
+              data={dropdownData.developStage}
+              labelField="label"
+              valueField="value"
+              placeholder="Chọn giai đoạn phát triển"
+              value={developStage}
+              onChange={(item) => setDevelopStage(item.value)}
+              style={{ flex: 1 }}
+              placeholderStyle={{ color: "#9CA3AF" }}
+            />
+          </View>
+          {/* Địa điểm trồng cây */}
+          <View className="flex flex-row items-center rounded-2xl p-4 border border-neutral-300 gap-4">
+            <Ionicons name="map" size={25} color="#3CC18E" />
+            <Dropdown
+              data={dropdownData.placePlant}
+              labelField="label"
+              valueField="value"
+              placeholder="Chọn địa điểm trồng"
+              value={placePlant}
+              onChange={(item) => setPlacePlant(item.value)}
+              style={{ flex: 1 }}
+              placeholderStyle={{ color: "#9CA3AF" }}
+            />
+          </View>
+          {/* Loại đất */}
+          <View className="flex flex-row items-center rounded-2xl p-4 border border-neutral-300 gap-4">
+            <Entypo name="shopping-basket" size={25} color="#3CC18E" />
+            <Dropdown
+              data={dropdownData.soilType}
+              labelField="label"
+              valueField="value"
+              placeholder="Chọn loại đất"
+              value={soilType}
+              onChange={(item) => setSoilType(item.value)}
+              style={{ flex: 1 }}
+              placeholderStyle={{ color: "#9CA3AF" }}
+            />
+          </View>
+
           {/* Sức khỏe */}
-          <View className="h-48 mt-4 p-4 bg-gray-100 border border-neutral-300 rounded-2xl flex flex-col gap-5">
+          <View className="h-auto mt-4 p-4 bg-gray-100 border border-neutral-300 rounded-2xl flex flex-col gap-5">
             <View className="flex flex-row items-center justify-between">
               <View className="flex flex-row items-center gap-2">
-                <MaterialCommunityIcons
-                  name="cross-outline"
-                  size={30}
+                <MaterialIcons
+                  name="health-and-safety"
+                  size={25}
                   color="#3CC18E"
                 />
-                <Text className="text-2xl font-medium">Sức khỏe</Text>
+                <Text className="text-lg font-inter-semibold">Sức khỏe</Text>
               </View>
-              <MaterialCommunityIcons
-                name="line-scan"
-                size={30}
-                color="#3CC18E"
+              <Ionicons name="scan-outline" size={25} color="#3CC18E" />
+            </View>
+            <TextInput
+              className="mt-2 p-3 rounded-xl border border-neutral-300 text-lg"
+              placeholder="Mô tả tình trạng cây (tối đa 150 ký tự)..."
+              placeholderTextColor="#9CA3AF"
+              maxLength={150}
+              multiline
+              value={healthDescription}
+              onChangeText={setHealthDescription}
+            />
+          </View>
+          <View className="mt-4 p-5 border border-neutral-300 rounded-2xl flex flex-col gap-3">
+            <View className="flex flex-row items-center gap-2 pb-3 border-b border-neutral-200">
+              <FontAwesome6 name="file-waveform" size={25} color="#3CC18E" />
+              <Text className="text-lg font-inter-semibold text-neutral-500">
+                Chăm sóc cá nhân hóa
+              </Text>
+            </View>
+
+            {/* Thời gian có thể dành mỗi ngày */}
+            <View className="flex flex-col gap-2">
+              <Text className="text-lg font-medium text-neutral-600">
+                Thời gian có thể dành cho cây mỗi ngày?
+              </Text>
+              <Dropdown
+                data={dropdownData.careTimeOptions}
+                labelField="label"
+                valueField="value"
+                placeholder="Chọn thời gian"
+                placeholderStyle={{ color: "#9CA3AF" }}
+                style={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "#D1D5DB",
+                  padding: 12,
+                }}
+                value={selectedCareTime}
+                onChange={(item) => setSelectedCareTime(item.value)}
               />
             </View>
-            <View className="flex flex-row items-center justify-between pb-5 border-b border-neutral-300">
-              <Text className="text-xl">Tình trạng</Text>
-              <Text className="text-xl font-medium">
-                {plantData.healthStatus.status}
+
+            {/* Công việc muốn làm */}
+            <View className="flex flex-col gap-2">
+              <Text className="text-lg font-medium text-neutral-600">
+                Bạn sẽ làm những việc nào để chăm sóc cây?
               </Text>
+              <MultiSelect
+                data={dropdownData.careTasksOptions}
+                labelField="label"
+                valueField="value"
+                placeholder="Chọn công việc"
+                placeholderStyle={{ color: "#9CA3AF" }}
+                style={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "#D1D5DB",
+                  padding: 12,
+                }}
+                value={selectedCareTasks}
+                onChange={(item) => setSelectedCareTasks(item)}
+              />
             </View>
 
-            <Text className="text-xl text-neutral-300">
-              Lần scan cuối: {plantData.healthStatus.lastCheck}
-            </Text>
-          </View>
-          {/* Tưới nước */}
-          <View className="h-48 mt-4 p-4 bg-gray-100 border border-neutral-300 rounded-2xl flex flex-col gap-5">
-            <View className="flex flex-row items-center justify-center">
-              <View className="flex flex-row items-center gap-2">
-                <MaterialCommunityIcons
-                  name="watering-can-outline"
-                  size={30}
-                  color="#3CC18E"
-                />
-                <Text className="text-2xl font-medium">Tưới nước</Text>
-              </View>
-            </View>
-            <View className="flex flex-row items-center justify-between pb-5 border-b border-neutral-300">
-              <Text className="text-xl">Tần suất</Text>
-              <Text className="text-xl font-medium">
-                {plantData.careActivities[0].frequency}
+            {/* Thời gian thuận tiện */}
+            <View className="flex flex-col gap-2">
+              <Text className="text-lg font-medium text-neutral-600">
+                Thời gian nào thuận tiện để chăm sóc cây?
               </Text>
+              <MultiSelect
+                data={dropdownData.convenientTimesOptions}
+                labelField="label"
+                valueField="value"
+                placeholder="Chọn thời gian"
+                placeholderStyle={{ color: "#9CA3AF" }}
+                style={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "#D1D5DB",
+                  padding: 12,
+                }}
+                value={selectedConvenientTimes}
+                onChange={(item) => setSelectedConvenientTimes(item)}
+              />
             </View>
-
-            <Text className="text-xl text-neutral-300">
-              Lần scan cuối: {plantData.healthStatus.lastCheck}
-            </Text>
           </View>
+
           {/* ghi chú */}
           <View className="h-min-48 h-max-screen mt-4 p-4 bg-gray-100 border border-neutral-300 rounded-2xl flex flex-col justify-between gap-5">
             {notes.map((note, index) => (
@@ -368,54 +490,6 @@ const CreateAgendaForm = () => {
             <Text className="text-neutral-100 text-xl font-semibold">Lưu</Text>
           </TouchableOpacity>
         </View>
-
-        {/* ActionSheet cho chọn giai đoạn phát triển của cây */}
-        <ActionSheet
-          ref={developStageActionSheet}
-          title="Chọn thời gian phát triển của cây"
-          options={[
-            "Mới gieo trồng",
-            "Mới nảy mầm",
-            "Phát triển thành cây non",
-            "Cây non phát triển thành cây trưởng thành",
-            "Hủy",
-          ]}
-          cancelButtonIndex={4} // Index của nút Hủy
-          onPress={(index) => {
-            if (index === 0) setDevelopStage("Mới gieo trồng");
-            else if (index === 1) setDevelopStage("Mới nảy mầm");
-            else if (index === 2) setDevelopStage("phát triển thành cây non");
-            else if (index === 3)
-              setDevelopStage("Cây non phát triển thành cây trưởng thành");
-            else setDevelopStage("");
-          }}
-        />
-        {/* ActionSheet cho chọn địa điểm trồng cây */}
-        <ActionSheet
-          ref={placePlantActionSheet}
-          title="Chọn chọn địa điểm trồng cây"
-          options={["Trong nhà", "Ngoài trời", "Ban công", "Hủy"]}
-          cancelButtonIndex={3} // Index của nút Hủy
-          onPress={(index) => {
-            if (index === 0) setPlacePlant("Trong nhà");
-            else if (index === 1) setPlacePlant("Ngoài trời");
-            else if (index === 2) setPlacePlant("Ban công");
-            else setPlacePlant("");
-          }}
-        />
-        {/* ActionSheet cho loại đât */}
-        <ActionSheet
-          ref={soilTypeActionSheet}
-          title="Loại đất"
-          options={["Đất sét", "Đất cát", "Đất đỏ", "Hủy"]}
-          cancelButtonIndex={3} // Index của nút Hủy
-          onPress={(index) => {
-            if (index === 0) setSoilType("Đất sét");
-            else if (index === 1) setSoilType("Đất cát");
-            else if (index === 2) setSoilType("Đất đỏ");
-            else setSoilType("");
-          }}
-        />
       </ScrollView>
     </>
   );
