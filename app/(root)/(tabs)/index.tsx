@@ -43,7 +43,7 @@ const Home = () => {
   };
 
   const handleNotification = () => {
-    router.replace("/(root)/notifications");
+    router.push("/(root)/notifications");
   };
 
   const handleNotificationSettings = () => {
@@ -94,7 +94,6 @@ const Home = () => {
     queryFn: fetchPopularPlants,
     staleTime: 1000,
   });
-  console.log("popular data::::", popularPlants);
 
   return (
     <SafeAreaProvider>
