@@ -16,6 +16,7 @@ import SearchHeader from "./SearchHeader";
 import SettingsMenu from "./SettingsMenu";
 import NoResults from "./NoResults";
 import AlertError from "./AlertError";
+import CustomModal from "./CustomModal";
 
 export {
   ErrorMessage,
@@ -36,4 +37,5 @@ export {
   SettingsMenu,
   NoResults,
   AlertError,
+  CustomModal,
 };

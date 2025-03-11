@@ -1,8 +1,9 @@
-import React from "react";
+import { useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Card, Icon } from "@rneui/themed";
-import { Plant } from "@/libs/types";
 import { router } from "expo-router";
+import { Plant } from "@/libs/types";
+import CustomModal from "./CustomModal";
 
 interface PlantCardProps {
   plant: Plant;
@@ -15,6 +16,7 @@ const PlantCard: React.FC<PlantCardProps> = ({
   onToggleFavorite,
   favorites,
 }) => {
+  const [isModalVisible, setModalVisible] = useState(false);
   return (
     <View className="w-1/2 px-2 mr-0 pb-4">
       <TouchableOpacity
@@ -54,7 +56,7 @@ const PlantCard: React.FC<PlantCardProps> = ({
           <TouchableOpacity
             onPress={(e) => {
               e.stopPropagation();
-              console.log("Add to garden");
+              setModalVisible(true);
             }}
             className="bg-primary rounded-full mx-4 my-3"
           >
@@ -64,6 +66,18 @@ const PlantCard: React.FC<PlantCardProps> = ({
           </TouchableOpacity>
         </Card>
       </TouchableOpacity>
+
+      {/* Custom Modal */}
+      <CustomModal
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={() => {
+          setModalVisible(false);
+          console.log("Tạo lịch trình chăm sóc");
+        }}
+        title="Tạo lịch trình chăm sóc cây"
+        message="Bạn có muốn tạo lịch trình chăm sóc cây ngay bây giờ không?"
+      />
     </View>
   );
 };
