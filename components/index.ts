@@ -17,8 +17,30 @@ import SettingsMenu from "./SettingsMenu";
 import NoResults from "./NoResults";
 import AlertError from "./AlertError";
 import CustomModal from "./CustomModal";
+import PlantCarePreferences from "./PlantCarePreferences";
+import PlantDropdown from "./PlantDropdown";
+import PlantEnvironmentSliders from "./PlantEnvironmentSliders";
+import PlantHeader from "./PlantHeader";
+import PlantHealthSection from "./PlantHealthSection";
+import PlantInfoField from "./PlantInfoField";
+import PlantMultiSelect from "./PlantMultiSelect";
+import PlantNotes from "./PlantNotes";
+import PlantStatistics from "./PlantStatistics";
+import PlantTextInput from "./PlantTextInput";
+import SaveButton from "./SaveButton";
 
 export {
+  PlantCarePreferences,
+  PlantDropdown,
+  PlantEnvironmentSliders,
+  PlantHeader,
+  PlantMultiSelect,
+  PlantHealthSection,
+  PlantInfoField,
+  PlantNotes,
+  PlantStatistics,
+  PlantTextInput,
+  SaveButton,
   ErrorMessage,
   Header,
   Loading,

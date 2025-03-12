@@ -1,7 +1,7 @@
 // src/components/CustomSlider.tsx
-import React, { useState } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import { Slider, Text } from '@rneui/themed';
+import React, { useState } from "react";
+import { View, StyleSheet, Platform } from "react-native";
+import FixedSlider from "./FixedSlider";
 
 interface CustomSliderProps {
   min?: number;
@@ -20,7 +20,6 @@ const CustomSlider: React.FC<CustomSliderProps> = ({
   initialValue = 0,
   label = "Slider",
   disabled = false,
-  
 }) => {
   const [value, setValue] = useState(initialValue);
 
@@ -44,7 +43,7 @@ const CustomSlider: React.FC<CustomSliderProps> = ({
   return (
     <View style={styles.container}>
       {/* <Text style={styles.label}>{label}</Text> */}
-      <Slider
+      <FixedSlider
         value={value}
         onValueChange={handleValueChange}
         minimumValue={min}
@@ -52,8 +51,8 @@ const CustomSlider: React.FC<CustomSliderProps> = ({
         step={step}
         allowTouchTrack={false}
         minimumTrackTintColor={color()}
-        trackStyle={{ height: 7, borderRadius: 10}}
-        thumbStyle={{ height: 20, width: 20, backgroundColor: 'white' }}
+        trackStyle={{ height: 7, borderRadius: 10 }}
+        thumbStyle={{ height: 20, width: 20, backgroundColor: "white" }}
         disabled={disabled}
       />
       {/* <Text style={styles.valueText}>Value: {value}</Text> */}
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   valueText: {
@@ -78,4 +77,3 @@ const styles = StyleSheet.create({
 });
 
 export default CustomSlider;
-
