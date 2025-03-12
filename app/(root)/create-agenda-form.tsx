@@ -15,6 +15,7 @@ import {
   MaterialCommunityIcons,
   Entypo,
   MaterialIcons,
+  EvilIcons,
 } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import CustomSlider from "@/components/CustomSlider";
@@ -440,12 +441,7 @@ const CreateAgendaForm = () => {
                   marginBottom: 10,
                 }}
               >
-                <MaterialCommunityIcons
-                  name="note-text"
-                  size={28}
-                  color="#3CC18E"
-                  style={{ marginRight: 10 }}
-                />
+                <FontAwesome6 name="notes-medical" size={25} color="#3CC18E" />
                 <TextInput
                   className="text-lg  flex-1"
                   placeholder="Ghi chú ..."
@@ -463,7 +459,7 @@ const CreateAgendaForm = () => {
                 {/* Hiển thị nút X chỉ khi không phải ghi chú đầu tiên */}
                 {index > 0 && (
                   <TouchableOpacity onPress={() => removeNote(index)}>
-                    <Ionicons name="close-circle" size={24} color="red" />
+                    <EvilIcons name="close-o" size={25} color="red" />
                   </TouchableOpacity>
                 )}
               </View>
@@ -476,7 +472,7 @@ const CreateAgendaForm = () => {
                 className="flex flex-row items-center justify-center border-t border-neutral-300 py-2"
               >
                 <Ionicons name="add-sharp" size={24} color="#B7BBC1" />
-                <Text className="text-xl font-semibold text-neutral-300">
+                <Text className="text-lg font-inter-semibold text-neutral-300">
                   Thêm ghi chú
                 </Text>
               </TouchableOpacity>
