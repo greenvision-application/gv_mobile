@@ -17,7 +17,9 @@ const urls = {
   scan: "/gemini/upload-image",
   popular: "/plants/client-plants",
   category: "/categories",
+  addGarden: "/user-plant",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
+  updateUserPlant: (id: string | string[]) => `/user-plant/${id}`,
 };
 
 const methods = {

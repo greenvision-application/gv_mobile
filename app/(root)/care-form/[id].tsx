@@ -3,8 +3,12 @@ import { Alert, ScrollView, View } from "react-native";
 import { Header, Loading } from "@/components";
 import { Ionicons, Entypo, FontAwesome6 } from "@expo/vector-icons";
 import dropdownData from "@/constants/dropdownData";
-import { useLocalSearchParams } from "expo-router";
-import { plantDetail, getCategory } from "@/services/plantService";
+import { router, useLocalSearchParams } from "expo-router";
+import {
+  plantDetail,
+  getCategory,
+  updateGardenPlant,
+} from "@/services/plantService";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -19,10 +23,12 @@ import {
   PlantTextInput,
   SaveButton,
 } from "@/components";
-import { plantData } from "@/libs/dataFake";
+import { useGlobalStore } from "@/store/global";
+import Toast from "react-native-toast-message";
 
 const CreateAgendaForm: React.FC = () => {
   const { id } = useLocalSearchParams();
+  const { updateUserPlantId } = useGlobalStore();
   const [developStage, setDevelopStage] = useState("");
   const [placePlant, setPlacePlant] = useState("");
   const [soilType, setSoilType] = useState("");
@@ -76,7 +82,7 @@ const CreateAgendaForm: React.FC = () => {
     if (plantInfo && plantInfo.Phase && Array.isArray(plantInfo.Phase)) {
       const phases = plantInfo.Phase.map((phase: any) => ({
         label: phase.phase_name,
-        value: phase.phase_name,
+        value: phase.id,
       }));
       setPhaseOptions(phases);
     }
@@ -95,9 +101,86 @@ const CreateAgendaForm: React.FC = () => {
     humidityRange: plantInfo.humidityRange,
   };
 
-  const handleSave = () => {
-    console.log("Lưu thông tin chăm sóc");
-    // Implement your save logic here
+  const handleSave = async () => {
+    try {
+      await updateGardenPlant(
+        {
+          id: updateUserPlantId,
+          nickname: nickname,
+          growth_stage: developStage,
+          plant_site: placePlant,
+          planting_date: new Date().toISOString(),
+          caring_plant_infor: {
+            soilType: {
+              description: "The type of soil in which the plant is grown",
+              value: soilType,
+            },
+            healthDescription: {
+              description:
+                "A description of the plant's current health condition",
+              value: healthDescription,
+            },
+            convenientTimes: {
+              description:
+                "The convenient times the user has for taking care of the plant",
+              value: selectedConvenientTimes,
+            },
+            careTasks: {
+              description:
+                "The plant care tasks that the user wants to perform",
+              value: selectedCareTasks,
+            },
+            careTime: {
+              description:
+                "The specific time slots during the day when the user can take care of their plant",
+              value: selectedCareTime,
+            },
+            note: {
+              description: "Personal notes about the plant or related matters",
+              value: notes,
+            },
+          },
+        },
+        () => {
+          Toast.show({
+            type: "success",
+            text1: "Thành công",
+            text2: "Đã lưu thông tin cây vào vườn của bạn",
+            position: "top",
+            visibilityTime: 3000,
+            topOffset: 50,
+            text1Style: {
+              fontSize: 16,
+              fontWeight: "bold",
+              color: "#3CC18E",
+            },
+            text2Style: {
+              fontSize: 14,
+              color: "black",
+            },
+          });
+          router.push("/agenda");
+        }
+      );
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Không thể thêm cây vào vườn",
+        position: "bottom",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+    }
   };
 
   return (
@@ -136,6 +219,7 @@ const CreateAgendaForm: React.FC = () => {
                 <PlantTextInput
                   placeholder="Tên bạn muốn đặt cho cây"
                   value={nickname ?? plantInfo.plant_name}
+                  onChangeText={setNickname}
                 />
               </PlantInfoField>
 

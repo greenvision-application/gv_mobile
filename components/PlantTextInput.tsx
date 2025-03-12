@@ -8,7 +8,7 @@ interface PlantTextInputProps extends TextInputProps {
 const PlantTextInput: React.FC<PlantTextInputProps> = (props) => {
   return (
     <TextInput
-      className="flex-1 text-neutral-600 font-inter text-lg"
+      className="flex-1 text-neutral-500 font-inter text-lg items-center"
       placeholderTextColor="#9CA3AF"
       {...props}
     />

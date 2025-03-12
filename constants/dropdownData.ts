@@ -58,15 +58,15 @@ export const dropdownData = {
     },
   ],
   soilType: [
-    { label: "Đất đá vôi", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CHALK },
-    { label: "Đất sét", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CLAY },
-    { label: "Đất mùn", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.LOAM },
+    { value: "CHALK", label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CHALK },
+    { value: "CLAY", label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CLAY },
+    { value: "LOAM", label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.LOAM },
     {
-      label: "Đất than bùn",
-      value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.PEAT,
+      value: "PEAT",
+      label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.PEAT,
     },
-    { label: "Đất cát", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SANDY },
-    { label: "Đất phù sa", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SILT },
+    { value: "SANDY", label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SANDY },
+    { value: "SILT", label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SILT },
   ],
   careTimeOptions: [
     { label: "Dưới 5 phút", value: "under_5" },

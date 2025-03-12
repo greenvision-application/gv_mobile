@@ -1,6 +1,6 @@
 import variables from "@/constants/variables";
 import request from "@/libs/apiClient";
-import { FormInfoData } from "@/store/global";
+import { UserPlant } from "@/libs/types";
 
 const popularPlant = async (
   onSuccess?: (data: any) => void,
@@ -39,4 +39,43 @@ const getCategory = async (
   });
 };
 
-export { popularPlant, plantDetail, getCategory };
+const addToGarden = async (
+  userPlantForm: UserPlant,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = { ...userPlantForm };
+
+  return request({
+    method: variables.methods.post,
+    url: variables.urls.addGarden,
+    data,
+    onSuccess,
+    onError,
+  });
+};
+
+const updateGardenPlant = async (
+  userPlantForm: UserPlant,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = {
+    ...userPlantForm,
+  };
+
+  return request({
+    method: variables.methods.patch,
+    url: variables.urls.updateUserPlant(userPlantForm.id!),
+    data,
+    onSuccess,
+    onError,
+  });
+};
+export {
+  popularPlant,
+  plantDetail,
+  getCategory,
+  addToGarden,
+  updateGardenPlant,
+};

@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/libs/tanstackQuery";
 import "./global.css";
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -30,6 +31,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <Stack screenOptions={{ headerShown: false }} />
+      <Toast />
     </QueryClientProvider>
   );
 }

@@ -31,6 +31,7 @@ interface GlobalState {
   uriImage: string | null;
   onboarded: boolean;
   formData: FormInfoData | null;
+  updateUserPlantId: string | string[] | null | undefined;
 
   // Actions
   setUser: (user: User | null) => void;
@@ -38,6 +39,7 @@ interface GlobalState {
   setError: (error: string | null) => void;
   setOnboarded: (onboarded: boolean) => void;
   setUri: (uri: string | null) => void;
+  setUserPlantId: (id: string) => void;
 
   // Async actions
   completeOnboarding: () => void;
@@ -56,6 +58,7 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   uriImage: null,
   onboarded: false,
   formData: null,
+  updateUserPlantId: null,
 
   setUser: (user) => set({ user, isLoggedIn: !!user }),
   setLoading: (loading) => set({ loading }),
@@ -65,6 +68,7 @@ export const useGlobalStore = create<GlobalState>((set) => ({
     set({ uploadedFile: file });
   },
   setUri: (uriImage: string | null) => set({ uriImage }),
+  setUserPlantId: (updateUserPlantId) => set({ updateUserPlantId }),
 
   refetch: async () => {
     try {
