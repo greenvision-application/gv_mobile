@@ -55,64 +55,8 @@ const PlantDetailsContent: React.FC<PlantDetailsContentProps> = ({
 
   const isExpanded = (section: string) => expandedSections.includes(section);
 
-  const getValue = (level: string) => {
-    switch (level) {
-      case "NONE":
-        return 0;
-      case "VERY_LOW":
-        return 10;
-      case "LOW":
-        return 25;
-      case "MEDIUM":
-        return 50;
-      case "HIGH":
-        return 75;
-      case "VERY_HIGH":
-        return 100;
-      default:
-        return 50;
-    }
-  };
-
-  const getLightText = () => {
-    switch (plantData.lightRequirement) {
-      case "NONE":
-        return "Không cần nắng";
-      case "VERY_LOW":
-        return "Rất ít nắng";
-      case "LOW":
-        return "Ít nắng";
-      case "MEDIUM":
-        return "Trung bình";
-      case "HIGH":
-        return "Nhiều nắng";
-      case "VERY_HIGH":
-        return "Rất nhiều nắng";
-      default:
-        return "Trung bình";
-    }
-  };
-  const getLightValue = getValue(plantData.lightRequirement);
-  const getHumidityValue = getValue(plantData.humidityRange);
-
-  const getHumidityText = () => {
-    switch (plantData.humidityRange) {
-      case "NONE":
-        return "Không cần ẩm";
-      case "VERY_LOW":
-        return "Rất ít ẩm";
-      case "LOW":
-        return "Ít ẩm";
-      case "MEDIUM":
-        return "Trung bình";
-      case "HIGH":
-        return "Nhiều ẩm";
-      case "VERY_HIGH":
-        return "Rất nhiều ẩm";
-      default:
-        return "Trung bình";
-    }
-  };
+  const getLightValue = variables.getValue(plantData.lightRequirement);
+  const getHumidityValue = variables.getValue(plantData.humidityRange);
 
   return (
     <ScrollView
@@ -172,7 +116,7 @@ const PlantDetailsContent: React.FC<PlantDetailsContentProps> = ({
               />
             </View>
             <Text className="text-gray-600 font-medium min-w-16">
-              {getLightText()}
+              {variables.getLightText(plantData.lightRequirement)}
             </Text>
           </View>
         </View>
@@ -192,7 +136,7 @@ const PlantDetailsContent: React.FC<PlantDetailsContentProps> = ({
               />
             </View>
             <Text className="text-gray-600 font-medium min-w-16">
-              {getHumidityText()}
+              {variables.getHumidityText(plantData.humidityRange)}
             </Text>
           </View>
         </View>

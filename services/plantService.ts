@@ -27,4 +27,16 @@ const plantDetail = async (
   });
 };
 
-export { popularPlant, plantDetail };
+const getCategory = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.category,
+    onSuccess,
+    onError,
+  });
+};
+
+export { popularPlant, plantDetail, getCategory };

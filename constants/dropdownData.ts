@@ -9,36 +9,36 @@ export const dropdownData = {
   ],
   placePlant: [
     {
-      label: "Ban công",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.BALCONY,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.BALCONY,
+      value: "BALCONY",
     },
     {
-      label: "Phòng tắm",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.BATHROOM,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.BATHROOM,
+      value: "BATHROOM",
     },
     {
-      label: "Trong vườn",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.GARDEN,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.GARDEN,
+      value: "GARDEN",
     },
     {
-      label: "Nhà kính",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.GREENHOUSE,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.GREENHOUSE,
+      value: "GREENHOUSE",
     },
     {
-      label: "Thủy canh",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.HYDROPONICS,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.HYDROPONICS,
+      value: "HYDROPONICS",
     },
     {
-      label: "Trong nhà",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.INDOOR,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.INDOOR,
+      value: "INDOOR",
     },
     {
-      label: "Nhà bếp",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.KITCHEN,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.KITCHEN,
+      value: "KITCHEN",
     },
     {
-      label: "Văn phòng",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.OFFICE,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.OFFICE,
+      value: "OFFICE",
     },
     {
       label: "Ngoài trời",
@@ -49,17 +49,17 @@ export const dropdownData = {
       value: variables.ENUM_TRANSLATIONS.PLANT_SITE.TERRACE,
     },
     {
-      label: "Vường treo",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.WALL_PLANTER,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.WALL_PLANTER,
+      value: "WALL_PLANTER",
     },
     {
-      label: "Bệ của sổ",
-      value: variables.ENUM_TRANSLATIONS.PLANT_SITE.WINDOW_SILL,
+      label: variables.ENUM_TRANSLATIONS.PLANT_SITE.WINDOW_SILL,
+      value: "WINDOW_SILL",
     },
   ],
   soilType: [
     { label: "Đất đá vôi", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CHALK },
-    { label: "Đất set", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CLAY },
+    { label: "Đất sét", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.CLAY },
     { label: "Đất mùn", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.LOAM },
     {
       label: "Đất than bùn",
@@ -67,12 +67,6 @@ export const dropdownData = {
     },
     { label: "Đất cát", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SANDY },
     { label: "Đất phù sa", value: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SILT },
-  ],
-  typeOfPlant: [
-    { label: "Cây cảnh", value: "Cây cảnh" },
-    { label: "Cây ăn qả", value: "Cây ăn qả" },
-    { label: "Cây thân gỗ", value: "Cây thân gỗ" },
-    { label: "Cây thủy sinh", value: "Cây thủy sinh" },
   ],
   careTimeOptions: [
     { label: "Dưới 5 phút", value: "under_5" },

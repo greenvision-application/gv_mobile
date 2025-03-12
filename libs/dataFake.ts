@@ -99,4 +99,7 @@ export const plantData = {
   maxMatureSize: 200,
   humidityRange: "HIGH" as const,
   lightRequirement: "HIGH" as const,
+  Category: {
+    category_name: "Không xác định",
+  },
 };

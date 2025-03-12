@@ -13,6 +13,7 @@ type PlantDropdownProps = {
   onChange: (item: DropdownItem) => void;
   placeholder: string;
   style?: StyleProp<ViewStyle>;
+  editable?: boolean;
 };
 
 const PlantDropdown: React.FC<PlantDropdownProps> = ({
@@ -21,6 +22,7 @@ const PlantDropdown: React.FC<PlantDropdownProps> = ({
   onChange,
   placeholder,
   style,
+  editable = true,
 }) => {
   return (
     <Dropdown
@@ -32,6 +34,7 @@ const PlantDropdown: React.FC<PlantDropdownProps> = ({
       onChange={onChange}
       style={[{ flex: 1 }, style]}
       placeholderStyle={{ color: "#9CA3AF" }}
+      disable={!editable}
     />
   );
 };

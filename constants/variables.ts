@@ -16,6 +16,7 @@ const urls = {
   status: "/auth/status",
   scan: "/gemini/upload-image",
   popular: "/plants/client-plants",
+  category: "/categories",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
 };
 
@@ -66,6 +67,63 @@ const ENUM_TRANSLATIONS = {
   },
 };
 
+const getHumidityText = (humidityRange: string) => {
+  switch (humidityRange) {
+    case "NONE":
+      return "Không cần ẩm";
+    case "VERY_LOW":
+      return "Rất ít ẩm";
+    case "LOW":
+      return "Ít ẩm";
+    case "MEDIUM":
+      return "Trung bình";
+    case "HIGH":
+      return "Nhiều ẩm";
+    case "VERY_HIGH":
+      return "Rất nhiều ẩm";
+    default:
+      return "Trung bình";
+  }
+};
+
+const getLightText = (lightRequirement: string) => {
+  switch (lightRequirement) {
+    case "NONE":
+      return "Không cần nắng";
+    case "VERY_LOW":
+      return "Rất ít nắng";
+    case "LOW":
+      return "Ít nắng";
+    case "MEDIUM":
+      return "Trung bình";
+    case "HIGH":
+      return "Nhiều nắng";
+    case "VERY_HIGH":
+      return "Rất nhiều nắng";
+    default:
+      return "Trung bình";
+  }
+};
+
+const getValue = (level: string) => {
+  switch (level) {
+    case "NONE":
+      return 0;
+    case "VERY_LOW":
+      return 10;
+    case "LOW":
+      return 25;
+    case "MEDIUM":
+      return 50;
+    case "HIGH":
+      return 75;
+    case "VERY_HIGH":
+      return 100;
+    default:
+      return 50;
+  }
+};
+
 export default {
   API_BASE_URL,
   GOOGLE_CLIENT_ID,
@@ -76,4 +134,7 @@ export default {
   localStorage,
   urls,
   methods,
+  getHumidityText,
+  getLightText,
+  getValue,
 };

@@ -1,43 +1,61 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import CustomSlider from "@/components/CustomSlider";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import variables from "@/constants/variables";
+import Slider from "@react-native-community/slider";
 
-const PlantEnvironmentSliders: React.FC = () => {
+interface PlantEnvironmentSlidersProps {
+  lightValue: string;
+  humidityValue: string;
+}
+const PlantEnvironmentSliders: React.FC<PlantEnvironmentSlidersProps> = ({
+  lightValue,
+  humidityValue,
+}) => {
+  const getLightValue = variables.getValue(lightValue);
+  const getHumidityValue = variables.getValue(humidityValue);
   return (
     <>
-      <View className="flex flex-row items-center justify-between px-4">
-        <View className="w-1/12">
-          <Ionicons name="sunny" size={30} color="#3CC18E" />
+      <View className="p-3">
+        <View className="space-y-2">
+          <View className="flex-row items-center">
+            <Feather name="sun" size={27} color="#3CC18E" />
+            <View className="flex-1 mx-2">
+              <Slider
+                minimumValue={0}
+                maximumValue={100}
+                value={getLightValue}
+                minimumTrackTintColor="#3CC18E"
+                maximumTrackTintColor="#E3E6EA"
+                thumbTintColor="#3CC18E"
+                style={{ height: 100 }}
+                disabled={true}
+              />
+            </View>
+            <Text className="text-gray-600 font-medium min-w-16">
+              {variables.getLightText(lightValue)}
+            </Text>
+          </View>
         </View>
-        <View className="w-10/12">
-          <CustomSlider
-            label="Volume Control"
-            min={0}
-            max={60}
-            initialValue={80}
-            disabled={false}
-          />
-        </View>
-        <View className="w-1/12">
-          <Text>Cao</Text>
-        </View>
-      </View>
-      <View className="flex flex-row items-center justify-between px-4">
-        <View className="w-1/12">
-          <Ionicons name="water" size={30} color="#3CC18E" />
-        </View>
-        <View className="w-10/12">
-          <CustomSlider
-            label="Volume Control"
-            min={0}
-            max={100}
-            initialValue={50}
-            disabled={false}
-          />
-        </View>
-        <View className="w-1/12">
-          <Text>Vừa</Text>
+        <View className="space-y-2">
+          <View className="flex-row items-center">
+            <MaterialCommunityIcons name="water" size={27} color="#3CC18E" />
+            <View className="flex-1 mx-2">
+              <Slider
+                minimumValue={0}
+                maximumValue={100}
+                value={getHumidityValue}
+                minimumTrackTintColor="#3CC18E"
+                maximumTrackTintColor="#E3E6EA"
+                thumbTintColor="#3CC18E"
+                style={{ height: 100 }}
+                disabled={true}
+              />
+            </View>
+            <Text className="text-gray-600 font-medium min-w-16">
+              {variables.getHumidityText(humidityValue)}
+            </Text>
+          </View>
         </View>
       </View>
     </>

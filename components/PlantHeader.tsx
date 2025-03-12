@@ -1,11 +1,13 @@
+import variables from "@/constants/variables";
 import React from "react";
 import { View, Text, Image } from "react-native";
 
+type PlantSite = keyof typeof variables.ENUM_TRANSLATIONS.PLANT_SITE;
 type PlantHeaderProps = {
   image: string;
   name: string;
   type: string;
-  careLocation: string;
+  careLocation: PlantSite;
 };
 
 const PlantHeader: React.FC<PlantHeaderProps> = ({
@@ -21,7 +23,10 @@ const PlantHeader: React.FC<PlantHeaderProps> = ({
         <Text className="text-2xl font-inter-bold mb-4">{name}</Text>
         <Text className="text-neutral-400 text-xl mb-4">{type}</Text>
         <Text className="text-primary">
-          Chăm sóc <Text className="font-inter-bold">{careLocation}</Text>
+          Chăm sóc{" "}
+          <Text className="font-inter-bold">
+            {variables.ENUM_TRANSLATIONS.PLANT_SITE[careLocation]}
+          </Text>
         </Text>
       </View>
     </View>

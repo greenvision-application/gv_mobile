@@ -73,7 +73,7 @@ const PlantCard: React.FC<PlantCardProps> = ({
         onClose={() => setModalVisible(false)}
         onConfirm={() => {
           setModalVisible(false);
-          router.push("/(root)/create-agenda-form");
+          router.push(`/care-form/${plant.id}`);
         }}
         title="Tạo lịch trình chăm sóc cây"
         message="Bạn có muốn tạo lịch trình chăm sóc cây ngay bây giờ không?"
