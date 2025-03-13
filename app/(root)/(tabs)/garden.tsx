@@ -13,6 +13,7 @@ import {
   Entypo,
   FontAwesome6,
   MaterialCommunityIcons,
+  AntDesign,
 } from "@expo/vector-icons";
 import { Header, Loading, SaveButton } from "@/components";
 import { getDetailUser } from "@/services/userService";
@@ -21,10 +22,12 @@ import {
   getFavorite,
   getPlanted,
   removeFavorite,
+  removeUserPlant,
 } from "@/services/plantService";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/libs/tanstackQuery";
 import Toast from "react-native-toast-message";
+import { useGlobalStore } from "@/store/global";
 
 // Define types
 interface UserData {
@@ -131,9 +134,52 @@ const handleRemoveFavorite = async (plantId: string): Promise<void> => {
   }
 };
 
+// Thêm function để gọi API xóa cây chưa trồng
+const handleRemovePlant = async (plantId: string): Promise<void> => {
+  try {
+    await removeUserPlant(plantId, () => {
+      Toast.show({
+        type: "success",
+        text1: "Thành công",
+        text2: "Đã xóa cây khỏi danh sách",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "#3CC18E",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+    });
+  } catch (error) {
+    Toast.show({
+      type: "error",
+      text1: "Lỗi",
+      text2: "Không thể xóa cây, vui lòng thử lại sau",
+      position: "bottom",
+      visibilityTime: 3000,
+      topOffset: 50,
+      text1Style: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "red",
+      },
+      text2Style: {
+        fontSize: 14,
+        color: "black",
+      },
+    });
+  }
+};
+
 const Garden: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("all");
-
+  const { setUserPlantId } = useGlobalStore();
   // Fetch user data with corrected query functions
   const { data: userData, isLoading: userLoading } = useQuery<UserData>({
     queryKey: ["user"],
@@ -221,6 +267,44 @@ const Garden: React.FC = () => {
     });
   };
 
+  // Thêm hàm xử lý sự kiện xóa cây chưa trồng
+  const onRemovePlant = async (plantId: string) => {
+    // Hiển thị hộp thoại xác nhận
+    Alert.alert(
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa cây này khỏi danh sách?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel",
+        },
+        {
+          text: "Xóa",
+          style: "destructive",
+          onPress: async () => {
+            await handleRemovePlant(plantId);
+
+            // Cập nhật lại dữ liệu sau khi xóa
+            queryClient.setQueryData<PlantData[]>(["unplanted"], (oldData) => {
+              return oldData
+                ? oldData.filter((plant) => plant.id !== plantId)
+                : [];
+            });
+
+            // Cập nhật lại số lượng cây chưa trồng
+            queryClient.setQueryData<UserStats>(["userStats"], (oldStats) => {
+              if (!oldStats) return userStats;
+              return {
+                ...oldStats,
+                unplanted: oldStats.unplanted - 1,
+              };
+            });
+          },
+        },
+      ]
+    );
+  };
+
   const renderPlants = (): JSX.Element => {
     const plants = plantData[activeTab];
 
@@ -254,16 +338,29 @@ const Garden: React.FC = () => {
                   resizeMode="cover"
                 />
 
-                {/* Thêm nút trái tim bỏ yêu thích ở góc phải trên của card khi ở tab favorites */}
+                {/* Nút trái tim bỏ yêu thích ở góc phải trên của card khi ở tab favorites */}
                 {activeTab === "favorites" && (
                   <TouchableOpacity
                     className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md"
                     onPress={(e) => {
-                      e.stopPropagation(); // Ngăn không cho sự kiện lan tỏa lên card
+                      e.stopPropagation();
                       onRemoveFavorite(plant.id);
                     }}
                   >
                     <Entypo name="heart" size={20} color="#FF4B6E" />
+                  </TouchableOpacity>
+                )}
+
+                {/* Nút xóa ở góc phải trên của card khi ở tab unplanted */}
+                {activeTab === "unplanted" && (
+                  <TouchableOpacity
+                    className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md"
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      onRemovePlant(plant.id);
+                    }}
+                  >
+                    <AntDesign name="delete" size={20} color="#FF4B6E" />
                   </TouchableOpacity>
                 )}
               </View>
@@ -277,6 +374,7 @@ const Garden: React.FC = () => {
                   <SaveButton
                     text="Trồng ngay"
                     onPress={() => {
+                      setUserPlantId(plant.id);
                       router.push(`/care-form/${plant.Plant.id}`);
                     }}
                     style="p-2 rounded-3xl"

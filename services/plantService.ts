@@ -140,7 +140,7 @@ const removeFavorite = async (
   onError?: (error: any) => void
 ) => {
   return request({
-    method: variables.methods.patch,
+    method: variables.methods.put,
     url: variables.urls.changeFavorite(userPlantId),
     onSuccess,
     onError,
