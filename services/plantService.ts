@@ -84,6 +84,20 @@ const generateSchedule = async (
     onError,
   });
 };
+
+const generateTasks = async (
+  id: string | string[],
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.post,
+    url: variables.urls.generateTask(id),
+    onSuccess,
+    onError,
+  });
+};
+
 export {
   popularPlant,
   plantDetail,
@@ -91,4 +105,5 @@ export {
   addToGarden,
   updateGardenPlant,
   generateSchedule,
+  generateTasks,
 };

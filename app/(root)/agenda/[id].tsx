@@ -3,13 +3,15 @@ import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { Header, Loading } from "@/components";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { generateSchedule } from "@/services/plantService";
 import Toast from "react-native-toast-message";
+import { useGlobalStore } from "@/store/global";
 
 const TimelineScreen = () => {
   const { id } = useLocalSearchParams();
+  const { setPhaseId } = useGlobalStore();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["schedule", id],
@@ -21,7 +23,7 @@ const TimelineScreen = () => {
     if (!scheduleData) return [];
 
     return scheduleData.map((item: any) => ({
-      date: format(new Date(item.careSchedule.start_date), "dd MMM", {
+      date: format(new Date(item.careSchedule.start_date), "dd MMM yyyy", {
         locale: vi,
       }),
       title: `${item.careSchedule.phase_name}`,
@@ -68,11 +70,14 @@ const TimelineScreen = () => {
           className="p-4"
           renderItem={({ item, index }) => (
             <TouchableOpacity
-              onPress={() => console.log("đã đi đến trang mới ", item.title)}
+              onPress={() => {
+                setPhaseId(item.id);
+                router.push(`/agenda/agenda-task`);
+              }}
               className="flex-row items-start"
             >
-              {/* Ngày tháng */}
-              <View className="w-16">
+              {/* Ngày tháng năm */}
+              <View className="w-20">
                 <Text className="text-black font-bold text-lg">
                   {item.date}
                 </Text>

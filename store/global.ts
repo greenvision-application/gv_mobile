@@ -32,6 +32,7 @@ interface GlobalState {
   onboarded: boolean;
   formData: FormInfoData | null;
   updateUserPlantId: string | string[] | null | undefined;
+  phaseId: string | null | string[];
 
   // Actions
   setUser: (user: User | null) => void;
@@ -40,6 +41,7 @@ interface GlobalState {
   setOnboarded: (onboarded: boolean) => void;
   setUri: (uri: string | null) => void;
   setUserPlantId: (id: string) => void;
+  setPhaseId: (id: string) => void;
 
   // Async actions
   completeOnboarding: () => void;
@@ -59,6 +61,7 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   onboarded: false,
   formData: null,
   updateUserPlantId: null,
+  phaseId: null,
 
   setUser: (user) => set({ user, isLoggedIn: !!user }),
   setLoading: (loading) => set({ loading }),
@@ -69,6 +72,7 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   },
   setUri: (uriImage: string | null) => set({ uriImage }),
   setUserPlantId: (updateUserPlantId) => set({ updateUserPlantId }),
+  setPhaseId: (phaseId) => set({ phaseId }),
 
   refetch: async () => {
     try {

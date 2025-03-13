@@ -21,6 +21,7 @@ const urls = {
   plantDetail: (id: string | string[]) => `/plants/${id}`,
   updateUserPlant: (id: string | string[]) => `/user-plant/${id}`,
   generateSchedule: (id: string | string[]) => `/care-schedule/${id}`,
+  generateTask: (id: string | string[]) => `/tasks/${id}`,
 };
 
 const methods = {
@@ -67,6 +68,11 @@ const ENUM_TRANSLATIONS = {
     MEDIUM: "Trung bình",
     HIGH: "Cao",
     VERY_HIGH: "Rất cao",
+  },
+  TASK_STATUS: {
+    DO: "DO",
+    DONE: "DONE",
+    NOT_YET: "NOT YET",
   },
 };
 
