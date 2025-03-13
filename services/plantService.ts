@@ -72,10 +72,23 @@ const updateGardenPlant = async (
     onError,
   });
 };
+const generateSchedule = async (
+  id: string | string[],
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.post,
+    url: variables.urls.generateSchedule(id),
+    onSuccess,
+    onError,
+  });
+};
 export {
   popularPlant,
   plantDetail,
   getCategory,
   addToGarden,
   updateGardenPlant,
+  generateSchedule,
 };

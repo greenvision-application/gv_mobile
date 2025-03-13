@@ -141,7 +141,7 @@ const CreateAgendaForm: React.FC = () => {
             },
           },
         },
-        () => {
+        (res) => {
           Toast.show({
             type: "success",
             text1: "Thành công",
@@ -159,7 +159,7 @@ const CreateAgendaForm: React.FC = () => {
               color: "black",
             },
           });
-          router.push("/agenda");
+          router.push(`/agenda/${res?.id}`);
         }
       );
     } catch (error) {

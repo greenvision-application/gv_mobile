@@ -20,6 +20,7 @@ const urls = {
   addGarden: "/user-plant",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
   updateUserPlant: (id: string | string[]) => `/user-plant/${id}`,
+  generateSchedule: (id: string | string[]) => `/care-schedule/${id}`,
 };
 
 const methods = {
