@@ -134,6 +134,32 @@ const getUnplanted = async (
   });
 };
 
+const removeFavorite = async (
+  userPlantId: string,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.patch,
+    url: variables.urls.changeFavorite(userPlantId),
+    onSuccess,
+    onError,
+  });
+};
+
+const removeUserPlant = async (
+  userPlantId: string,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.delete,
+    url: variables.urls.removeUserPlant(userPlantId),
+    onSuccess,
+    onError,
+  });
+};
+
 export {
   popularPlant,
   plantDetail,
@@ -145,4 +171,6 @@ export {
   getFavorite,
   getPlanted,
   getUnplanted,
+  removeFavorite,
+  removeUserPlant,
 };

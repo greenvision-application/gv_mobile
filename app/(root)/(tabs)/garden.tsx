@@ -5,20 +5,26 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
+  Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Header, Loading } from "@/components";
 import {
   Entypo,
-  FontAwesome,
   FontAwesome6,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { Header, Loading, SaveButton } from "@/components";
 import { getDetailUser } from "@/services/userService";
-import { getUnplanted, getFavorite, getPlanted } from "@/services/plantService";
+import {
+  getUnplanted,
+  getFavorite,
+  getPlanted,
+  removeFavorite,
+} from "@/services/plantService";
 import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/libs/tanstackQuery";
+import Toast from "react-native-toast-message";
 
 // Define types
 interface UserData {
@@ -29,6 +35,7 @@ interface UserData {
 }
 
 interface Plant {
+  id: string;
   image_url: string[];
   plant_name: string;
 }
@@ -81,9 +88,51 @@ const fetchUnplanted = async (): Promise<PlantData[]> => {
   return result;
 };
 
+// Thêm function để gọi API bỏ yêu thích
+const handleRemoveFavorite = async (plantId: string): Promise<void> => {
+  try {
+    await removeFavorite(plantId, () => {
+      Toast.show({
+        type: "success",
+        text1: "Thành công",
+        text2: "Đã bỏ yêu thích cây này",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "#3CC18E",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+    });
+  } catch (error) {
+    Toast.show({
+      type: "error",
+      text1: "Lỗi",
+      text2: "Không thể bỏ yêu thích, vui lòng thử lại sau",
+      position: "bottom",
+      visibilityTime: 3000,
+      topOffset: 50,
+      text1Style: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "red",
+      },
+      text2Style: {
+        fontSize: 14,
+        color: "black",
+      },
+    });
+  }
+};
+
 const Garden: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("all");
-  const router = useRouter();
 
   // Fetch user data with corrected query functions
   const { data: userData, isLoading: userLoading } = useQuery<UserData>({
@@ -145,13 +194,40 @@ const Garden: React.FC = () => {
     return <Loading />;
   }
 
+  const handlePress = (id?: string) => {
+    if (activeTab === "all" && id) {
+      router.push(`/agenda/${id}`);
+    } else {
+      router.push(`/properties/${id}`);
+    }
+  };
+
+  // Thêm hàm xử lý sự kiện bỏ yêu thích
+  const onRemoveFavorite = async (plantId: string) => {
+    await handleRemoveFavorite(plantId);
+
+    // Cập nhật lại dữ liệu sau khi bỏ yêu thích
+    queryClient.setQueryData<PlantData[]>(["favorite"], (oldData) => {
+      return oldData ? oldData.filter((plant) => plant.id !== plantId) : [];
+    });
+
+    // Cập nhật lại số lượng yêu thích
+    queryClient.setQueryData<UserStats>(["userStats"], (oldStats) => {
+      if (!oldStats) return userStats;
+      return {
+        ...oldStats,
+        favorites: oldStats.favorites - 1,
+      };
+    });
+  };
+
   const renderPlants = (): JSX.Element => {
     const plants = plantData[activeTab];
 
     if (!plants || plants.length === 0) {
       return (
         <View className="mt-4 px-4 items-center justify-center py-10">
-          <Text className="text-lg text-gray-500">
+          <Text className="text-lg text-neutral-500">
             Không có cây nào trong danh mục này
           </Text>
         </View>
@@ -159,27 +235,54 @@ const Garden: React.FC = () => {
     }
 
     return (
-      <View className="mt-4 px-4">
+      <View className="mt-4 px-4 mb-20">
         <View className="flex-row flex-wrap gap-4">
           {plants.map((plant) => (
             <TouchableOpacity
               key={plant.id}
               className="w-[48%] bg-neutral rounded-2xl shadow-lg overflow-hidden border border-neutral-200"
-              // onPress={() => router.push(`/plant-detail/${plant.id}`)}
+              onPress={() => {
+                activeTab === "all"
+                  ? handlePress(plant.id)
+                  : handlePress(plant.Plant.id);
+              }}
             >
-              <Image
-                source={{ uri: plant.Plant.image_url[0] }}
-                className="w-full h-56"
-                resizeMode="cover"
-              />
+              <View className="relative">
+                <Image
+                  source={{ uri: plant.Plant.image_url[0] }}
+                  className="w-full h-56"
+                  resizeMode="cover"
+                />
+
+                {/* Thêm nút trái tim bỏ yêu thích ở góc phải trên của card khi ở tab favorites */}
+                {activeTab === "favorites" && (
+                  <TouchableOpacity
+                    className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md"
+                    onPress={(e) => {
+                      e.stopPropagation(); // Ngăn không cho sự kiện lan tỏa lên card
+                      onRemoveFavorite(plant.id);
+                    }}
+                  >
+                    <Entypo name="heart" size={20} color="#FF4B6E" />
+                  </TouchableOpacity>
+                )}
+              </View>
+
               <View className="p-2 items-center">
-                <Text className="text-lg font-semibold text-black">
-                  {plant.nickname || plant.Plant.plant_name}
+                <Text className="text-lg font-inter-bold text-neutral-500">
+                  {plant.nickname ? plant.nickname : plant.Plant.plant_name}
                 </Text>
-                {plant.nickname && (
-                  <Text className="text-sm text-gray-500">
-                    {plant.Plant.plant_name}
-                  </Text>
+
+                {activeTab === "unplanted" ? (
+                  <SaveButton
+                    text="Trồng ngay"
+                    onPress={() => {
+                      router.push(`/care-form/${plant.Plant.id}`);
+                    }}
+                    style="p-2 rounded-3xl"
+                  />
+                ) : (
+                  ""
                 )}
               </View>
             </TouchableOpacity>

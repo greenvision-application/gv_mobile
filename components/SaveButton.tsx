@@ -4,15 +4,22 @@ import { TouchableOpacity, Text } from "react-native";
 type SaveButtonProps = {
   onPress: () => void;
   text?: string;
+  style?: string;
 };
 
-const SaveButton: React.FC<SaveButtonProps> = ({ onPress, text = "Lưu" }) => {
+const SaveButton: React.FC<SaveButtonProps> = ({
+  onPress,
+  text = "Lưu",
+  style = "mt-4 p-4 rounded-2xl",
+}) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="flex flex-1 bg-[#3CC18E] p-4 rounded-2xl items-center mt-4 mb-20 border border-neutral-300"
+      className={`flex flex-1 bg-primary items-center border border-neutral-300 ${style}`}
     >
-      <Text className="text-neutral-100 text-xl font-semibold">{text}</Text>
+      <Text className="text-neutral-100 text-xl font-inter-semibold">
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };

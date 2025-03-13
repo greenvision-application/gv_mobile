@@ -192,7 +192,7 @@ const CreateAgendaForm: React.FC = () => {
         {isLoading ? (
           <Loading />
         ) : (
-          <>
+          <View className="mb-20">
             {/* Plant Info */}
             <PlantHeader
               image={plantInfo.image_url?.[0]}
@@ -305,7 +305,7 @@ const CreateAgendaForm: React.FC = () => {
               {/* Save Button */}
               <SaveButton onPress={handleSave} />
             </View>
-          </>
+          </View>
         )}
       </ScrollView>
     </>

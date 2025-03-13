@@ -26,6 +26,8 @@ const urls = {
   updateUserPlant: (id: string | string[]) => `/user-plant/${id}`,
   generateSchedule: (id: string | string[]) => `/care-schedule/${id}`,
   generateTask: (id: string | string[]) => `/tasks/${id}`,
+  changeFavorite: (id: string | string[]) => `/user-plant/like/${id}`,
+  removeUserPlant: (id: string | string[]) => `/user-plant/${id}`,
 };
 
 const methods = {
