@@ -98,6 +98,42 @@ const generateTasks = async (
   });
 };
 
+const getFavorite = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.favorite,
+    onSuccess,
+    onError,
+  });
+};
+
+const getPlanted = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.planted,
+    onSuccess,
+    onError,
+  });
+};
+
+const getUnplanted = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.unplanted,
+    onSuccess,
+    onError,
+  });
+};
+
 export {
   popularPlant,
   plantDetail,
@@ -106,4 +142,7 @@ export {
   updateGardenPlant,
   generateSchedule,
   generateTasks,
+  getFavorite,
+  getPlanted,
+  getUnplanted,
 };

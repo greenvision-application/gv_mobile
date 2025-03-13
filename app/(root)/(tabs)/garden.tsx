@@ -1,131 +1,217 @@
 import React, { useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Header } from "@/components";
-import Entypo from "@expo/vector-icons/Entypo";
+import { Header, Loading } from "@/components";
+import {
+  Entypo,
+  FontAwesome,
+  FontAwesome6,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import { getDetailUser } from "@/services/userService";
+import { getUnplanted, getFavorite, getPlanted } from "@/services/plantService";
+import { useQuery } from "@tanstack/react-query";
 
-const user = {
-  name: "Rina ksor",
-  role: "(Thợ vườn tập sự)",
-  status:
-    "But I can see us lost in the memory\nAugust slipped away into a moment in time.",
-  avatar:
-    "https://f.hoatieu.vn/data/image/2022/08/25/avatar-cute-meo-con-than-chet.jpg",
-  coverImage:
-    "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1000&auto=format&fit=crop",
-  stats: {
-    totalPlants: 8,
-    favorites: 3,
-    unplanted: 56,
-  },
+// Define types
+interface UserData {
+  address: string | null;
+  email: string;
+  username: string | null;
+  preferences: any | null;
+}
+
+interface Plant {
+  image_url: string[];
+  plant_name: string;
+}
+
+interface PlantData {
+  id: string;
+  nickname: string;
+  Plant: Plant;
+}
+
+interface PlantDataMap {
+  all: PlantData[];
+  favorites: PlantData[];
+  unplanted: PlantData[];
+}
+
+interface UserStats {
+  totalPlants: number;
+  favorites: number;
+  unplanted: number;
+}
+
+interface UserProfile {
+  name: string;
+  avatar: string;
+  coverImage: string;
+  email: string;
+  address: string;
+}
+
+type TabType = "all" | "favorites" | "unplanted";
+
+const fetchDetailUser = async (): Promise<UserData> => {
+  const result = await getDetailUser();
+  return result;
 };
 
-const plantData = {
-  all: [
-    {
-      id: 1,
-      name: "Cây xương rồng",
-      image:
-        "https://coconhouse.com/wp-content/uploads/2019/11/bef31bec91c2769c2fd3.jpg",
-    },
-    {
-      id: 2,
-      name: "Cây lô hội",
-      image:
-        "https://vandienfmp.vn/wp-content/uploads/2021/01/%E1%BA%A2nh-c%C3%A2y-l%C3%B4-h%E1%BB%99i.jpg",
-    },
-    {
-      id: 3,
-      name: "Cây trầu bà",
-      image:
-        "https://caytrauba.com/wp-content/uploads/2023/01/monstera-deliciosa-800x800-1.jpg",
-    },
-  ],
-  favorites: [
-    {
-      id: 2,
-      name: "Cây lô hội",
-      image:
-        "https://vandienfmp.vn/wp-content/uploads/2021/01/%E1%BA%A2nh-c%C3%A2y-l%C3%B4-h%E1%BB%99i.jpg",
-    },
-    {
-      id: 3,
-      name: "Cây trầu bà",
-      image:
-        "https://caytrauba.com/wp-content/uploads/2023/01/monstera-deliciosa-800x800-1.jpg",
-    },
-  ],
-  unplanted: [
-    {
-      id: 4,
-      name: "Cây cúc",
-      image:
-        "https://khuvuonmini.com/asset/editor/ResponsiveFilemanager-master/source/PHUONG-%20CAY%20GIONG/c%C3%BAc%20b%C3%A1ch%20nh%E1%BA%ADt/cuc-anh-belis%20%205.jpg",
-    },
-    {
-      id: 5,
-      name: "Cây hoa hồng",
-      image:
-        "https://lh3.googleusercontent.com/f8WE9R7_1d3qejfWNU7aBe6XPZCSNwmRYWW69Z4oJPK1Qf7yrvslFfVQhdLOgjf8Qdi149Awc-6HHcgvkFgvqp2nEEEIaxergSssTJOl_H9AgaPWi5db8Wp48uV7iCDB7RqjkhRRBeZyMRddTps1iOM",
-    },
-    {
-      id: 6,
-      name: "Cây lan",
-      image:
-        "https://product.hstatic.net/1000336151/product/20201204_084505_8d859b4216a34883bd56e45fba6eb4f1_master.jpg",
-    },
-  ],
+const fetchPlanted = async (): Promise<PlantData[]> => {
+  const result = await getPlanted();
+  return result;
 };
 
-const Garden = () => {
+const fetchFavorite = async (): Promise<PlantData[]> => {
+  const result = await getFavorite();
+  return result;
+};
+
+const fetchUnplanted = async (): Promise<PlantData[]> => {
+  const result = await getUnplanted();
+  return result;
+};
+
+const Garden: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>("all");
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("all");
 
-  const renderPlants = () => {
-    const plants = plantData[activeTab as keyof typeof plantData];
+  // Fetch user data with corrected query functions
+  const { data: userData, isLoading: userLoading } = useQuery<UserData>({
+    queryKey: ["user"],
+    queryFn: fetchDetailUser,
+  });
+
+  // Fetch planted plants
+  const { data: plantedData, isLoading: plantedLoading } = useQuery<
+    PlantData[]
+  >({
+    queryKey: ["planted"],
+    queryFn: fetchPlanted,
+  });
+
+  // Fetch favorite plants
+  const { data: favoriteData, isLoading: favoriteLoading } = useQuery<
+    PlantData[]
+  >({
+    queryKey: ["favorite"],
+    queryFn: fetchFavorite,
+  });
+
+  // Fetch unplanted plants
+  const { data: unplantedData, isLoading: unplantedLoading } = useQuery<
+    PlantData[]
+  >({
+    queryKey: ["unplanted"],
+    queryFn: fetchUnplanted,
+  });
+
+  // Combine all plant data
+  const plantData: PlantDataMap = {
+    all: plantedData || [],
+    favorites: favoriteData || [],
+    unplanted: unplantedData || [],
+  };
+
+  // Calculate user stats based on API data
+  const userStats: UserStats = {
+    totalPlants: plantedData?.length || 0,
+    favorites: favoriteData?.length || 0,
+    unplanted: unplantedData?.length || 0,
+  };
+
+  // Mock user data where API doesn't provide values
+  const userProfile: UserProfile = {
+    name: "Người làm vườn chỉnh chu",
+    avatar:
+      "https://f.hoatieu.vn/data/image/2022/08/25/avatar-cute-meo-con-than-chet.jpg",
+    coverImage:
+      "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1000&auto=format&fit=crop",
+    email: userData?.email || "",
+    address: userData?.address || "Chưa cập nhật địa chỉ",
+  };
+
+  // Show loading state if any data is loading
+  if (userLoading || plantedLoading || favoriteLoading || unplantedLoading) {
+    return <Loading />;
+  }
+
+  const renderPlants = (): JSX.Element => {
+    const plants = plantData[activeTab];
+
+    if (!plants || plants.length === 0) {
+      return (
+        <View className="mt-4 px-4 items-center justify-center py-10">
+          <Text className="text-lg text-gray-500">
+            Không có cây nào trong danh mục này
+          </Text>
+        </View>
+      );
+    }
+
     return (
       <View className="mt-4 px-4">
         <View className="flex-row flex-wrap gap-4">
           {plants.map((plant) => (
-            <View
+            <TouchableOpacity
               key={plant.id}
               className="w-[48%] bg-neutral rounded-2xl shadow-lg overflow-hidden border border-neutral-200"
+              // onPress={() => router.push(`/plant-detail/${plant.id}`)}
             >
               <Image
-                source={{ uri: plant.image }}
+                source={{ uri: plant.Plant.image_url[0] }}
                 className="w-full h-56"
                 resizeMode="cover"
               />
               <View className="p-2 items-center">
                 <Text className="text-lg font-semibold text-black">
-                  {plant.name}
+                  {plant.nickname || plant.Plant.plant_name}
                 </Text>
+                {plant.nickname && (
+                  <Text className="text-sm text-gray-500">
+                    {plant.Plant.plant_name}
+                  </Text>
+                )}
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
     );
   };
+
   return (
-    <SafeAreaProvider className="flex-1 bg-neutral p-4">
+    <SafeAreaProvider className="flex-1">
       <Header title="Vườn cây" />
       <ScrollView className="mb-20 bg-neutral">
-        <View className="info-container">
-          <Image source={{ uri: user.coverImage }} className="w-full h-48" />
+        <View className="info-container bg-neutral">
+          <Image
+            source={{ uri: userProfile.coverImage }}
+            className="w-full h-48"
+          />
           <View className="items-start mt-[-60] ml-5">
             <Image
-              source={{ uri: user.avatar }}
+              source={{ uri: userProfile.avatar }}
               className="w-36 h-36 rounded-full border-4 border-neutral"
             />
             <View className="mt-2">
-              <Text className="text-2xl font-bold text-left">{user.name}</Text>
-              <Text className="text-xl text-gray-500 text-left">
-                {user.role}
+              <Text className="text-2xl font-inter-bold text-left">
+                {userProfile.name}
               </Text>
-              <Text className="text-base text-gray-400 mt-1 text-left">
-                {user.status}
+              <Text className="text-lg text-gray-500 mt-1 text-left">
+                Email: {userProfile.email}
+              </Text>
+              <Text className="text-lg text-gray-500 mt-1 text-left">
+                Địa chỉ: {userProfile.address}
               </Text>
             </View>
           </View>
@@ -135,12 +221,12 @@ const Garden = () => {
             onPress={() => setActiveTab("all")}
             className="items-center"
           >
-            <Entypo
-              name="tree"
-              size={24}
+            <FontAwesome6
+              name="seedling"
+              size={25}
               color={activeTab === "all" ? "#0B5B5C" : "#3CC18E"}
             />
-            <Text className="text-center">{user.stats.totalPlants}</Text>
+            <Text className="text-center">{userStats.totalPlants}</Text>
             <Text className="text-center">Cây trồng</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -148,23 +234,23 @@ const Garden = () => {
             className="items-center"
           >
             <Entypo
-              name="heart-outlined"
-              size={24}
+              name="heart"
+              size={25}
               color={activeTab === "favorites" ? "#0B5B5C" : "#3CC18E"}
             />
-            <Text className="text-center">{user.stats.favorites}</Text>
+            <Text className="text-center">{userStats.favorites}</Text>
             <Text className="text-center">Yêu thích</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setActiveTab("unplanted")}
             className="items-center"
           >
-            <Entypo
-              name="leaf"
-              size={24}
+            <MaterialCommunityIcons
+              name="seed"
+              size={25}
               color={activeTab === "unplanted" ? "#0B5B5C" : "#3CC18E"}
             />
-            <Text className="text-center">{user.stats.unplanted}</Text>
+            <Text className="text-center">{userStats.unplanted}</Text>
             <Text className="text-center">Cây chưa trồng</Text>
           </TouchableOpacity>
         </View>

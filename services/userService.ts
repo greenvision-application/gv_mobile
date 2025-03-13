@@ -70,4 +70,22 @@ const getStatus = async (
   });
 };
 
-export { handleRegister, handleVerifyOTP, handleLoginEmail, getStatus };
+const getDetailUser = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.user,
+    onSuccess,
+    onError,
+  });
+};
+
+export {
+  handleRegister,
+  handleVerifyOTP,
+  handleLoginEmail,
+  getStatus,
+  getDetailUser,
+};
