@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Header } from "@/components";
 
 const plantData = [
   {
@@ -74,24 +75,7 @@ export default function Timeline() {
 
   return (
     <>
-      {/* header */}
-      <View className="bg-[#3CC18E] p-2 py-4 flex flex-row items-center justify-between">
-        <TouchableOpacity
-          onPress={() => console.log("Back button pressed")}
-          className=""
-        >
-          <Ionicons name="chevron-back-sharp" size={30} color="white" />
-        </TouchableOpacity>
-        <Text className="text-neutral-100 text-2xl font-inter-bold">
-          Chăm sóc
-        </Text>
-        <TouchableOpacity
-          onPress={() => console.log("Setting button pressed")}
-          className=""
-        >
-          <Ionicons name="settings-sharp" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
+      <Header title="Lịch trình"/>
       {/* Menu cây được chăm sóc */}
       <View className="flex-1 bg-white mb-20">
         {/* Danh sách vị trí cây */}

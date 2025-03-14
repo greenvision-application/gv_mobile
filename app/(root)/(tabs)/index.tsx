@@ -1,25 +1,62 @@
-import React, { useState } from "react";
-import { ScrollView, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Header,
   SearchHeader,
   PopularPlants,
   SimilarPlants,
+  ErrorMessage,
+  Loading,
 } from "@/components";
-import { popularPlants, similarPlants } from "@/libs/dataFake";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
-import { useRouter } from "expo-router";
+import helper from "@/libs/helper";
+import {
+  addToGarden,
+  handleFavorite,
+  popularPlant,
+  recommendationsPlant,
+} from "@/services/plantService";
+import { Plant } from "@/libs/types";
+import { queryKeys } from "@/libs/tanstackQuery";
+import Toast from "react-native-toast-message";
 
 const Home = () => {
   const [showAllPopular, setShowAllPopular] = useState(false);
   const [showAllSimilar, setShowAllSimilar] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const { refetch } = useGlobalStore();
-  const route = useRouter();
+  const { refetch, setLoading } = useGlobalStore();
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = async (id: string) => {
+    try {
+      const createdUserPlant = await addToGarden({
+        plant_id: id,
+        caring_plant_infor: {},
+      });
+
+      await handleFavorite(createdUserPlant.id);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Không thay đổi yêu thích, vui lòng thử lại sau",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+    }
     setFavorites((prev) => {
       if (prev.includes(id)) {
         return prev.filter((item) => item !== id);
@@ -34,11 +71,11 @@ const Home = () => {
   };
 
   const handleScan = () => {
-    route.replace("/(root)/(tabs)/scan");
+    router.replace("/(root)/(tabs)/scan");
   };
 
   const handleNotification = () => {
-    route.replace("/(root)/notifications")
+    router.push("/(root)/notifications");
   };
 
   const handleNotificationSettings = () => {
@@ -55,18 +92,62 @@ const Home = () => {
       {
         text: "Đăng xuất",
         onPress: async () => {
-          const result = await logout();
+          const token = await helper.getToken();
+
+          const result = token ? await helper.removeToken() : await logout();
+
           if (result) {
-            Alert.alert("Success", "Logged out successfully");
+            Alert.alert("Thành công", "Đăng xuất thành công");
             refetch();
           } else {
-            Alert.alert("Error", "Failed to logout");
+            Alert.alert("Lỗi", "Lỗi khi đăng xuất");
           }
         },
         style: "destructive",
       },
     ]);
   };
+  const fetchPopularPlants = async (): Promise<Plant[]> => {
+    try {
+      const data = await new Promise<Plant[]>((resolve, reject) => {
+        popularPlant(
+          (res) => resolve(helper.mapApiDataToPlants(res)),
+          (err) => reject(new Error(err.message))
+        );
+      });
+      return data;
+    } catch (error) {
+      throw new Error("Đã xảy ra lỗi khi tải dữ liệu!");
+    }
+  };
+
+  const { data: popularPlants = [] } = useQuery({
+    queryKey: [queryKeys.popular],
+    queryFn: fetchPopularPlants,
+    staleTime: 1000,
+  });
+
+  const {
+    data: similarPlants = [],
+    isLoading: similarPlantsLoading,
+    error: similarPlantsError,
+  } = useQuery({
+    queryKey: [queryKeys.similar],
+    queryFn: async () => {
+      return new Promise<Plant[]>((resolve, reject) => {
+        recommendationsPlant(
+          (res) => {
+            const data = helper.mapRecommendationPlants(res);
+            resolve(data);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      });
+    },
+    staleTime: 1000,
+  });
 
   return (
     <SafeAreaProvider>
@@ -92,13 +173,19 @@ const Home = () => {
           onToggleFavorite={toggleFavorite}
         />
 
-        <SimilarPlants
-          plants={similarPlants}
-          showAllSimilar={showAllSimilar}
-          setShowAllSimilar={setShowAllSimilar}
-          favorites={favorites}
-          onToggleFavorite={toggleFavorite}
-        />
+        {similarPlantsLoading ? (
+          <Loading />
+        ) : similarPlantsError ? (
+          <ErrorMessage message="Lỗi khi lấy dữ liệu câu tương tự" />
+        ) : similarPlants.length > 0 ? (
+          <SimilarPlants
+            plants={similarPlants}
+            showAllSimilar={showAllSimilar}
+            setShowAllSimilar={setShowAllSimilar}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+          />
+        ) : null}
       </ScrollView>
     </SafeAreaProvider>
   );

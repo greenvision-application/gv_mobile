@@ -7,7 +7,7 @@ import { usePathname } from "expo-router";
 
 const AppLayout = () => {
   const { loading, isLoggedIn, refetch, error, onboarded } = useGlobalStore();
-  const path = usePathname();
+  
   useEffect(() => {
     if (!isLoggedIn && loading) {
       refetch();

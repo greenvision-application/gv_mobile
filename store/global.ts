@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { getCurrentUser, logout } from "@/libs/appwrite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import variables from "@/constants/variables";
+import helper from "@/libs/helper";
+import { getStatus } from "@/services/userService";
 
 interface User {
   $id: string;
@@ -9,24 +12,43 @@ interface User {
   avatar: string;
 }
 
+export interface FormInfoData {
+  username?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  otp?: string;
+  gender?: string;
+  dayOfBirth?: string;
+}
+
 interface GlobalState {
   user: User | null;
   loading: boolean;
   isLoggedIn: boolean;
   error: string | null;
-  uploadedFileUrl: string | null;
+  uploadedFile: FormData | null;
+  uriImage: string | null;
   onboarded: boolean;
+  formData: FormInfoData | null;
+  updateUserPlantId: string | string[] | null | undefined;
+  phaseId: string | null | string[];
 
   // Actions
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setOnboarded: (onboarded: boolean) => void;
+  setUri: (uri: string | null) => void;
+  setUserPlantId: (id: string) => void;
+  setPhaseId: (id: string) => void;
 
   // Async actions
   completeOnboarding: () => void;
   refetch: () => Promise<void>;
-  setUploadedFileUrl: (url: string | null) => void;
+  setUploadedFile: (file: FormData | null) => void;
+  setFormData: (formData: Partial<FormInfoData>) => void;
+  resetForm: () => void;
 }
 
 export const useGlobalStore = create<GlobalState>((set) => ({
@@ -34,24 +56,44 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   loading: true,
   isLoggedIn: false,
   error: null,
-  uploadedFileUrl: null,
+  uploadedFile: null,
+  uriImage: null,
   onboarded: false,
+  formData: null,
+  updateUserPlantId: null,
+  phaseId: null,
 
   setUser: (user) => set({ user, isLoggedIn: !!user }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
   setOnboarded: (onboarded) => set({ onboarded }),
-  setUploadedFileUrl: (url: string | null) => {
-    set({ uploadedFileUrl: url });
+  setUploadedFile: (file: FormData | null) => {
+    set({ uploadedFile: file });
   },
+  setUri: (uriImage: string | null) => set({ uriImage }),
+  setUserPlantId: (updateUserPlantId) => set({ updateUserPlantId }),
+  setPhaseId: (phaseId) => set({ phaseId }),
 
   refetch: async () => {
     try {
       set({ loading: true, error: null });
 
-      const onboardedStatus = await AsyncStorage.getItem("onboarded");
+      const onboardedStatus = await AsyncStorage.getItem(
+        variables.localStorage.onboarded
+      );
       set({ onboarded: onboardedStatus === "true" });
-      const user = await getCurrentUser();
+      const token = await helper.getToken();
+
+      let user = null;
+
+      if (token) {
+        const response = await getStatus();
+        if (response) {
+          user = response;
+        }
+      } else {
+        user = await getCurrentUser();
+      }
 
       set({
         user,
@@ -74,7 +116,18 @@ export const useGlobalStore = create<GlobalState>((set) => ({
   },
 
   completeOnboarding: async () => {
-    await AsyncStorage.setItem("onboarded", "true");
+    await AsyncStorage.setItem(variables.localStorage.onboarded, "true");
     set({ onboarded: true });
   },
+
+  setFormData: (formData) => {
+    set((state) => ({
+      formData: { ...state.formData, ...formData },
+    }));
+  },
+  resetForm: () =>
+    set({
+      formData: null,
+      loading: false,
+    }),
 }));

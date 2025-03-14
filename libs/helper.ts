@@ -1,4 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import variables from "@/constants/variables";
+import { Plant } from "./types";
 
 const getAllKeys = async () => {
   try {
@@ -78,6 +80,46 @@ const allKeyStorage = async () => {
   }
 };
 
+const setToken = async (token: string) => {
+  await setItem(variables.localStorage.accessToken, token);
+};
+
+const getToken = async () => {
+  return await getItem(variables.localStorage.accessToken);
+};
+
+const removeToken = async () => {
+  try {
+    const result = await removeItem(variables.localStorage.accessToken);
+    return result;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+const mapApiDataToPlants = (data: any[]): Plant[] => {
+  return data.map((item) => ({
+    id: item.id,
+    name: item.plant_name,
+    image: item.image_url.length > 0 ? item.image_url[0] : null,
+    favorite: item.User_Plant.length > 0 ? item.User_Plant[0].favorite : false,
+    nickname:
+      item.User_Plant.length > 0 ? item.User_Plant[0].nickname : undefined,
+  }));
+};
+
+const mapRecommendationPlants = (data: any[]): Plant[] => {
+  console.log("Map data:::::", data);
+  const result = data.map((item) => ({
+    id: item.id,
+    name: item.plant_name,
+    image: item.image_url.length > 0 ? item.image_url[0] : null,
+  }));
+  console.log("Map result:::::", result);
+  return result;
+};
+
 export default {
   getAllKeys,
   getItem,
@@ -86,4 +128,9 @@ export default {
   clearAll,
   getAllItems,
   allKeyStorage,
+  getToken,
+  setToken,
+  removeToken,
+  mapApiDataToPlants,
+  mapRecommendationPlants,
 };

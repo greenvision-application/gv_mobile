@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "gv_mobile",
-    "slug": "gv_mobile",
+    "name": "GreenVision",
+    "slug": "gv-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "GreenVision",
+    "scheme": "green-vision",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

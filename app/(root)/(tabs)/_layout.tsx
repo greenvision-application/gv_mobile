@@ -34,7 +34,6 @@ const TabIcon = ({
 const TabsLayout = () => {
   return (
     <>
-      {/* <Header /> */}
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
