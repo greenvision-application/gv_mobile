@@ -3,18 +3,18 @@ import { ScrollView, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/libs/tanstackQuery";
 import {
   Header,
   SearchHeader,
   PopularPlants,
   SimilarPlants,
+  ErrorMessage,
+  Loading,
 } from "@/components";
-import { similarPlants } from "@/libs/dataFake";
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
 import helper from "@/libs/helper";
-import { popularPlant } from "@/services/plantService";
+import { popularPlant, recommendationsPlant } from "@/services/plantService";
 import { Plant } from "@/libs/types";
 import { queryKeys } from "@/libs/tanstackQuery";
 
@@ -95,6 +95,28 @@ const Home = () => {
     staleTime: 1000,
   });
 
+  const {
+    data: similarPlants = [],
+    isLoading: similarPlantsLoading,
+    error: similarPlantsError,
+  } = useQuery({
+    queryKey: [queryKeys.similar],
+    queryFn: async () => {
+      return new Promise<Plant[]>((resolve, reject) => {
+        recommendationsPlant(
+          (res) => {
+            const data = helper.mapRecommendationPlants(res);
+            resolve(data);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      });
+    },
+    staleTime: 1000,
+  });
+
   return (
     <SafeAreaProvider>
       {/* Header */}
@@ -119,13 +141,19 @@ const Home = () => {
           onToggleFavorite={toggleFavorite}
         />
 
-        <SimilarPlants
-          plants={similarPlants}
-          showAllSimilar={showAllSimilar}
-          setShowAllSimilar={setShowAllSimilar}
-          favorites={favorites}
-          onToggleFavorite={toggleFavorite}
-        />
+        {similarPlantsLoading ? (
+          <Loading />
+        ) : similarPlantsError ? (
+          <ErrorMessage message="Lỗi khi lấy dữ liệu câu tương tự" />
+        ) : similarPlants.length > 0 ? (
+          <SimilarPlants
+            plants={similarPlants}
+            showAllSimilar={showAllSimilar}
+            setShowAllSimilar={setShowAllSimilar}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+          />
+        ) : null}
       </ScrollView>
     </SafeAreaProvider>
   );

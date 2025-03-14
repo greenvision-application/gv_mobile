@@ -109,6 +109,17 @@ const mapApiDataToPlants = (data: any[]): Plant[] => {
   }));
 };
 
+const mapRecommendationPlants = (data: any[]): Plant[] => {
+  console.log("Map data:::::", data);
+  const result = data.map((item) => ({
+    id: item.id,
+    name: item.plant_name,
+    image: item.image_url.length > 0 ? item.image_url[0] : null,
+  }));
+  console.log("Map result:::::", result);
+  return result;
+};
+
 export default {
   getAllKeys,
   getItem,
@@ -121,4 +132,5 @@ export default {
   setToken,
   removeToken,
   mapApiDataToPlants,
+  mapRecommendationPlants,
 };

@@ -14,6 +14,18 @@ const popularPlant = async (
   });
 };
 
+const recommendationsPlant = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.recommendations,
+    onSuccess,
+    onError,
+  });
+};
+
 const plantDetail = async (
   id: string | string[],
   onSuccess?: (data: any) => void,
@@ -162,6 +174,7 @@ const removeUserPlant = async (
 
 export {
   popularPlant,
+  recommendationsPlant,
   plantDetail,
   getCategory,
   addToGarden,

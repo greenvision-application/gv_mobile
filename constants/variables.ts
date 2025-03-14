@@ -16,6 +16,7 @@ const urls = {
   status: "/auth/status",
   scan: "/gemini/upload-image",
   popular: "/plants/client-plants",
+  recommendations: "/plants/recommendations",
   category: "/categories",
   addGarden: "/user-plant",
   favorite: "/user-plant/favorite",
