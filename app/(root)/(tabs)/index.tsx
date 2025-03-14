@@ -14,9 +14,15 @@ import {
 import { logout } from "@/libs/appwrite";
 import { useGlobalStore } from "@/store/global";
 import helper from "@/libs/helper";
-import { popularPlant, recommendationsPlant } from "@/services/plantService";
+import {
+  addToGarden,
+  handleFavorite,
+  popularPlant,
+  recommendationsPlant,
+} from "@/services/plantService";
 import { Plant } from "@/libs/types";
 import { queryKeys } from "@/libs/tanstackQuery";
+import Toast from "react-native-toast-message";
 
 const Home = () => {
   const [showAllPopular, setShowAllPopular] = useState(false);
@@ -24,7 +30,33 @@ const Home = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const { refetch, setLoading } = useGlobalStore();
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = async (id: string) => {
+    try {
+      const createdUserPlant = await addToGarden({
+        plant_id: id,
+        caring_plant_infor: {},
+      });
+
+      await handleFavorite(createdUserPlant.id);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Không thay đổi yêu thích, vui lòng thử lại sau",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+    }
     setFavorites((prev) => {
       if (prev.includes(id)) {
         return prev.filter((item) => item !== id);

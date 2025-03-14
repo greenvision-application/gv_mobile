@@ -146,7 +146,7 @@ const getUnplanted = async (
   });
 };
 
-const removeFavorite = async (
+const handleFavorite = async (
   userPlantId: string,
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
@@ -184,6 +184,6 @@ export {
   getFavorite,
   getPlanted,
   getUnplanted,
-  removeFavorite,
+  handleFavorite,
   removeUserPlant,
 };

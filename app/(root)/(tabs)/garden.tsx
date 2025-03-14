@@ -21,7 +21,7 @@ import {
   getUnplanted,
   getFavorite,
   getPlanted,
-  removeFavorite,
+  handleFavorite,
   removeUserPlant,
 } from "@/services/plantService";
 import { useQuery } from "@tanstack/react-query";
@@ -94,7 +94,7 @@ const fetchUnplanted = async (): Promise<PlantData[]> => {
 // Thêm function để gọi API bỏ yêu thích
 const handleRemoveFavorite = async (plantId: string): Promise<void> => {
   try {
-    await removeFavorite(plantId, () => {
+    await handleFavorite(plantId, () => {
       Toast.show({
         type: "success",
         text1: "Thành công",
