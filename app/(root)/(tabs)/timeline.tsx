@@ -1,115 +1,154 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Header } from "@/components";
+import { ErrorMessage, Header, Loading } from "@/components";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/libs/tanstackQuery";
+import variables from "@/constants/variables";
+import { getTimeline } from "@/services/plantService";
+import { router } from "expo-router";
 
-const plantData = [
-  {
-    id: "1",
-    location: "Phòng khách",
-    images:
-      "https://housevn.vn/upload/data/images/noi-that/nha-o/nt-009/noi-that-dep-nha-pho-5-tang-009-01.jpg",
-    plants: [
-      {
-        id: "p1",
-        image:
-          "https://cafefcdn.com/203337114487263232/2020/11/24/photo-1-16061900622181559629865.jpg",
-        name: "Cây lưỡi hổ",
-      },
+type PlantSite = keyof typeof variables.ENUM_TRANSLATIONS.PLANT_SITE;
+// Định nghĩa type cho dữ liệu
+interface UserPlant {
+  id: string;
+  nickname: string | null;
+  plant_site: PlantSite;
+  image_url: string[];
+  Plant: {
+    plant_name: string;
+    image_url: string[];
+  };
+}
 
-      {
-        id: "p2",
-        image:
-          "https://cafefcdn.com/203337114487263232/2020/11/24/photo-1-16061900622181559629865.jpg",
-        name: "Cây lubby",
-      },
-      {
-        id: "p3",
-        image:
-          "https://cdn.tgdd.vn/Files/2022/05/10/1431513/cay-co-canh-dac-diem-y-nghia-va-cach-trong-cay-lam-kieng-tai-nha-202205101334012353.jpg",
-        name: "Cây lưỡi hổ",
-      },
-      {
-        id: "p4",
-        image:
-          "https://www.thetealab.us/wp-content/uploads/2020/11/dat-dai.jpg",
-        name: "Cây lưỡi hổ",
-      },
-    ],
-    lastCare: "10 giờ trước",
-  },
-  {
-    id: "2",
-    location: "Ban công",
-    images:
-      "https://housevn.vn/upload/data/images/noi-that/nha-o/nt-009/noi-that-dep-nha-pho-5-tang-009-01.jpg",
-    plants: [
-      {
-        id: "p5",
-        image:
-          "https://storage.googleapis.com/digital-platform/hinh_anh_top_15_loai_cay_phong_thuy_trong_nha_mang_tai_loc_may_man_so_1_2afda09fad/hinh_anh_top_15_loai_cay_phong_thuy_trong_nha_mang_tai_loc_may_man_so_1_2afda09fad.jpg",
-        name: "Cây lưỡi hổ",
-      },
-    ],
-    lastCare: "2 giờ trước",
-  },
-  {
-    id: "3",
-    location: "Ngoài trời",
-    images:
-      "https://housevn.vn/upload/data/images/noi-that/nha-o/nt-009/noi-that-dep-nha-pho-5-tang-009-01.jpg",
-    plants: [
-      {
-        id: "p6",
-        image:
-          "https://storage.googleapis.com/digital-platform/hinh_anh_top_15_loai_cay_phong_thuy_trong_nha_mang_tai_loc_may_man_so_1_2afda09fad/hinh_anh_top_15_loai_cay_phong_thuy_trong_nha_mang_tai_loc_may_man_so_1_2afda09fad.jpg",
-        name: "Cây lưỡi hổ",
-      },
-    ],
-    lastCare: "2 giờ trước",
-  },
-];
+interface TransformedLocation {
+  key: string;
+  location: string;
+  images: string;
+  plants: {
+    id: string;
+    name: string;
+    image: string;
+  }[];
+  lastCare: string;
+}
+
+// Hàm chuyển đổi dữ liệu API thành định dạng mà UI hiện tại cần
+const transformTimelineData = (data: UserPlant[]): TransformedLocation[] => {
+  // Nhóm các cây theo vị trí
+  const groupedByLocation = data.reduce((acc, plant) => {
+    // Lấy thông tin vị trí từ placePlant
+    const locationValue = plant.plant_site;
+    let locationKey = locationValue;
+    let locationName = variables.placePlant[locationValue]?.label || "Khác";
+    let locationImage = variables.placePlant[locationValue]?.image || "";
+
+    // Nếu vị trí chưa tồn tại, tạo mới
+    if (!acc[locationKey]) {
+      acc[locationKey] = {
+        key: locationKey,
+        location: locationName,
+        images: locationImage || plant.Plant.image_url[0],
+        plants: [],
+        lastCare: "Chưa có dữ liệu",
+      };
+    }
+
+    // Thêm cây vào danh sách tại vị trí
+    acc[locationKey].plants.push({
+      id: plant.id,
+      name: plant.nickname || plant.Plant.plant_name,
+      image: plant.Plant.image_url[0] || "",
+    });
+
+    return acc;
+  }, {} as Record<string, TransformedLocation>);
+
+  // Chuyển đổi object thành mảng
+  return Object.values(groupedByLocation);
+};
 
 export default function Timeline() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // Sử dụng React Query để fetch dữ liệu
+  const { isLoading, error, data } = useQuery({
+    queryKey: [queryKeys.timeline],
+    queryFn: () => {
+      const result = getTimeline((res) => {
+        return res;
+      });
+      return result;
+    },
+  });
+
+  // Chuyển đổi dữ liệu từ API
+  const transformedData = data ? transformTimelineData(data) : [];
+
+  // Hiển thị trạng thái loading
+  if (isLoading) {
+    return (
+      <>
+        <Header title="Lịch trình" />
+        <Loading />
+      </>
+    );
+  }
+
+  // Hiển thị lỗi nếu có
+  if (error) {
+    return (
+      <>
+        <Header title="Lịch trình" />
+        <ErrorMessage
+          message={error.message ?? "Đã xảy ra lỗi khi tải dữ liệu"}
+        />
+      </>
+    );
+  }
+
   return (
     <>
-      <Header title="Lịch trình"/>
+      <Header title="Lịch trình" />
       {/* Menu cây được chăm sóc */}
-      <View className="flex-1 bg-white mb-20">
+      <View className="flex-1 bg-neutral mb-20">
         {/* Danh sách vị trí cây */}
         <FlatList
-          data={plantData}
-          keyExtractor={(item) => item.id}
+          data={transformedData}
+          keyExtractor={(item) => item.key}
+          ListEmptyComponent={
+            <View className="p-10 justify-center items-center">
+              <Text className="text-neutral-500">Không có dữ liệu</Text>
+            </View>
+          }
           renderItem={({ item }) => (
             <View className="border-b border-neutral-300 p-4">
               {/* Tiêu đề vị trí */}
               <TouchableOpacity
                 onPress={() =>
-                  setExpanded(expanded === item.id ? null : item.id)
+                  setExpanded(expanded === item.key ? null : item.key)
                 }
                 className="flex-row items-center justify-between"
               >
                 <View className="flex-row items-center">
-                  <View className="">
-                    <Image
-                      source={{ uri: item.images }}
-                      className="w-24 h-24 border border-neutral-300 rounded-xl "
-                    />
-                  </View>
+                  <Image
+                    source={{ uri: item.images }}
+                    className="w-24 h-24 border border-neutral-300 rounded-xl"
+                  />
                   <View className="flex h-fit gap-3 flex-col ml-5 justify-between">
-                    <Text className="text-xl font-bold">{item.location}</Text>
-                    <Text className="text-gray-500">
+                    <Text className="text-xl font-inter-bold">
+                      {item.location}
+                    </Text>
+                    <Text className="text-neutral-500">
                       {item.plants.length} cây trồng
                     </Text>
-                    <Text className="text-gray-500">
+                    <Text className="text-neutral-500">
                       Lần chăm sóc cuối • {item.lastCare}
                     </Text>
                   </View>
                 </View>
 
-                {expanded === item.id ? (
+                {expanded === item.key ? (
                   <Ionicons name="chevron-up" size={28} color="#3CC18E" />
                 ) : (
                   <Ionicons name="chevron-down" size={28} color="#3CC18E" />
@@ -117,24 +156,29 @@ export default function Timeline() {
               </TouchableOpacity>
 
               {/* Hiển thị danh sách cây khi mở rộng */}
-              {expanded === item.id && (
+              {expanded === item.key && (
                 <FlatList
                   data={item.plants}
                   numColumns={2}
                   keyExtractor={(plant) => plant.id}
-                  renderItem={({ item }) => (
-                    <View className="flex flex-row w-1/2 gap-2 border-neutral-300 pr-2 pt-4">
+                  renderItem={({ item: plant }) => (
+                    <TouchableOpacity
+                      className="flex flex-row w-1/2 gap-2 border-neutral-300 pr-2 pt-4"
+                      onPress={() => {
+                        router.push(`/agenda/${plant.id}`);
+                      }}
+                    >
                       <View className="w-full border border-neutral-300 rounded-xl overflow-hidden">
                         <Image
-                          source={{ uri: item.image }}
-                          className="w-full h-44 "
+                          source={{ uri: plant.image }}
+                          className="w-full h-44"
                           resizeMode="cover"
                         />
                         <Text className="text-xl font-bold p-4 text-center">
-                          {item.name}
+                          {plant.name}
                         </Text>
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   )}
                 />
               )}

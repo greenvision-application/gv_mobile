@@ -25,6 +25,7 @@ import {
 } from "@/components";
 import { useGlobalStore } from "@/store/global";
 import Toast from "react-native-toast-message";
+import { queryKeys } from "@/libs/tanstackQuery";
 
 const CreateAgendaForm: React.FC = () => {
   const { id } = useLocalSearchParams();
@@ -47,7 +48,7 @@ const CreateAgendaForm: React.FC = () => {
 
   // Fetch plant details
   const { data: plantInfo = {}, isLoading: isPlantLoading } = useQuery({
-    queryKey: ["plantDetail", id],
+    queryKey: [queryKeys.plant_detail, id],
     queryFn: () =>
       plantDetail(
         id,
@@ -60,7 +61,7 @@ const CreateAgendaForm: React.FC = () => {
 
   // Fetch plant categories
   const { data: categories = [], isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ["categories"],
+    queryKey: [queryKeys.categories],
     queryFn: async () => {
       const result = await getCategory(
         (res) => res,

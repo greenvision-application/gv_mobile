@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { vi } from "date-fns/locale";
 import Toast from "react-native-toast-message";
 import variables from "@/constants/variables";
+import { queryKeys } from "@/libs/tanstackQuery";
 
 type StatusTask = keyof typeof variables.ENUM_TRANSLATIONS.TASK_STATUS;
 // Định nghĩa kiểu dữ liệu Task
@@ -123,7 +124,7 @@ const AgendaTask = () => {
 
   // Fetch dữ liệu tasks
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", phaseId],
+    queryKey: [queryKeys.tasks, phaseId],
     queryFn: () => generateTasks(phaseId!),
   });
 
@@ -133,7 +134,7 @@ const AgendaTask = () => {
       updateTaskStatus(taskId, status),
     onSuccess: () => {
       // Invalidate và refetch
-      queryClient.invalidateQueries({ queryKey: ["tasks", phaseId] });
+      queryClient.invalidateQueries({ queryKey: [queryKeys.tasks, phaseId] });
     },
   });
 

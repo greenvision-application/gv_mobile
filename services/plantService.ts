@@ -172,6 +172,18 @@ const removeUserPlant = async (
   });
 };
 
+const getTimeline = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.timeline,
+    onSuccess,
+    onError,
+  });
+};
+
 export {
   popularPlant,
   recommendationsPlant,
@@ -186,4 +198,5 @@ export {
   getUnplanted,
   handleFavorite,
   removeUserPlant,
+  getTimeline,
 };
