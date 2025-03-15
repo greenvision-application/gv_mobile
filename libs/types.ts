@@ -1,3 +1,5 @@
+import variables from "@/constants/variables";
+
 export interface Plant {
   id: string;
   name: string;
@@ -16,4 +18,29 @@ export interface UserPlant {
   plant_site?: string;
   caring_plant_infor: any;
   plant_id?: any;
+}
+
+type PlantSite = keyof typeof variables.ENUM_TRANSLATIONS.PLANT_SITE;
+type SoilType = keyof typeof variables.ENUM_TRANSLATIONS.SOIL_TYPE;
+type DifficultyLevel =
+  keyof typeof variables.ENUM_TRANSLATIONS.DIFFICULTY_LEVEL;
+type Level = keyof typeof variables.ENUM_TRANSLATIONS.LEVEL;
+export interface CreatePlantRequest {
+  plant_name: string;
+  scientific_name: string;
+  overview: string[];
+  characteristic: string[];
+  function: string[];
+  meaning: string[];
+  image_url: string[];
+  difficulty_level: DifficultyLevel;
+  soil_type: SoilType;
+  habitatLocation: PlantSite;
+  minTemperature: number;
+  maxTemperature: number;
+  minMatureSize: number;
+  maxMatureSize: number;
+  humidityRange: Level;
+  lightRequirement: Level;
+  approved_content: boolean;
 }

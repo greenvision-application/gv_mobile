@@ -12,6 +12,7 @@ const queryKeys = {
   unplanted: "unplanted",
   schedule: "schedule",
   tasks: "tasks",
+  scan: "scan",
   plant_detail: "plant_detail",
   categories: "categories",
 };

@@ -23,6 +23,7 @@ const urls = {
   planted: "/user-plant/planted",
   unplanted: "/user-plant/unplanted",
   user: "/users/detail",
+  plants: "/plants",
   timeline: "/user-plant/client-schedule",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
   updateUserPlant: (id: string | string[]) => `/user-plant/${id}`,
@@ -30,6 +31,7 @@ const urls = {
   generateTask: (id: string | string[]) => `/tasks/${id}`,
   changeFavorite: (id: string | string[]) => `/user-plant/like/${id}`,
   removeUserPlant: (id: string | string[]) => `/user-plant/${id}`,
+  generatePhase: (id: string | string[]) => `/plants/generate-phase/${id}`,
 };
 
 const methods = {
