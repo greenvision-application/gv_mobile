@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   Dimensions,
-  Platform,
   StatusBar,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import PlantDetailsContent from "@/components/PlantDetailsContent";
 import { useGlobalStore } from "@/store/global";
@@ -20,8 +18,6 @@ const PlantDetailFromGemini = () => {
   const { uploadedFile } = useGlobalStore();
   const [isLoading, setIsLoading] = useState(false);
   const [plantInfo, setPlantInfo] = useState(plantData);
-
-  const windowHeight = Dimensions.get("window").height;
 
   useEffect(() => {
     const fetchPlantInfo = async () => {

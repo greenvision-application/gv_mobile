@@ -11,7 +11,8 @@ import Toast from "react-native-toast-message";
 import variables from "@/constants/variables";
 import { queryKeys } from "@/libs/tanstackQuery";
 
-type StatusTask = keyof typeof variables.ENUM_TRANSLATIONS.TASK_STATUS;
+type StatusTask =
+  (typeof variables.ENUM_TRANSLATIONS.TASK_STATUS)[keyof typeof variables.ENUM_TRANSLATIONS.TASK_STATUS];
 // Định nghĩa kiểu dữ liệu Task
 interface Task {
   id: string;
@@ -44,29 +45,29 @@ const TaskItem = ({
   });
 
   return (
-    <View className="flex-row p-4 bg-white rounded-lg shadow-sm mb-3">
+    <View className="flex-row p-4 bg-neutral rounded-lg shadow-sm mb-3 items-center">
       <TouchableOpacity
         onPress={onToggleStatus}
         className={`h-6 w-6 rounded-full mr-3 items-center justify-center border ${
           task.completion_status ===
           variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE
-            ? "bg-green-500 border-green-500"
-            : "bg-white border-red-500"
+            ? "bg-primary border-primary"
+            : "bg-neutral border-semantic-error"
         }`}
       >
         {task.completion_status ===
           variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE && (
-          <Ionicons name="checkmark" size={16} color="white" />
+          <Ionicons name="checkmark" size={20} color="white" />
         )}
       </TouchableOpacity>
 
       <View className="flex-1">
         <Text
-          className={`text-sm mb-2 ${
+          className={`text-md font-inter mb-2 ${
             task.completion_status ===
             variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE
-              ? "text-gray-500 line-through"
-              : "text-black"
+              ? "text-primary line-through"
+              : "text-neutral-500"
           }`}
         >
           {task.content}
@@ -101,8 +102,8 @@ const TaskGroup = ({
   });
 
   return (
-    <View className="mb-5">
-      <Text className="text-lg font-semibold mb-2 text-gray-700">
+    <View className="mb-3">
+      <Text className="text-lg font-inter-semibold mb-2 text-neutral-500">
         {formattedDate}
       </Text>
 
@@ -140,7 +141,7 @@ const AgendaTask = () => {
 
   // Xử lý toggle trạng thái task
   const handleToggleStatus = (taskId: string) => {
-    const task = data?.tasks.find((task: any) => task.id === taskId);
+    const task = data?.tasks.find((task: Task) => task.id === taskId);
     if (!task) return;
 
     const newStatus =
@@ -197,7 +198,7 @@ const AgendaTask = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-neutral">
       <Header title="Công việc" />
 
       <ScrollView className="flex-1 px-4 pt-4">
