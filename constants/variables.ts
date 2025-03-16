@@ -26,6 +26,7 @@ const urls = {
   plants: "/plants",
   timeline: "/user-plant/client-schedule",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
+  updateTask: (id: string | string[]) => `/tasks/${id}`,
   updateUserPlant: (id: string | string[]) => `/user-plant/${id}`,
   generateSchedule: (id: string | string[]) => `/care-schedule/${id}`,
   generateTask: (id: string | string[]) => `/tasks/${id}`,
@@ -82,7 +83,7 @@ const ENUM_TRANSLATIONS = {
   TASK_STATUS: {
     DO: "DO",
     DONE: "DONE",
-    NOT_YET: "NOT YET",
+    NOT_YET: "NOT_YET",
   },
 };
 const placePlant = {

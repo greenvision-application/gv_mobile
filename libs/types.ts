@@ -25,6 +25,7 @@ type SoilType = keyof typeof variables.ENUM_TRANSLATIONS.SOIL_TYPE;
 type DifficultyLevel =
   keyof typeof variables.ENUM_TRANSLATIONS.DIFFICULTY_LEVEL;
 type Level = keyof typeof variables.ENUM_TRANSLATIONS.LEVEL;
+export type TaskType = keyof typeof variables.ENUM_TRANSLATIONS.TASK_STATUS;
 export interface CreatePlantRequest {
   plant_name: string;
   scientific_name: string;

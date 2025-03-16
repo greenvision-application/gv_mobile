@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StatusBar, Alert } from "react-native";
-import { router } from "expo-router";
+import { View, Text, TouchableOpacity, StatusBar } from "react-native";
 import PlantDetailsContent from "@/components/PlantDetailsContent";
 import Loading from "@/components/Loading";
 import { plantData } from "@/libs/dataFake";

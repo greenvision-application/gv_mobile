@@ -1,6 +1,7 @@
 import variables from "@/constants/variables";
 import request from "@/libs/apiClient";
 import { UserPlant, CreatePlantRequest } from "@/libs/types";
+import { TaskType } from "@/libs/types";
 
 const popularPlant = async (
   onSuccess?: (data: any) => void,
@@ -214,6 +215,22 @@ const getTimeline = async (
   });
 };
 
+const updateTask = async (
+  id: string,
+  status: TaskType,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = { completion_status: status };
+  return request({
+    method: variables.methods.patch,
+    url: variables.urls.updateTask(id),
+    data,
+    onSuccess,
+    onError,
+  });
+};
+
 export {
   popularPlant,
   recommendationsPlant,
@@ -231,4 +248,5 @@ export {
   getTimeline,
   createPlant,
   generatePhase,
+  updateTask,
 };
