@@ -1,5 +1,5 @@
 import variables from "@/constants/variables";
-import request from "@/libs/apiClient";
+import { request, requestAddress } from "@/libs/apiClient";
 import { FormInfoData } from "@/store/global";
 
 const handleRegister = async (
@@ -13,6 +13,41 @@ const handleRegister = async (
     method: variables.methods.post,
     url: variables.urls.register,
     data,
+    onSuccess,
+    onError,
+  });
+};
+const callProvince = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return requestAddress({
+    method: variables.methods.get,
+    url: variables.urls.province,
+    onSuccess,
+    onError,
+  });
+};
+const callDistrict = async (
+  id: string,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return requestAddress({
+    method: variables.methods.get,
+    url: variables.urls.district(id),
+    onSuccess,
+    onError,
+  });
+};
+const callWard = async (
+  id: string,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return requestAddress({
+    method: variables.methods.get,
+    url: variables.urls.ward(id),
     onSuccess,
     onError,
   });
@@ -88,4 +123,7 @@ export {
   handleLoginEmail,
   getStatus,
   getDetailUser,
+  callProvince,
+  callDistrict,
+  callWard,
 };

@@ -77,4 +77,35 @@ const request = async ({
     throw new Error(errorMessage);
   }
 };
-export default request;
+
+const requestAddress = async ({
+  method,
+  url,
+  onSuccess,
+  onError,
+}: RequestOptions) => {
+  try {
+    const response = await axios({
+      method: method,
+      baseURL: variables.ADDRESS_API,
+      url: url,
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json;charset=utf-8",
+      },
+    });
+    onSuccess?.(response.data);
+    return response.data;
+  } catch (error) {
+    const errorMessage = axios.isAxiosError(error)
+      ? error.response?.data || "Unknown Axios error"
+      : error instanceof Error
+      ? error.message
+      : "Unknown error";
+
+    onError?.(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+export { request, requestAddress };

@@ -3,6 +3,7 @@ const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!;
 const PLATFORM = "greenvision.dev.com";
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const APPWRITE_PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!;
+const ADDRESS_API = "https://provinces.open-api.vn/api";
 
 const localStorage = {
   accessToken: "accessToken",
@@ -13,6 +14,7 @@ const urls = {
   register: "/auth/register",
   login: "/auth/login",
   otp: "/auth/verify-otp",
+  province: "/p",
   status: "/auth/status",
   scan: "/gemini/upload-image",
   popular: "/plants/client-plants",
@@ -33,6 +35,8 @@ const urls = {
   changeFavorite: (id: string | string[]) => `/user-plant/like/${id}`,
   removeUserPlant: (id: string | string[]) => `/user-plant/${id}`,
   generatePhase: (id: string | string[]) => `/plants/generate-phase/${id}`,
+  district: (id: string | string[]) => `p/${id}?depth=2`,
+  ward: (id: string | string[]) => `d/${id}?depth=2`,
 };
 
 const methods = {
@@ -223,6 +227,7 @@ export default {
   APPWRITE_ENDPOINT,
   APPWRITE_PROJECT_ID,
   ENUM_TRANSLATIONS,
+  ADDRESS_API,
   localStorage,
   urls,
   methods,
