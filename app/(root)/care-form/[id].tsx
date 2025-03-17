@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, ScrollView, View, Text } from "react-native";
 import { Header, Loading } from "@/components";
 import { Ionicons, Entypo, FontAwesome6 } from "@expo/vector-icons";
 import dropdownData from "@/constants/dropdownData";
@@ -25,6 +25,7 @@ import {
 } from "@/components";
 import { useGlobalStore } from "@/store/global";
 import Toast from "react-native-toast-message";
+import { queryKeys } from "@/libs/tanstackQuery";
 
 const CreateAgendaForm: React.FC = () => {
   const { id } = useLocalSearchParams();
@@ -45,9 +46,17 @@ const CreateAgendaForm: React.FC = () => {
   const [selectedCareTasks, setSelectedCareTasks] = useState<string[]>([]);
   const [notes, setNotes] = useState([""]);
 
+  // Validation states
+  const [errors, setErrors] = useState({
+    developStage: false,
+    placePlant: false,
+    soilType: false,
+    plantType: false,
+  });
+
   // Fetch plant details
   const { data: plantInfo = {}, isLoading: isPlantLoading } = useQuery({
-    queryKey: ["plantDetail", id],
+    queryKey: [queryKeys.plant_detail, id],
     queryFn: () =>
       plantDetail(
         id,
@@ -60,7 +69,7 @@ const CreateAgendaForm: React.FC = () => {
 
   // Fetch plant categories
   const { data: categories = [], isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ["categories"],
+    queryKey: [queryKeys.categories],
     queryFn: async () => {
       const result = await getCategory(
         (res) => res,
@@ -101,7 +110,46 @@ const CreateAgendaForm: React.FC = () => {
     humidityRange: plantInfo.humidityRange,
   };
 
+  // Function to validate required fields
+  const validateForm = () => {
+    const newErrors = {
+      developStage: developStage === "",
+      placePlant: placePlant === "",
+      soilType: soilType === "",
+      plantType:
+        plantType === "" &&
+        (plantInfo.approved_content !== true ||
+          !plantInfo.Category?.category_name),
+    };
+
+    setErrors(newErrors);
+
+    // Return true if no errors (all required fields filled)
+    return !Object.values(newErrors).some((error) => error === true);
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Vui lòng điền đầy đủ các trường bắt buộc",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+      return;
+    }
+
     try {
       await updateGardenPlant(
         {
@@ -226,17 +274,27 @@ const CreateAgendaForm: React.FC = () => {
               {/* Plant Type */}
               <PlantInfoField
                 icon={<Entypo name="feather" size={25} color="#3CC18E" />}
+                error={
+                  errors.plantType && (
+                    <Text className="text-semantic-error text-md font-inter-light mt-1">
+                      Vui lòng chọn loại cây
+                    </Text>
+                  )
+                }
               >
                 <PlantDropdown
                   data={categories}
                   value={plantType}
-                  onChange={(item) => setPlantType(item.value)}
+                  onChange={(item) => {
+                    setPlantType(item.value);
+                    setErrors({ ...errors, plantType: false });
+                  }}
                   placeholder={
-                    id
+                    plantInfo.approved_content === true
                       ? plantInfo.Category?.category_name
                       : "Điều chỉnh loại cây"
                   }
-                  editable={id ? false : true}
+                  editable={plantInfo.approved_content === true ? false : true}
                 />
               </PlantInfoField>
 
@@ -245,11 +303,21 @@ const CreateAgendaForm: React.FC = () => {
                 icon={
                   <FontAwesome6 name="chart-gantt" size={25} color="#3CC18E" />
                 }
+                error={
+                  errors.developStage && (
+                    <Text className="text-semantic-error text-md font-inter-light mt-1">
+                      Vui lòng chọn giai đoạn phát triển
+                    </Text>
+                  )
+                }
               >
                 <PlantDropdown
                   data={phaseOptions}
                   value={developStage}
-                  onChange={(item) => setDevelopStage(item.value)}
+                  onChange={(item) => {
+                    setDevelopStage(item.value);
+                    setErrors({ ...errors, developStage: false });
+                  }}
                   placeholder="Chọn giai đoạn phát triển"
                 />
               </PlantInfoField>
@@ -257,11 +325,21 @@ const CreateAgendaForm: React.FC = () => {
               {/* Plant Location */}
               <PlantInfoField
                 icon={<Ionicons name="map" size={25} color="#3CC18E" />}
+                error={
+                  errors.placePlant && (
+                    <Text className="text-semantic-error text-md font-inter-light mt-1">
+                      Vui lòng chọn địa điểm trồng
+                    </Text>
+                  )
+                }
               >
                 <PlantDropdown
                   data={dropdownData.placePlant}
                   value={placePlant}
-                  onChange={(item) => setPlacePlant(item.value)}
+                  onChange={(item) => {
+                    setPlacePlant(item.value);
+                    setErrors({ ...errors, placePlant: false });
+                  }}
                   placeholder="Chọn địa điểm trồng"
                 />
               </PlantInfoField>
@@ -271,11 +349,21 @@ const CreateAgendaForm: React.FC = () => {
                 icon={
                   <Entypo name="shopping-basket" size={25} color="#3CC18E" />
                 }
+                error={
+                  errors.soilType && (
+                    <Text className="text-semantic-error text-md font-inter-light mt-1">
+                      Vui lòng chọn loại đất
+                    </Text>
+                  )
+                }
               >
                 <PlantDropdown
                   data={dropdownData.soilType}
                   value={soilType}
-                  onChange={(item) => setSoilType(item.value)}
+                  onChange={(item) => {
+                    setSoilType(item.value);
+                    setErrors({ ...errors, soilType: false });
+                  }}
                   placeholder="Chọn loại đất"
                 />
               </PlantInfoField>

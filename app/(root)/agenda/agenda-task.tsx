@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Header, Loading } from "@/components";
 import { useGlobalStore } from "@/store/global";
-import { generateTasks } from "@/services/plantService";
+import { generateTasks, updateTask } from "@/services/plantService";
 import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { vi } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
 import Toast from "react-native-toast-message";
 import variables from "@/constants/variables";
+import { queryKeys, queryClient } from "@/libs/tanstackQuery";
+import { TaskType } from "@/libs/types";
 
-type StatusTask = keyof typeof variables.ENUM_TRANSLATIONS.TASK_STATUS;
 // Định nghĩa kiểu dữ liệu Task
 interface Task {
   id: string;
   content: string;
-  completion_status: StatusTask;
+  completion_status: TaskType;
   task_date: string;
   task_time: string;
 }
-
-// Giả định API Service để cập nhật trạng thái task
-const updateTaskStatus = async (taskId: string, status: StatusTask) => {
-  // Đây là nơi bạn sẽ gọi API thực tế
-  // Ví dụ: return await api.put(`/tasks/${taskId}`, { completion_status: status });
-  return { success: true };
-};
 
 // Component hiển thị một task đơn lẻ
 const TaskItem = ({
@@ -38,47 +32,59 @@ const TaskItem = ({
   const formattedDate = format(new Date(task.task_date), "dd/MM/yyyy", {
     locale: vi,
   });
-  const formattedTime = format(new Date(task.task_time), "HH:mm", {
-    locale: vi,
-  });
+  const formattedTime = format(
+    toZonedTime(new Date(task.task_time), "UTC"),
+    "HH:mm",
+    {
+      locale: vi,
+    }
+  );
 
   return (
-    <View className="flex-row p-4 bg-white rounded-lg shadow-sm mb-3">
+    <View className="flex-row p-4 bg-neutral rounded-lg shadow-sm mb-3 items-center">
       <TouchableOpacity
         onPress={onToggleStatus}
         className={`h-6 w-6 rounded-full mr-3 items-center justify-center border ${
           task.completion_status ===
           variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE
-            ? "bg-green-500 border-green-500"
-            : "bg-white border-red-500"
+            ? "bg-primary border-primary"
+            : "bg-neutral border-semantic-error"
         }`}
       >
         {task.completion_status ===
           variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE && (
-          <Ionicons name="checkmark" size={16} color="white" />
+          <Ionicons name="checkmark" size={20} color="white" />
         )}
       </TouchableOpacity>
 
       <View className="flex-1">
         <Text
-          className={`text-sm mb-2 ${
+          className={`text-md font-inter mb-2 ${
             task.completion_status ===
             variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE
-              ? "text-gray-500 line-through"
-              : "text-black"
+              ? "text-semantic-success line-through"
+              : task.completion_status ===
+                variables.ENUM_TRANSLATIONS.TASK_STATUS.NOT_YET
+              ? "text-semantic-error"
+              : "text-neutral-500"
           }`}
         >
           {task.content}
         </Text>
 
-        <View className="flex-row items-center">
-          <Ionicons name="calendar-outline" size={14} color="#666" />
-          <Text className="text-xs text-gray-500 ml-1 mr-3">
-            {formattedDate}
-          </Text>
-
-          <Ionicons name="time-outline" size={14} color="#666" />
-          <Text className="text-xs text-gray-500 ml-1">{formattedTime}</Text>
+        <View className="flex-row justify-between">
+          <View className="flex-row items-center">
+            <Ionicons name="calendar-outline" size={18} color="#666" />
+            <Text className="text-xs font-inter text-neutral-500 ml-1 mr-3">
+              {formattedDate}
+            </Text>
+          </View>
+          <View className="flex-row items-center">
+            <Ionicons name="time-outline" size={18} color="#666" />
+            <Text className="text-xs font-inter text-neutral-500 ml-1">
+              {formattedTime}
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -100,8 +106,8 @@ const TaskGroup = ({
   });
 
   return (
-    <View className="mb-5">
-      <Text className="text-lg font-semibold mb-2 text-gray-700">
+    <View className="mb-3">
+      <Text className="text-lg font-inter-semibold mb-2 text-neutral-500">
         {formattedDate}
       </Text>
 
@@ -119,36 +125,31 @@ const TaskGroup = ({
 // Component chính
 const AgendaTask = () => {
   const { phaseId } = useGlobalStore();
-  const queryClient = useQueryClient();
 
   // Fetch dữ liệu tasks
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", phaseId],
+    queryKey: [queryKeys.tasks, phaseId],
     queryFn: () => generateTasks(phaseId!),
   });
 
   // Mutation để cập nhật trạng thái task
   const mutation = useMutation({
-    mutationFn: ({ taskId, status }: { taskId: string; status: StatusTask }) =>
-      updateTaskStatus(taskId, status),
+    mutationFn: ({ taskId, status }: { taskId: string; status: TaskType }) =>
+      updateTask(taskId, status),
     onSuccess: () => {
       // Invalidate và refetch
-      queryClient.invalidateQueries({ queryKey: ["tasks", phaseId] });
+      queryClient.invalidateQueries({ queryKey: [queryKeys.tasks, phaseId] });
     },
   });
 
   // Xử lý toggle trạng thái task
   const handleToggleStatus = (taskId: string) => {
-    const task = data?.tasks.find((task: any) => task.id === taskId);
+    const task = data?.tasks.find((task: Task) => task.id === taskId);
     if (!task) return;
 
-    const newStatus =
-      task.completion_status === variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE
-        ? variables.ENUM_TRANSLATIONS.TASK_STATUS.NOT_YET
-        : variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE;
+    const newStatus = task.completion_status === "DONE" ? "DO" : "DONE";
     mutation.mutate({ taskId, status: newStatus });
   };
-
   // Nhóm tasks theo ngày
   const groupTasksByDate = (tasks: Task[] = []) => {
     const grouped: { [date: string]: Task[] } = {};
@@ -196,7 +197,7 @@ const AgendaTask = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-neutral">
       <Header title="Công việc" />
 
       <ScrollView className="flex-1 px-4 pt-4">

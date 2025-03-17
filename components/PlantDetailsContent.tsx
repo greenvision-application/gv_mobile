@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import {
-  AntDesign,
-  Feather,
-  MaterialCommunityIcons,
-  Ionicons,
-} from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import variables from "@/constants/variables";
 
@@ -86,15 +81,19 @@ const PlantDetailsContent: React.FC<PlantDetailsContentProps> = ({
       {/* Plant Name Section */}
       <View className="flex-row justify-between items-center pt-2">
         <View>
-          <Text className="text-3xl font-inter-extrabold text-gray-800">
+          <Text className="text-3xl font-inter-extrabold text-neutral-500">
             {plantData.plant_name}
           </Text>
           <Text className="text-neutral-500 font-inter-medium text-xl mt-1">
             {plantData.scientific_name}
           </Text>
         </View>
-        <TouchableOpacity className="bg-red-50 rounded-full">
-          <AntDesign name="heart" size={24} color="red" />
+        <TouchableOpacity className="bg-neutral rounded-full">
+          <MaterialCommunityIcons
+            name="comment-question"
+            size={35}
+            color="#3CC18E"
+          />
         </TouchableOpacity>
       </View>
 

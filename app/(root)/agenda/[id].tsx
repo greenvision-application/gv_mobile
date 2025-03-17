@@ -5,16 +5,17 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { router, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { generateSchedule } from "@/services/plantService";
 import Toast from "react-native-toast-message";
+import { generateSchedule } from "@/services/plantService";
 import { useGlobalStore } from "@/store/global";
+import { queryKeys } from "@/libs/tanstackQuery";
 
 const TimelineScreen = () => {
   const { id } = useLocalSearchParams();
   const { setPhaseId } = useGlobalStore();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["schedule", id],
+    queryKey: [queryKeys.schedule, id],
     queryFn: () => generateSchedule(id),
     staleTime: 1 * 60 * 1000,
   });

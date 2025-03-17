@@ -1,6 +1,7 @@
 import variables from "@/constants/variables";
 import request from "@/libs/apiClient";
-import { UserPlant } from "@/libs/types";
+import { UserPlant, CreatePlantRequest } from "@/libs/types";
+import { TaskType } from "@/libs/types";
 
 const popularPlant = async (
   onSuccess?: (data: any) => void,
@@ -34,6 +35,36 @@ const plantDetail = async (
   return request({
     method: variables.methods.get,
     url: variables.urls.plantDetail(id),
+    onSuccess,
+    onError,
+  });
+};
+
+const createPlant = async (
+  data: CreatePlantRequest,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.post,
+    url: variables.urls.plants,
+    data,
+    onSuccess,
+    onError,
+  });
+};
+
+const generatePhase = async (
+  id: string,
+  data: { plant_name: string; scientific_name: string },
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  console.log("data test::::", data);
+  return request({
+    method: variables.methods.post,
+    url: variables.urls.generatePhase(id),
+    data,
     onSuccess,
     onError,
   });
@@ -172,6 +203,34 @@ const removeUserPlant = async (
   });
 };
 
+const getTimeline = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.timeline,
+    onSuccess,
+    onError,
+  });
+};
+
+const updateTask = async (
+  id: string,
+  status: TaskType,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = { completion_status: status };
+  return request({
+    method: variables.methods.patch,
+    url: variables.urls.updateTask(id),
+    data,
+    onSuccess,
+    onError,
+  });
+};
+
 export {
   popularPlant,
   recommendationsPlant,
@@ -186,4 +245,8 @@ export {
   getUnplanted,
   handleFavorite,
   removeUserPlant,
+  getTimeline,
+  createPlant,
+  generatePhase,
+  updateTask,
 };

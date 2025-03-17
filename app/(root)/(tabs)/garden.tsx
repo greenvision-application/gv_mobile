@@ -25,7 +25,7 @@ import {
   removeUserPlant,
 } from "@/services/plantService";
 import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/libs/tanstackQuery";
+import { queryClient, queryKeys } from "@/libs/tanstackQuery";
 import Toast from "react-native-toast-message";
 import { useGlobalStore } from "@/store/global";
 
@@ -182,7 +182,7 @@ const Garden: React.FC = () => {
   const { setUserPlantId } = useGlobalStore();
   // Fetch user data with corrected query functions
   const { data: userData, isLoading: userLoading } = useQuery<UserData>({
-    queryKey: ["user"],
+    queryKey: [queryKeys.user],
     queryFn: fetchDetailUser,
   });
 
@@ -190,7 +190,7 @@ const Garden: React.FC = () => {
   const { data: plantedData, isLoading: plantedLoading } = useQuery<
     PlantData[]
   >({
-    queryKey: ["planted"],
+    queryKey: [queryKeys.planted],
     queryFn: fetchPlanted,
   });
 
@@ -198,7 +198,7 @@ const Garden: React.FC = () => {
   const { data: favoriteData, isLoading: favoriteLoading } = useQuery<
     PlantData[]
   >({
-    queryKey: ["favorite"],
+    queryKey: [queryKeys.favorite],
     queryFn: fetchFavorite,
   });
 
@@ -206,7 +206,7 @@ const Garden: React.FC = () => {
   const { data: unplantedData, isLoading: unplantedLoading } = useQuery<
     PlantData[]
   >({
-    queryKey: ["unplanted"],
+    queryKey: [queryKeys.unplanted],
     queryFn: fetchUnplanted,
   });
 
