@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Pressable,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import {
   FontAwesome6,
   MaterialCommunityIcons,
   AntDesign,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { Header, Loading, SaveButton } from "@/components";
 import { getDetailUser } from "@/services/userService";
@@ -226,11 +228,9 @@ const Garden: React.FC = () => {
 
   // Mock user data where API doesn't provide values
   const userProfile: UserProfile = {
-    name: "Người làm vườn chỉnh chu",
-    avatar:
-      "https://f.hoatieu.vn/data/image/2022/08/25/avatar-cute-meo-con-than-chet.jpg",
-    coverImage:
-      "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1000&auto=format&fit=crop",
+    name: "Bác nông dân",
+    avatar: "https://avatar.iran.liara.run/public/45",
+    coverImage: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc",
     email: userData?.email || "",
     address: userData?.address || "Chưa cập nhật địa chỉ",
   };
@@ -399,11 +399,22 @@ const Garden: React.FC = () => {
             source={{ uri: userProfile.coverImage }}
             className="w-full h-48"
           />
+
           <View className="items-start mt-[-60] ml-5">
-            <Image
-              source={{ uri: userProfile.avatar }}
-              className="w-36 h-36 rounded-full border-4 border-neutral"
-            />
+            <Pressable
+              className="relative"
+              onPress={() => {
+                router.push("/user-infor");
+              }}
+            >
+              <Image
+                source={{ uri: userProfile.avatar }}
+                className="w-36 h-36 rounded-full border-4 border-neutral"
+              />
+              <View className="absolute bottom-2 right-3 bg-primary w-8 h-8 rounded-full justify-center items-center">
+                <MaterialIcons name="photo-library" size={18} color="white" />
+              </View>
+            </Pressable>
             <View className="mt-2">
               <Text className="text-2xl font-inter-bold text-left">
                 {userProfile.name}

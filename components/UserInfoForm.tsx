@@ -1,10 +1,12 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable, Image } from "react-native";
 import {
   AntDesign,
   FontAwesome,
   FontAwesome5,
   Ionicons,
+  MaterialIcons,
 } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { useState, useRef, useEffect } from "react";
 import DateTimePicker, { DateType } from "react-native-ui-datepicker";
 import dayjs from "dayjs";
@@ -35,6 +37,8 @@ export default function UserInfoForm() {
     null
   );
   const [selectedWard, setSelectedWard] = useState<Ward | null>(null);
+
+  const [image, setImage] = useState<string | null>(null); // Lưu URI của ảnh
 
   // Lấy danh sách tỉnh/thành phố
   const { data: provinces, isLoading: isLoadingProvinces } = useQuery({
@@ -95,6 +99,36 @@ export default function UserInfoForm() {
     }
   }, [selectedDistrict]);
 
+  // Yêu cầu quyền truy cập thư viện ảnh
+  const requestMediaLibraryPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Chúng tôi cần quyền truy cập vào thư viện ảnh của bạn!");
+      return false;
+    }
+    return true;
+  };
+
+  // Chọn ảnh từ thư viện
+  const pickImage = async () => {
+    const hasPermission = await requestMediaLibraryPermission();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Lỗi khi chọn ảnh:", error);
+      alert("Có lỗi xảy ra khi chọn ảnh");
+    }
+  };
+
   // Format địa chỉ đầy đủ
   const getFullAddress = () => {
     const parts = [];
@@ -105,16 +139,30 @@ export default function UserInfoForm() {
   };
 
   return (
-    <View className="flex-1 w-full items-center justify-start pt-48 bg-neutral">
-      <View className="px-6 w-full">
-        <Text className="text-4xl font-inter-bold text-white text-center">
-          Thông tin
-        </Text>
-        <Text className="mb-10 mt-4 text-base text-center font-inter">
-          Thông tin này giúp bạn chăm sóc cây cá nhân hóa hơn!
-        </Text>
+    <View className="flex-1 w-full items-center bg-neutral">
+      <View className="px-6 mt-5 w-full">
         <View className="flex flex-col gap-4">
           <View className="flex flex-col gap-4">
+            {/* Phần upload ảnh đại diện */}
+            <View className="flex items-center">
+              <Pressable onPress={pickImage} className="relative">
+                {image ? (
+                  <Image
+                    source={{ uri: image }}
+                    className="w-24 h-24 rounded-full"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View className="w-20 h-20 rounded-full bg-neutral-200 justify-center items-center">
+                    <FontAwesome name="user" size={40} color="#A3A3A3" />
+                  </View>
+                )}
+                <View className="absolute bottom-0 right-0 bg-primary w-8 h-8 rounded-full justify-center items-center">
+                  <MaterialIcons name="photo-library" size={18} color="white" />
+                </View>
+              </Pressable>
+              <Text className="mt-2 text-white font-inter">Ảnh đại diện</Text>
+            </View>
             {/* Ô nhập tên người dùng */}
             <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
               <View className="flex flex-row items-center h-14">
@@ -129,7 +177,6 @@ export default function UserInfoForm() {
                 <Text className="text-semantic-error">*</Text>
               </View>
             </View>
-
             {/* Dropdown chọn Tỉnh/Thành phố */}
             <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
               <View className="flex flex-row items-center h-14 w-full">
@@ -156,7 +203,6 @@ export default function UserInfoForm() {
                 </View>
               </View>
             </View>
-
             {/* Dropdown chọn Quận/Huyện */}
             <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
               <View className="flex flex-row items-center h-14 w-full">
@@ -185,7 +231,6 @@ export default function UserInfoForm() {
                 </View>
               </View>
             </View>
-
             {/* Dropdown chọn Phường/Xã */}
             <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
               <View className="flex flex-row items-center h-14 w-full">
@@ -216,30 +261,30 @@ export default function UserInfoForm() {
                 </View>
               </View>
             </View>
-
-            {/* Ô chọn Giới tính */}
-            <Pressable
-              className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300"
-              onPress={() => genderActionSheet.current?.show()}
-            >
-              <Ionicons name="transgender-sharp" size={25} color="#3CC18E" />
-              <Text className="px-2 flex-1 ml-2 font-inter-medium text-md">
-                {gender || "Chọn giới tính"}
-              </Text>
-            </Pressable>
-
-            {/* Ô chọn Ngày sinh */}
-            <Pressable
-              className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300"
-              onPress={() => setOpenDatePicker(true)}
-            >
-              <AntDesign name="calendar" size={24} color="#3CC18E" />
-              <Text className="flex-1 ml-2 p-2 text-neutral-300 font-inter-medium text-md">
-                {selected
-                  ? dayjs(selected).format("DD/MM/YYYY")
-                  : "Chọn ngày sinh"}
-              </Text>
-            </Pressable>
+            <View className="flex flex-row items-center justify-between gap-2">
+              {/* Ô chọn Giới tính */}
+              <Pressable
+                className="flex-1 flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300"
+                onPress={() => genderActionSheet.current?.show()}
+              >
+                <Ionicons name="transgender-sharp" size={25} color="#3CC18E" />
+                <Text className="px-2 flex-1 ml-2 font-inter-medium text-md">
+                  {gender || "Chọn giới tính"}
+                </Text>
+              </Pressable>
+              {/* Ô chọn Ngày sinh */}
+              <Pressable
+                className="flex-1 flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300"
+                onPress={() => setOpenDatePicker(true)}
+              >
+                <AntDesign name="calendar" size={24} color="#3CC18E" />
+                <Text className="flex-1 ml-2 p-2 text-neutral-300 font-inter-medium text-md">
+                  {selected
+                    ? dayjs(selected).format("DD/MM/YYYY")
+                    : "Chọn ngày sinh"}
+                </Text>
+              </Pressable>
+            </View>
           </View>
 
           {/* DatePicker Modal */}

@@ -1,5 +1,5 @@
 import variables from "@/constants/variables";
-import request from "@/libs/apiClient";
+import {request} from "@/libs/apiClient";
 import { UserPlant, CreatePlantRequest } from "@/libs/types";
 import { TaskType } from "@/libs/types";
 

@@ -55,7 +55,7 @@ export default function VerifyOtp() {
         formData!,
         (response) => {
           resetForm();
-          router.replace("/user-infor");
+          router.replace("/form");
         },
         (error) => {
           if (error?.statusCode === 400) {
