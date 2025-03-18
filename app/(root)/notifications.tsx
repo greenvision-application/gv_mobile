@@ -10,6 +10,7 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Header } from "@/components";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import NotificationTester from "@/components/NotificationTester";
 
 interface NotificationItem {
   id: string;
@@ -98,6 +99,7 @@ const Notifications = () => {
   return (
     <SafeAreaProvider className="flex-1 bg-white">
       <Header title="Thông báo" />
+      <NotificationTester />
       <FlatList
         data={notifications}
         keyExtractor={(item) => item.id}

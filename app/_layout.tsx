@@ -2,9 +2,10 @@ import { Stack, SplashScreen } from "expo-router";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import { QueryClientProvider } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 import { queryClient } from "@/libs/tanstackQuery";
 import "./global.css";
-import Toast from "react-native-toast-message";
+import usePushNotifications from "@/services/usePushNotifications";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -17,7 +18,7 @@ export default function RootLayout() {
     "Inter-Black": require("../assets/fonts/Inter-Black.ttf"),
     "Inter-ExtraLight": require("../assets/fonts/Inter-ExtraLight.ttf"),
   });
-
+  const { expoPushToken } = usePushNotifications();
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();

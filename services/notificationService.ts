@@ -1,18 +1,36 @@
 import variables from "@/constants/variables";
 import { request } from "@/libs/apiClient";
 import helper from "@/libs/helper";
-
-// services/notificationService.ts
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/** 
+// Cấu hình cách hiển thị thông báo khi app đang mở
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+/**
  * Đăng ký nhận thông báo và lấy Expo push token
  */
 async function registerForPushNotificationsAsync() {
   let token;
+
+  // Thiết lập channel thông báo cho Android
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("task-notifications", {
+      name: "Task Notifications",
+      description: "Thông báo về các nhiệm vụ chăm sóc cây",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#4CAF50", // Màu xanh lá cây
+    });
+  }
 
   // Kiểm tra xem có phải thiết bị thật hay không
   if (Device.isDevice) {
@@ -45,16 +63,6 @@ async function registerForPushNotificationsAsync() {
     await helper.setItem(variables.localStorage.expoPushToken, token);
   } else {
     alert("Tính năng thông báo yêu cầu thiết bị thật để hoạt động");
-  }
-
-  // Cấu hình channel thông báo cho Android
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
   }
 
   return token;
@@ -118,9 +126,28 @@ const updatePushToken = async (
   });
 };
 
+async function scheduleLocalNotification(
+  title: string,
+  body: string,
+  data = {},
+  seconds = 2
+) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: title || "Thông báo chăm sóc cây",
+      body: body || "Bạn có nhiệm vụ chăm sóc cây sắp đến hạn",
+      data: data,
+    },
+    trigger: {
+      seconds: seconds,
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+    },
+  });
+}
 export {
   updatePushToken,
   registerNotificationsOnLogin,
   updateUserPushToken,
   registerForPushNotificationsAsync,
+  scheduleLocalNotification,
 };
