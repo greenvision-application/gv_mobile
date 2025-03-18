@@ -40,16 +40,19 @@ const TaskItem = ({
     }
   );
 
+  const isFutureTask = new Date(task.task_date) > new Date();
+
   return (
     <View className="flex-row p-4 bg-neutral rounded-lg shadow-sm mb-3 items-center">
       <TouchableOpacity
         onPress={onToggleStatus}
+        disabled={isFutureTask}
         className={`h-6 w-6 rounded-full mr-3 items-center justify-center border ${
           task.completion_status ===
           variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE
             ? "bg-primary border-primary"
             : "bg-neutral border-semantic-error"
-        }`}
+        } ${isFutureTask ? "opacity-50" : ""}`}
       >
         {task.completion_status ===
           variables.ENUM_TRANSLATIONS.TASK_STATUS.DONE && (
@@ -147,9 +150,15 @@ const AgendaTask = () => {
     const task = data?.tasks.find((task: Task) => task.id === taskId);
     if (!task) return;
 
+    const taskDate = new Date(task.task_date);
+    const today = new Date();
+
+    if (taskDate > today) return;
+
     const newStatus = task.completion_status === "DONE" ? "DO" : "DONE";
     mutation.mutate({ taskId, status: newStatus });
   };
+
   // Nhóm tasks theo ngày
   const groupTasksByDate = (tasks: Task[] = []) => {
     const grouped: { [date: string]: Task[] } = {};

@@ -2,14 +2,17 @@ import { View, Text, TouchableOpacity, StatusBar } from "react-native";
 import PlantDetailsContent from "@/components/PlantDetailsContent";
 import Loading from "@/components/Loading";
 import { plantData } from "@/libs/dataFake";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Header } from "@/components";
-import { plantDetail } from "@/services/plantService";
-import { useQuery } from "@tanstack/react-query";
+import { addToGarden, plantDetail } from "@/services/plantService";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/libs/tanstackQuery";
+import Toast from "react-native-toast-message";
+import { useGlobalStore } from "@/store/global";
 
 const Property = () => {
   const { id } = useLocalSearchParams();
+  const { setUserPlantId } = useGlobalStore();
   const {
     data: plantInfo,
     isLoading,
@@ -34,7 +37,44 @@ const Property = () => {
     },
   });
 
-  if (isLoading) {
+  // Mutation để thêm cây vào vườn
+  const addToGardenMutation = useMutation({
+    mutationFn: async () => {
+      return await addToGarden({
+        plant_id: plantInfo.id,
+        caring_plant_infor: {},
+      });
+    },
+    onSuccess: async (data) => {
+      setUserPlantId(data?.id);
+      router.push(`/care-form/${plantInfo.id}`);
+    },
+    onError: () => {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Không thể thêm cây vào vườn",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
+    },
+  });
+
+  const handleAdd = async () => {
+    addToGardenMutation.mutate();
+  };
+
+  if (isLoading || addToGardenMutation.isPending) {
     return <Loading />;
   }
 
@@ -48,7 +88,10 @@ const Property = () => {
       {/* Add to Garden Button */}
       {!isError && (
         <View className="absolute bottom-0 w-full bg-neutral border-t border-neutral-300 p-5">
-          <TouchableOpacity className="flex-row items-center justify-center bg-primary py-3.5 rounded-2xl shadow-lg">
+          <TouchableOpacity
+            onPress={handleAdd}
+            className="flex-row items-center justify-center bg-primary py-3.5 rounded-2xl shadow-lg"
+          >
             <Text className="text-white text-lg font-bold">Thêm vào vườn</Text>
           </TouchableOpacity>
         </View>

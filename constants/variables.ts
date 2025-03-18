@@ -4,10 +4,12 @@ const PLATFORM = "greenvision.dev.com";
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const APPWRITE_PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!;
 const ADDRESS_API = "https://provinces.open-api.vn/api";
+const PROJECT_ID = process.env.EXPO_PROJECT_ID;
 
 const localStorage = {
   accessToken: "accessToken",
   onboarded: "onboarded",
+  expoPushToken: "expoPushToken",
 };
 
 const urls = {
@@ -26,6 +28,7 @@ const urls = {
   unplanted: "/user-plant/unplanted",
   user: "/users/detail",
   plants: "/plants",
+  updatePushToken: "/update-push-token",
   timeline: "/user-plant/client-schedule",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
   updateTask: (id: string | string[]) => `/tasks/${id}`,
@@ -228,6 +231,7 @@ export default {
   APPWRITE_PROJECT_ID,
   ENUM_TRANSLATIONS,
   ADDRESS_API,
+  PROJECT_ID,
   localStorage,
   urls,
   methods,
