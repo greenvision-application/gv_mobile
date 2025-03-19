@@ -18,6 +18,7 @@ const queryKeys = {
   scan: "scan",
   plant_detail: "plant_detail",
   categories: "categories",
+  notifications: "notifications",
 };
 
 export { queryClient, queryKeys };

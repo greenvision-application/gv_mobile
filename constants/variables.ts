@@ -29,6 +29,7 @@ const urls = {
   user: "/users/detail",
   plants: "/plants",
   updatePushToken: "/update-push-token",
+  notification: "/notification/client",
   timeline: "/user-plant/client-schedule",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
   updateTask: (id: string | string[]) => `/tasks/${id}`,

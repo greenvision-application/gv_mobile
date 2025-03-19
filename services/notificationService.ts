@@ -126,6 +126,18 @@ const updatePushToken = async (
   });
 };
 
+const getNotification = async (
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.notification,
+    onSuccess,
+    onError,
+  });
+};
+
 async function scheduleLocalNotification(
   title: string,
   body: string,
@@ -150,4 +162,5 @@ export {
   updateUserPushToken,
   registerForPushNotificationsAsync,
   scheduleLocalNotification,
+  getNotification,
 };

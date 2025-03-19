@@ -6,89 +6,99 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Header } from "@/components";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Header, Loading } from "@/components";
 import NotificationTester from "@/components/NotificationTester";
+import { getNotification } from "@/services/notificationService";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
+import { queryKeys } from "@/libs/tanstackQuery";
+import images from "@/constants/images";
 
-interface NotificationItem {
+// Định nghĩa interface cho dữ liệu thông báo từ API
+interface NotificationData {
+  content: string;
   id: string;
-  title: string;
-  message: string;
-  time: string;
-  image: string;
+  send_time: string;
+  created_at: string;
+  status: string;
+  schedule_id: string;
+  Care_Schedule: {
+    User_Plant: {
+      Plant: {
+        image_url: string[];
+      };
+    };
+  };
 }
 
-const notifications: NotificationItem[] = [
-  {
-    id: "1",
-    title: "Anthurium",
-    message: "đang cần được tưới",
-    time: "13 phút",
-    image:
-      "https://file.hstatic.net/200000630767/file/anthurium-crystalhope_b91c9e032c4940a9b4f9ba67da19bec2_1024x1024.jpg",
-  },
-  {
-    id: "2",
-    title: "Hương Thảo",
-    message: "còn 3 nhiệm vụ chưa được hoàn thành",
-    time: "15 phút",
-    image:
-      "https://saigonhoa.com/wp-content/uploads/2015/04/chau-cay-huong-thao-1.jpg",
-  },
-  {
-    id: "3",
-    title: "Lưỡi hổ",
-    message: "còn 2 nhiệm vụ chưa được hoàn thành",
-    time: "15 phút",
-    image:
-      "https://annhiengarden.vn/annhien-media/crop/570_633/an-nhien-2024/cay-trong-dat/1000603/6-5.webp",
-  },
-  {
-    id: "4",
-    title: "Xương rồng",
-    message: "đang phát triển tốt.",
-    time: "1 giờ",
-    image: "https://static.vinwonders.com/production/trong-xuong-rong-5.jpg",
-  },
-  {
-    id: "5",
-    title: "Cây lan",
-    message: "đang nếu nắng. Hãy phơi nắng nhé!",
-    time: "1 giờ",
-    image:
-      "https://product.hstatic.net/1000336151/product/20201204_084505_8d859b4216a34883bd56e45fba6eb4f1_master.jpg",
-  },
-];
-
 const Notifications = () => {
-  const [selectedItem, setSelectedItem] = useState<NotificationItem | null>(
+  const [selectedItem, setSelectedItem] = useState<NotificationData | null>(
     null
   );
   const [showMenu, setShowMenu] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleDelete = (item: NotificationItem) => {
-    // Xử lý logic xóa ở đây
-    setShowMenu(false);
+  // Sử dụng React Query để lấy dữ liệu thông báo
+  const { data, isLoading, isError } = useQuery({
+    queryKey: [queryKeys.notifications],
+    queryFn: async () => {
+      return await getNotification();
+    },
+  });
+
+  // Mutation để xóa thông báo
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => {
+      // Thay thế với API call xóa thông báo thực tế
+      return Promise.resolve(id);
+    },
+    onSuccess: () => {
+      // Làm mới danh sách thông báo sau khi xóa
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      closeMenu();
+    },
+  });
+
+  const handleDelete = (item: NotificationData) => {
+    deleteMutation.mutate(item.id);
   };
 
-  const handleMenuPress = (item: NotificationItem) => {
+  const handleMenuPress = (item: NotificationData) => {
     setSelectedItem(item);
     setShowMenu(true);
   };
 
   const closeMenu = () => setShowMenu(false);
 
-  const renderItem = ({ item }: { item: NotificationItem }) => (
-    <View className="flex-row items-center p-3">
-      <Image source={{ uri: item.image }} className="w-20 h-20 rounded-full" />
+  // Hàm định dạng thời gian
+  const formatTime = (timeString: string) => {
+    try {
+      const date = new Date(timeString);
+      return formatDistanceToNow(date, { addSuffix: true, locale: vi });
+    } catch (error) {
+      return "Không xác định";
+    }
+  };
+
+  const renderItem = ({ item }: { item: NotificationData }) => (
+    <View className="flex-row items-center p-3 border-b border-neutral-100">
+      <Image
+        source={{
+          uri: item.Care_Schedule?.User_Plant?.Plant?.image_url[0],
+        }}
+        className="w-20 h-20 rounded-full"
+        defaultSource={images.notFoundPlaceholder}
+      />
       <View className="flex-1 ml-3 mr-4">
-        <Text className="font-semibold text-lg">
-          {item.title}{" "}
-          <Text className="font-normal text-lg">{item.message}</Text>
+        <Text className="font-normal text-lg">{item.content}</Text>
+        <Text className="text-neutral-400 text-sm">
+          {formatTime(item.created_at)}
         </Text>
-        <Text className="text-neutral-400 text-sm">{item.time}</Text>
       </View>
       <TouchableOpacity onPress={() => handleMenuPress(item)}>
         <AntDesign name="ellipsis1" size={24} color="black" />
@@ -96,16 +106,57 @@ const Notifications = () => {
     </View>
   );
 
+  if (isLoading) {
+    return (
+      <SafeAreaProvider className="flex-1 bg-neutral">
+        <Header title="Thông báo" />
+        <Loading />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaProvider className="flex-1 bg-neutral">
+        <Header title="Thông báo" />
+        <View className="flex-1 justify-center items-center p-4">
+          <AntDesign name="warning" size={48} color="#FF6B6B" />
+          <Text className="mt-4 text-lg text-center">
+            Không thể tải thông báo. Vui lòng thử lại sau.
+          </Text>
+          <TouchableOpacity
+            className="mt-4 bg-green-500 px-6 py-3 rounded-full"
+            onPress={() =>
+              queryClient.invalidateQueries({ queryKey: ["notifications"] })
+            }
+          >
+            <Text className="text-white font-semibold">Tải lại</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaProvider>
+    );
+  }
+
   return (
-    <SafeAreaProvider className="flex-1 bg-white">
+    <SafeAreaProvider className="flex-1 bg-neutral">
       <Header title="Thông báo" />
+      {data && data.length > 0 ? (
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          className="mt-2"
+        />
+      ) : (
+        <View className="flex-1 justify-center items-center p-4">
+          <AntDesign name="inbox" size={64} color="#CCCCCC" />
+          <Text className="mt-4 text-lg text-neutral-500 text-center">
+            Bạn chưa có thông báo nào
+          </Text>
+        </View>
+      )}
       <NotificationTester />
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        className="mt-2"
-      />
+
       <Modal
         visible={showMenu}
         transparent={true}
@@ -117,14 +168,24 @@ const Notifications = () => {
           activeOpacity={1}
           onPress={closeMenu}
         >
-          <View className="absolute bottom-0 w-full border border-neutral-300 rounded-lg bg-white">
+          <View className="absolute bottom-0 w-full border border-neutral-300 rounded-t-lg bg-neutral">
             <TouchableOpacity
               className="p-4 border-b border-neutral-300"
               onPress={() => selectedItem && handleDelete(selectedItem)}
+              disabled={deleteMutation.isPending}
             >
-              <Text className="text-semantic-error text-center text-lg">
-                Xóa thông báo này
-              </Text>
+              {deleteMutation.isPending ? (
+                <View className="flex-row justify-center items-center">
+                  <ActivityIndicator size="small" color="#FF6B6B" />
+                  <Text className="text-semantic-error text-center text-lg ml-2">
+                    Đang xóa...
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-semantic-error text-center text-lg">
+                  Xóa thông báo này
+                </Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity className="p-4" onPress={closeMenu}>
               <Text className="text-center text-lg">Hủy</Text>
