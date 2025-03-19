@@ -1,7 +1,5 @@
-import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Link, router } from "expo-router";
 
 export default function Navigation() {
     return (

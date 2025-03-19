@@ -85,8 +85,7 @@ export const getCurrentUser = async () => {
 
 export const checkSession = async (onSessionFound?: () => void) => {
   try {
-    const session = await account.getSession("current");
-    console.log("✅ Session found:", session);
+    const session = await account.getSession("current")
 
     if (session && onSessionFound) {
       onSessionFound();

@@ -26,7 +26,6 @@ AXIOS.interceptors.request.use(
 
 AXIOS.interceptors.response.use(
   (response) => {
-    console.log("✅ API Response:", response.data);
     return response;
   },
   async (error) => {

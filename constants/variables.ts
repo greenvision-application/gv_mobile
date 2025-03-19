@@ -41,6 +41,7 @@ const urls = {
   generatePhase: (id: string | string[]) => `/plants/generate-phase/${id}`,
   district: (id: string | string[]) => `p/${id}?depth=2`,
   ward: (id: string | string[]) => `d/${id}?depth=2`,
+  removeNotification: (id: string | string[]) => `/notification/${id}`,
 };
 
 const methods = {

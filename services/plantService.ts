@@ -60,7 +60,6 @@ const generatePhase = async (
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
 ) => {
-  console.log("data test::::", data);
   return request({
     method: variables.methods.post,
     url: variables.urls.generatePhase(id),

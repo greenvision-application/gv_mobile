@@ -12,7 +12,7 @@ export default function NotificationTester() {
   };
 
   return (
-    <View className="p-4 my-5 bg-gray-100 rounded-lg">
+    <View className="p-4 my-5 bg-primary rounded-2xl">
       <Text className="text-base font-bold mb-2.5">Kiểm tra thông báo</Text>
       <Button title="Gửi thông báo thử nghiệm" onPress={sendTestNotification} />
     </View>

@@ -77,14 +77,12 @@ async function updateUserPushToken(token: string) {
     const userId = await AsyncStorage.getItem("userId");
 
     if (!userId) {
-      console.log("Không thể cập nhật push token: Chưa đăng nhập");
       return;
     }
 
     // Gửi token lên server
     const response = updatePushToken(token);
 
-    console.log("Push token updated successfully");
     return response;
   } catch (error) {
     console.error("Error updating push token:", error);
@@ -138,6 +136,19 @@ const getNotification = async (
   });
 };
 
+const deleteNotifications = async (
+  id: string,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.delete,
+    url: variables.urls.removeNotification(id),
+    onSuccess,
+    onError,
+  });
+};
+
 async function scheduleLocalNotification(
   title: string,
   body: string,
@@ -163,4 +174,5 @@ export {
   registerForPushNotificationsAsync,
   scheduleLocalNotification,
   getNotification,
+  deleteNotifications,
 };
