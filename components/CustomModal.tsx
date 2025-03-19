@@ -1,8 +1,10 @@
+import { AntDesign } from "@expo/vector-icons";
 import React, { useRef, useEffect } from "react";
 import { View, Text, TouchableOpacity, Modal, Animated } from "react-native";
 
 interface CustomModalProps {
   visible: boolean;
+  onReject: () => void;
   onClose: () => void;
   onConfirm: () => void;
   title?: string;
@@ -11,6 +13,7 @@ interface CustomModalProps {
 
 const CustomModal: React.FC<CustomModalProps> = ({
   visible,
+  onReject,
   onClose,
   onConfirm,
   title = "Thông báo",
@@ -46,6 +49,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
             borderRadius: 12,
           }}
         >
+          <TouchableOpacity
+            onPress={onReject}
+            className="absolute right-4 top-4 z-30"
+          >
+            <AntDesign name="closecircleo" size={24} color="#777B84" />
+          </TouchableOpacity>
           <Text className="text-xl font-inter-bold text-neutral-500 text-center mb-5">
             {title}
           </Text>

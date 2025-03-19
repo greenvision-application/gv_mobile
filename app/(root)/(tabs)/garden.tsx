@@ -157,6 +157,9 @@ const handleRemovePlant = async (plantId: string): Promise<void> => {
           color: "black",
         },
       });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.similar, queryKeys.popular, queryKeys.favorite],
+      });
     });
   } catch (error) {
     Toast.show({
