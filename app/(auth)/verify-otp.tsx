@@ -94,6 +94,8 @@ export default function VerifyOtp() {
     }
   };
 
+  const isOtpComplete = !otp.some((digit) => digit === "");
+
   return (
     <View className="flex-1 w-full items-center justify-start bg-neutral pt-56">
       <View className="px-6 w-full">
@@ -124,7 +126,9 @@ export default function VerifyOtp() {
         ) : null}
 
         <TouchableOpacity
-          className="bg-neutral-300 p-4 rounded-full shadow-sm mb-8 mt-4 active:bg-primary"
+          className={`${
+            isOtpComplete ? "bg-primary" : "bg-neutral-300"
+          } p-4 rounded-full shadow-sm mb-8 mt-4 active:bg-primary`}
           onPress={callVerifyOTP}
         >
           <Text className="text-neutral text-center font-bold text-lg">

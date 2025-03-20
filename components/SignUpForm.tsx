@@ -6,6 +6,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -111,7 +112,8 @@ export default function SignUpForm() {
               onChangeText={(text) => handleChange("email", text.trim())}
               keyboardType="email-address"
               autoCapitalize="none"
-              blurOnSubmit={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
           </View>
 
@@ -125,11 +127,12 @@ export default function SignUpForm() {
               value={registerForm.password}
               onChangeText={(text) => handleChange("password", text)}
               autoCapitalize="none"
-              blurOnSubmit={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
+                name={showPassword ? "eye" : "eye-off"}
                 size={25}
                 color="#B7BBC1"
               />
@@ -146,11 +149,12 @@ export default function SignUpForm() {
               value={registerForm.confirmPassword}
               onChangeText={(text) => handleChange("confirmPassword", text)}
               autoCapitalize="none"
-              blurOnSubmit={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
+                name={showPassword ? "eye" : "eye-off"}
                 size={25}
                 color="#B7BBC1"
               />
