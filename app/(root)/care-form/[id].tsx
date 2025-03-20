@@ -289,6 +289,7 @@ const CreateAgendaForm: React.FC = () => {
                     </Text>
                   )
                 }
+                required={true}
               >
                 <PlantDropdown
                   data={categories}
@@ -318,6 +319,7 @@ const CreateAgendaForm: React.FC = () => {
                     </Text>
                   )
                 }
+                required={true}
               >
                 <PlantDropdown
                   data={phaseOptions}
@@ -340,6 +342,7 @@ const CreateAgendaForm: React.FC = () => {
                     </Text>
                   )
                 }
+                required={true}
               >
                 <PlantDropdown
                   data={dropdownData.placePlant}
@@ -364,6 +367,7 @@ const CreateAgendaForm: React.FC = () => {
                     </Text>
                   )
                 }
+                required={true}
               >
                 <PlantDropdown
                   data={dropdownData.soilType}
