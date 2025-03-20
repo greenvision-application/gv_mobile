@@ -38,6 +38,7 @@ const urls = {
   generateSchedule: (id: string | string[]) => `/care-schedule/${id}`,
   generateTask: (id: string | string[]) => `/tasks/${id}`,
   changeFavorite: (id: string | string[]) => `/user-plant/like/${id}`,
+  checkFavorite: (id: string | string[]) => `/user-plant/check-exist-plant/${id}`,
   removeUserPlant: (id: string | string[]) => `/user-plant/${id}`,
   generatePhase: (id: string | string[]) => `/plants/generate-phase/${id}`,
   district: (id: string | string[]) => `p/${id}?depth=2`,

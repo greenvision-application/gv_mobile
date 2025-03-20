@@ -114,6 +114,9 @@ const handleRemoveFavorite = async (plantId: string): Promise<void> => {
           color: "black",
         },
       });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.unplanted, queryKeys.similar, queryKeys.popular],
+      });
     });
   } catch (error) {
     Toast.show({
@@ -140,6 +143,9 @@ const handleRemoveFavorite = async (plantId: string): Promise<void> => {
 const handleRemovePlant = async (plantId: string): Promise<void> => {
   try {
     await removeUserPlant(plantId, () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.similar, queryKeys.popular, queryKeys.favorite],
+      });
       Toast.show({
         type: "success",
         text1: "Thành công",
@@ -157,16 +163,13 @@ const handleRemovePlant = async (plantId: string): Promise<void> => {
           color: "black",
         },
       });
-      queryClient.invalidateQueries({
-        queryKey: [queryKeys.similar, queryKeys.popular, queryKeys.favorite],
-      });
     });
   } catch (error) {
     Toast.show({
       type: "error",
       text1: "Lỗi",
       text2: "Không thể xóa cây, vui lòng thử lại sau",
-      position: "bottom",
+      position: "top",
       visibilityTime: 3000,
       topOffset: 50,
       text1Style: {
@@ -256,7 +259,7 @@ const Garden: React.FC = () => {
     await handleRemoveFavorite(plantId);
 
     // Cập nhật lại dữ liệu sau khi bỏ yêu thích
-    queryClient.setQueryData<PlantData[]>(["favorite"], (oldData) => {
+    queryClient.setQueryData<PlantData[]>([queryKeys.favorite], (oldData) => {
       return oldData ? oldData.filter((plant) => plant.id !== plantId) : [];
     });
 
@@ -288,18 +291,34 @@ const Garden: React.FC = () => {
             await handleRemovePlant(plantId);
 
             // Cập nhật lại dữ liệu sau khi xóa
-            queryClient.setQueryData<PlantData[]>(["unplanted"], (oldData) => {
-              return oldData
-                ? oldData.filter((plant) => plant.id !== plantId)
-                : [];
-            });
+            queryClient.setQueryData<PlantData[]>(
+              [queryKeys.unplanted],
+              (oldData) => {
+                return oldData
+                  ? oldData.filter((plant) => plant.id !== plantId)
+                  : [];
+              }
+            );
 
-            // Cập nhật lại số lượng cây chưa trồng
+            // Cập nhật lại dữ liệu favorite
+            queryClient.setQueryData<PlantData[]>(
+              [queryKeys.favorite],
+              (oldData) => {
+                return oldData
+                  ? oldData.filter((plant) => plant.id !== plantId)
+                  : [];
+              }
+            );
+
+            // Cập nhật lại số lượng cây chưa trồng và yêu thích
             queryClient.setQueryData<UserStats>(["userStats"], (oldStats) => {
               if (!oldStats) return userStats;
               return {
                 ...oldStats,
                 unplanted: oldStats.unplanted - 1,
+                favorites:
+                  oldStats.favorites -
+                  (favoriteData?.some((plant) => plant.id === plantId) ? 1 : 0),
               };
             });
           },
