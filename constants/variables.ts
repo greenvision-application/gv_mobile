@@ -19,6 +19,7 @@ const urls = {
   province: "/p",
   status: "/auth/status",
   scan: "/gemini/upload-image",
+  checkHealth: "/gemini/check-health",
   popular: "/plants/client-plants",
   recommendations: "/plants/recommendations",
   category: "/categories",

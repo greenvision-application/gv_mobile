@@ -16,6 +16,7 @@ const queryKeys = {
   schedule: "schedule",
   tasks: "tasks",
   scan: "scan",
+  health: "health",
   plant_detail: "plant_detail",
   categories: "categories",
   notifications: "notifications",
