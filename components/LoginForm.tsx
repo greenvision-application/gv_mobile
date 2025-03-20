@@ -91,7 +91,7 @@ export default function LoginForm() {
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
+                name={showPassword ? "eye" : "eye-off"}
                 size={25}
                 color="#B7BBC1"
               />
