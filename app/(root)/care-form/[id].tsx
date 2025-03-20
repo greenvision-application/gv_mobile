@@ -128,6 +128,14 @@ const CreateAgendaForm: React.FC = () => {
     return !Object.values(newErrors).some((error) => error === true);
   };
 
+  const isFormValid =
+    developStage !== "" &&
+    placePlant !== "" &&
+    soilType !== "" &&
+    (plantType !== "" ||
+      (plantInfo.approved_content === true &&
+        plantInfo.Category?.category_name));
+
   const handleSave = async () => {
     if (!validateForm()) {
       Toast.show({
@@ -391,7 +399,14 @@ const CreateAgendaForm: React.FC = () => {
               <PlantNotes notes={notes} setNotes={setNotes} />
 
               {/* Save Button */}
-              <SaveButton onPress={handleSave} />
+              <SaveButton
+                onPress={handleSave}
+                style={
+                  !isFormValid
+                    ? "mt-4 p-4 rounded-2xl bg-neutral-300"
+                    : "mt-4 p-4 rounded-2xl bg-primary"
+                }
+              />
             </View>
           </View>
         )}

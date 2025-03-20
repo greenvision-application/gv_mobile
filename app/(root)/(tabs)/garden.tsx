@@ -380,7 +380,7 @@ const Garden: React.FC = () => {
                       setUserPlantId(plant.id);
                       router.push(`/care-form/${plant.Plant.id}`);
                     }}
-                    style="p-2 rounded-3xl"
+                    style="p-2 rounded-3xl bg-primary"
                   />
                 ) : (
                   ""
