@@ -33,7 +33,11 @@ import { useGlobalStore } from "@/store/global";
 
 // Define types
 interface UserData {
-  address: string | null;
+  address: {
+    ward: string;
+    district: string;
+    province: string;
+  } | null;
   email: string;
   username: string | null;
   preferences: any | null;
@@ -63,13 +67,6 @@ interface UserStats {
   unplanted: number;
 }
 
-interface UserProfile {
-  name: string;
-  avatar: string;
-  coverImage: string;
-  email: string;
-  address: string;
-}
 
 type TabType = "all" | "favorites" | "unplanted";
 
@@ -230,15 +227,6 @@ const Garden: React.FC = () => {
     totalPlants: plantedData?.length || 0,
     favorites: favoriteData?.length || 0,
     unplanted: unplantedData?.length || 0,
-  };
-
-  // Mock user data where API doesn't provide values
-  const userProfile: UserProfile = {
-    name: "Bác nông dân",
-    avatar: "https://avatar.iran.liara.run/public/45",
-    coverImage: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc",
-    email: userData?.email || "",
-    address: userData?.address || "Chưa cập nhật địa chỉ",
   };
 
   // Show loading state if any data is loading
@@ -418,7 +406,9 @@ const Garden: React.FC = () => {
       <ScrollView className="mb-20 bg-neutral">
         <View className="info-container bg-neutral">
           <Image
-            source={{ uri: userProfile.coverImage }}
+            source={{
+              uri: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc",
+            }}
             className="w-full h-48"
           />
 
@@ -430,7 +420,11 @@ const Garden: React.FC = () => {
               }}
             >
               <Image
-                source={{ uri: userProfile.avatar }}
+                source={{
+                  uri: userData?.preferences?.avatar
+                    ? userData?.preferences?.avatar
+                    : "https://avatar.iran.liara.run/public/45",
+                }}
                 className="w-36 h-36 rounded-full border-4 border-neutral"
               />
               <View className="absolute bottom-2 right-3 bg-primary w-8 h-8 rounded-full justify-center items-center">
@@ -439,13 +433,16 @@ const Garden: React.FC = () => {
             </Pressable>
             <View className="mt-2">
               <Text className="text-2xl font-inter-bold text-left">
-                {userProfile.name}
+                {userData?.username}
               </Text>
               <Text className="text-lg text-gray-500 mt-1 text-left">
-                Email: {userProfile.email}
+                Email: {userData?.email}
               </Text>
               <Text className="text-lg text-gray-500 mt-1 text-left">
-                Địa chỉ: {userProfile.address}
+                Địa chỉ:{" "}
+                {userData?.address
+                  ? `${userData.address.ward}, ${userData.address.district}, ${userData.address.province}`
+                  : "Chưa cập nhật địa chỉ"}
               </Text>
             </View>
           </View>
@@ -493,5 +490,4 @@ const Garden: React.FC = () => {
     </SafeAreaProvider>
   );
 };
-
 export default Garden;

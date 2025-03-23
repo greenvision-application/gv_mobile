@@ -19,7 +19,16 @@ export interface FormInfoData {
   confirmPassword?: string;
   otp?: string;
   gender?: string;
-  dayOfBirth?: string;
+  dayOfBirth?: string | null;
+  address?: {
+    ward: string | null;
+    district: string | null;
+    province: string | null;
+    province_code: number | null;
+    district_code: number | null;
+    ward_code: number | null;
+  };
+  avatar?: string;
 }
 
 interface GlobalState {

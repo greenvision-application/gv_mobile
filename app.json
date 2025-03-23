@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nhatnguyenvantuong.gvmobile",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,8 +21,6 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
@@ -69,6 +71,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "be2bc04e-cd4c-4aea-a7b0-bdb47b41755b"
+      }
     }
   }
 }

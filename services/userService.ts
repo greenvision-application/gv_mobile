@@ -117,6 +117,55 @@ const getDetailUser = async (
   });
 };
 
+const updateUser = async (
+  userInformation: FormInfoData,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = {
+    username: userInformation.username,
+    email: userInformation.email,
+    preferences: {
+      avatar: userInformation.avatar,
+      gender: userInformation.gender,
+      dateBirth: userInformation.dayOfBirth,
+    },
+    address: {
+      ward: userInformation.address?.ward,
+      district: userInformation.address?.district,
+      province: userInformation.address?.province,
+      ward_code: userInformation.address?.ward_code,
+      district_code: userInformation.address?.district_code,
+      province_code: userInformation.address?.province_code,
+    },
+  };
+  return request({
+    method: variables.methods.patch,
+    url: variables.urls.updateUser,
+    data,
+    onSuccess,
+    onError,
+  });
+};
+
+const uploadImage = async (
+  fileData: FormData,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  const data = fileData;
+
+  return request({
+    method: variables.methods.post,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    url: variables.urls.uploadImage,
+    data,
+    onSuccess,
+    onError,
+  });
+};
 export {
   handleRegister,
   handleVerifyOTP,
@@ -126,4 +175,6 @@ export {
   callProvince,
   callDistrict,
   callWard,
+  updateUser,
+  uploadImage,
 };
