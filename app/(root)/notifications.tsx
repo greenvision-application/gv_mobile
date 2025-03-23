@@ -13,6 +13,7 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { queryKeys, queryClient } from "@/libs/tanstackQuery";
 import images from "@/constants/images";
+import { router } from "expo-router";
 
 interface NotificationData {
   content: string;
@@ -23,7 +24,9 @@ interface NotificationData {
   schedule_id: string;
   Care_Schedule: {
     User_Plant: {
+      id: string;
       Plant: {
+        id: string;
         image_url: string[];
       };
     };
@@ -49,6 +52,12 @@ const Notifications = () => {
     deleteMutation.mutate(item.id);
   };
 
+  const handleNotificationPress = (item: NotificationData) => {
+    if (item.schedule_id) {
+      router.push(`/agenda/${item.Care_Schedule.User_Plant.id}`);
+    }
+  };
+
   const formatTime = (timeString: string) => {
     try {
       const date = new Date(timeString);
@@ -60,28 +69,30 @@ const Notifications = () => {
 
   const renderItem = ({ item }: { item: NotificationData }) => {
     return (
-      <View className="flex-row items-center p-3 border-b border-neutral-100 bg-neutral">
-        <Image
-          source={
-            item.Care_Schedule?.User_Plant?.Plant?.image_url[0]
-              ? {
-                  uri: item.Care_Schedule?.User_Plant?.Plant?.image_url[0],
-                }
-              : images.notFoundPlaceholder
-          }
-          className="w-20 h-20 rounded-full"
-          defaultSource={images.notFoundPlaceholder}
-        />
-        <View className="flex-1 ml-3 mr-4">
-          <Text className="font-normal text-lg">{item.content}</Text>
-          <Text className="text-neutral-400 text-sm">
-            {formatTime(item.created_at)}
-          </Text>
+      <TouchableOpacity onPress={() => handleNotificationPress(item)}>
+        <View className="flex-row items-center p-3 border-b border-neutral-100 bg-neutral">
+          <Image
+            source={
+              item.Care_Schedule?.User_Plant?.Plant?.image_url[0]
+                ? {
+                    uri: item.Care_Schedule?.User_Plant?.Plant?.image_url[0],
+                  }
+                : images.notFoundPlaceholder
+            }
+            className="w-20 h-20 rounded-full"
+            defaultSource={images.notFoundPlaceholder}
+          />
+          <View className="flex-1 ml-3 mr-4">
+            <Text className="font-normal text-lg">{item.content}</Text>
+            <Text className="text-neutral-400 text-sm">
+              {formatTime(item.created_at)}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => handleDelete(item)}>
+            <AntDesign name="delete" size={20} color="#FF6B6B" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => handleDelete(item)}>
-          <AntDesign name="delete" size={20} color="#FF6B6B" />
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     );
   };
 
