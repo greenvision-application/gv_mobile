@@ -5,6 +5,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 // Cấu hình cách hiển thị thông báo khi app đang mở
 Notifications.setNotificationHandler({
@@ -85,7 +86,23 @@ async function updateUserPushToken(token: string) {
 
     return response;
   } catch (error) {
-    console.error("Error updating push token:", error);
+    Toast.show({
+      type: "error",
+      text1: "Lỗi",
+      text2: "Lỗi khi gửi pushToken notification lên mấy chủ",
+      position: "top",
+      visibilityTime: 3000,
+      topOffset: 50,
+      text1Style: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "red",
+      },
+      text2Style: {
+        fontSize: 14,
+        color: "black",
+      },
+    });
   }
 }
 
@@ -107,7 +124,7 @@ async function registerNotificationsOnLogin() {
       await updateUserPushToken(token);
     }
   } catch (error) {
-    console.error("Error registering notifications on login:", error);
+    throw error;
   }
 }
 const updatePushToken = async (

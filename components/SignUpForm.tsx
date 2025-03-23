@@ -14,6 +14,7 @@ import { CheckBox } from "@rneui/themed";
 import { router } from "expo-router";
 import { handleRegister } from "@/services/userService";
 import { useGlobalStore } from "@/store/global";
+import Toast from "react-native-toast-message";
 
 type RegisterFormType = {
   email: string;
@@ -87,7 +88,23 @@ export default function SignUpForm() {
         }
       );
     } catch (error) {
-      console.error("Unexpected error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Lỗi khi đăng ký",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
     }
   };
 

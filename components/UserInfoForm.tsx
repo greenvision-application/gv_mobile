@@ -105,7 +105,6 @@ export default function UserInfoForm() {
       }
     },
     onError: (error) => {
-      console.error("Error uploading image:", error);
       setIsSubmitting(false);
       alert("Lỗi khi tải lên ảnh đại diện");
     },
@@ -137,7 +136,6 @@ export default function UserInfoForm() {
       router.push("/garden");
     },
     onError: (error) => {
-      console.error("Error updating user:", error);
       setIsSubmitting(false);
       Toast.show({
         type: "error",
@@ -235,13 +233,11 @@ export default function UserInfoForm() {
         setNewImageFile(selectedAsset); // Save file for upload
       }
     } catch (error) {
-      console.error("Lỗi khi chọn ảnh:", error);
       alert("Có lỗi xảy ra khi chọn ảnh");
     }
   };
 
   const resizeImage = async (uri: string) => {
-    console.log(uri);
     try {
       const result = await ImageManipulator.manipulateAsync(
         uri,
@@ -250,7 +246,6 @@ export default function UserInfoForm() {
       );
       return result.uri;
     } catch (error) {
-      console.error("Error resizing image:", error);
       return uri; // Return original URI if manipulation fails
     }
   };

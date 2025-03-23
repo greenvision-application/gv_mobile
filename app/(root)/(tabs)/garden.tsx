@@ -67,7 +67,6 @@ interface UserStats {
   unplanted: number;
 }
 
-
 type TabType = "all" | "favorites" | "unplanted";
 
 const fetchDetailUser = async (): Promise<UserData> => {
@@ -120,7 +119,7 @@ const handleRemoveFavorite = async (plantId: string): Promise<void> => {
       type: "error",
       text1: "Lỗi",
       text2: "Không thể bỏ yêu thích, vui lòng thử lại sau",
-      position: "bottom",
+      position: "top",
       visibilityTime: 3000,
       topOffset: 50,
       text1Style: {
@@ -231,7 +230,12 @@ const Garden: React.FC = () => {
 
   // Show loading state if any data is loading
   if (userLoading || plantedLoading || favoriteLoading || unplantedLoading) {
-    return <Loading />;
+    return (
+      <>
+        <Header title="Vườn cây" />
+        <Loading />
+      </>
+    );
   }
 
   const handlePress = (id?: string) => {

@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import variables from "@/constants/variables";
 import helper from "./helper";
+import { Alert } from "react-native";
 
 const AXIOS = axios.create({
   baseURL: variables.API_BASE_URL,
@@ -29,8 +30,7 @@ AXIOS.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.error("❌ API Error:", error.response?.data || error.message);
-
+    Alert.alert("Lỗi", "Có lỗi xãy ra khi lấy dữ liệu");
     if (error.response?.status === 401) {
       await helper.removeToken();
     }

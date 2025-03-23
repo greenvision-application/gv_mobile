@@ -13,6 +13,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { useRouter } from "expo-router";
 import { useGlobalStore } from "@/store/global";
 import Loading from "@/components/Loading";
+import Toast from "react-native-toast-message";
 
 const Scan = () => {
   const router = useRouter();
@@ -73,7 +74,23 @@ const Scan = () => {
 
       return formData;
     } catch (error) {
-      console.error("Error transferring image data:", error);
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Lỗi khi chuyển file",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
       throw error;
     }
   };
@@ -120,7 +137,23 @@ const Scan = () => {
     if (!uri) return;
     const size = await getFileSize(uri);
     if (size && size > 5 * 1024 * 1024) {
-      console.error("File quá lớn, vui lòng chọn ảnh nhỏ hơn 5MB.");
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "File quá lớn, vui lòng chọn ảnh nhỏ hơn 5MB.",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
       return;
     }
     try {
@@ -129,7 +162,23 @@ const Scan = () => {
       setUploadedFile(formData);
       router.push("/properties/ai-infor");
     } catch (error) {
-      console.error("Error uploading plant:", error);
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Lỗi khi upload file ảnh",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
     } finally {
       setIsLoading(false);
     }
