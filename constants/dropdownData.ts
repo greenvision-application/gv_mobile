@@ -69,10 +69,10 @@ export const dropdownData = {
     { value: "SILT", label: variables.ENUM_TRANSLATIONS.SOIL_TYPE.SILT },
   ],
   careTimeOptions: [
-    { label: "Dưới 5 phút", value: "under_5" },
-    { label: "5 - 10 phút", value: "5_10" },
-    { label: "10 - 20 phút", value: "10_20" },
-    { label: "Trên 20 phút", value: "above_20" },
+    { label: "Dưới 5 phút", value: "under_5_minute" },
+    { label: "5 - 10 phút", value: "about_5_10_minute" },
+    { label: "10 - 20 phút", value: "about_10_20_minute" },
+    { label: "Trên 20 phút", value: "above_20_minute" },
   ],
   careTasksOptions: [
     { label: "Tưới nước", value: "watering" },
@@ -80,12 +80,17 @@ export const dropdownData = {
     { label: "Tỉa lá", value: "pruning" },
     { label: "Kiểm tra sâu bệnh", value: "pest_check" },
     { label: "Vệ sinh chậu và đất", value: "cleaning" },
+    { label: "Thay đất", value: "soil_change" },
+    { label: "Chiếu sáng", value: "lighting" },
+    { label: "Phun sương", value: "misting" },
+    { label: "Tạo độ ẩm", value: "humidity_control" },
+    { label: "Cắt tỉa rễ", value: "root_pruning" },
   ],
   convenientTimesOptions: [
-    { label: "Sáng sớm (6h - 8h)", value: "morning" },
-    { label: "Buổi trưa (12h - 14h)", value: "noon" },
-    { label: "Buổi chiều (16h - 18h)", value: "afternoon" },
-    { label: "Buổi tối (20h - 22h)", value: "evening" },
+    { label: "Sáng sớm (5h - 8h)", value: "morning_5h_8h" },
+    { label: "Buổi trưa (12h - 14h)", value: "noon_12h_14h" },
+    { label: "Buổi chiều (16h - 18h)", value: "afternoon_16h_18h" },
+    { label: "Buổi tối (20h - 22h)", value: "evening_20h_22h" },
   ],
 };
 

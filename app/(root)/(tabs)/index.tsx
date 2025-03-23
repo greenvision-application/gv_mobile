@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ScrollView, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Header,
   SearchHeader,
@@ -17,27 +17,53 @@ import helper from "@/libs/helper";
 import {
   addToGarden,
   handleFavorite,
+  checkFavorite,
   popularPlant,
   recommendationsPlant,
 } from "@/services/plantService";
 import { Plant } from "@/libs/types";
-import { queryKeys } from "@/libs/tanstackQuery";
+import { queryClient, queryKeys } from "@/libs/tanstackQuery";
 import Toast from "react-native-toast-message";
 
 const Home = () => {
   const [showAllPopular, setShowAllPopular] = useState(false);
   const [showAllSimilar, setShowAllSimilar] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const { refetch, setLoading } = useGlobalStore();
+  const { refetch } = useGlobalStore();
 
   const toggleFavorite = async (id: string) => {
     try {
-      const createdUserPlant = await addToGarden({
-        plant_id: id,
-        caring_plant_infor: {},
+      const checkedExist = await checkFavorite(id, async (res) => {
+        if (res.exists) {
+          await handleFavorite(res.userPlant.id, () => {
+            queryClient.invalidateQueries({
+              queryKey: [
+                queryKeys.favorite,
+                queryKeys.unplanted,
+                queryKeys.popular,
+                queryKeys.similar,
+              ],
+            });
+          });
+        }
       });
 
-      await handleFavorite(createdUserPlant.id);
+      if (!checkedExist.exists) {
+        const createdUserPlant = await addToGarden({
+          plant_id: id,
+          caring_plant_infor: {},
+        });
+        await handleFavorite(createdUserPlant.id, () => {
+          queryClient.invalidateQueries({
+            queryKey: [
+              queryKeys.favorite,
+              queryKeys.unplanted,
+              queryKeys.popular,
+              queryKeys.similar,
+            ],
+          });
+        });
+      }
     } catch (error) {
       Toast.show({
         type: "error",

@@ -36,7 +36,23 @@ const PlantDetailFromGemini = () => {
         );
         return result || plantData;
       } catch (error) {
-        console.error("Error scanning plant:", error);
+        Toast.show({
+          type: "error",
+          text1: "Lỗi",
+          text2: "Không thể nhận dạng cây, vui lòng thử lại sau",
+          position: "top",
+          visibilityTime: 3000,
+          topOffset: 50,
+          text1Style: {
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "red",
+          },
+          text2Style: {
+            fontSize: 14,
+            color: "black",
+          },
+        });
         return plantData;
       }
     },

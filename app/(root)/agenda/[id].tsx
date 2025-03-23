@@ -36,7 +36,12 @@ const TimelineScreen = () => {
   const timelineData = data ? formatTimelineData(data) : [];
 
   if (isLoading) {
-    return <Loading />;
+    return (
+      <>
+        <Header title="Lịch trình" />
+        <Loading />
+      </>
+    );
   }
 
   if (isError) {

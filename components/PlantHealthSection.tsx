@@ -1,6 +1,27 @@
-import React from "react";
-import { View, Text, TextInput } from "react-native";
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Modal,
+  StyleSheet,
+} from "react-native";
+import {
+  MaterialIcons,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { queryKeys } from "@/libs/tanstackQuery";
+import { useQuery } from "@tanstack/react-query";
+import { checkHealthPlant } from "@/services/geminiService";
+import { useGlobalStore } from "@/store/global";
+import Toast from "react-native-toast-message";
+import Loading from "./Loading";
+import * as ImageManipulator from "expo-image-manipulator";
+import * as FileSystem from "expo-file-system";
 
 type PlantHealthSectionProps = {
   healthDescription: string;
@@ -11,6 +32,120 @@ const PlantHealthSection: React.FC<PlantHealthSectionProps> = ({
   healthDescription,
   setHealthDescription,
 }) => {
+  const { uploadedFile, setUploadedFile } = useGlobalStore();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [cameraVisible, setCameraVisible] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [checkHealth, setCheckHealth] = useState(false);
+  const cameraRef = useRef<CameraView>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Xử lý khi nhấn vào biểu tượng quét
+  const handleScanPress = async () => {
+    if (!permission?.granted) {
+      await requestPermission();
+    }
+    if (permission?.granted) {
+      setCameraVisible(true);
+    }
+  };
+
+  // Chụp ảnh
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.7,
+      });
+      setCapturedImage(photo!.uri);
+      setCameraVisible(false);
+    }
+  };
+
+  const resizeImage = async (uri: string) => {
+    const result = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return result.uri;
+  };
+
+  const getFileSize = async (uri: string) => {
+    const info = await FileSystem.getInfoAsync(uri);
+    return info.exists ? info.size : undefined;
+  };
+
+  const handleCheckPlantHealth = async () => {
+    if (!capturedImage) return;
+    const size = await getFileSize(capturedImage);
+    if (size && size > 5 * 1024 * 1024) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "File quá lớn, vui lòng chọn ảnh nhỏ hơn 5MB",
+        position: "top",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    try {
+      setIsLoading(true);
+
+      const resizedUri = await resizeImage(capturedImage);
+      let formData = new FormData();
+      formData.append("file", {
+        uri: resizedUri,
+        name: "plant-image.jpg",
+        type: "image/jpeg",
+      } as any);
+      setUploadedFile(formData);
+      setCheckHealth(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Sự cố khi kiểm tra sức khỏe cây",
+        position: "top",
+        visibilityTime: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sử dụng useQuery để lấy thông tin cây
+  const { isLoading: isLoadingPlantHealth } = useQuery({
+    queryKey: [queryKeys.health, uploadedFile],
+    queryFn: async () => {
+      if (!uploadedFile) return;
+
+      try {
+        const result = await checkHealthPlant(uploadedFile, (res) => res);
+        setHealthDescription(result?.health_report);
+        return result;
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Lỗi",
+          text2: "Sự cố khi kiểm tra sức khỏe cây",
+          position: "top",
+          visibilityTime: 3000,
+          topOffset: 50,
+          text1Style: {
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "red",
+          },
+          text2Style: {
+            fontSize: 14,
+            color: "black",
+          },
+        });
+      }
+    },
+    enabled: checkHealth && !!uploadedFile,
+  });
+
   return (
     <View className="h-auto mt-4 p-4 bg-gray-100 border border-neutral-300 rounded-2xl flex flex-col gap-5">
       <View className="flex flex-row items-center justify-between">
@@ -18,19 +153,132 @@ const PlantHealthSection: React.FC<PlantHealthSectionProps> = ({
           <MaterialIcons name="health-and-safety" size={25} color="#3CC18E" />
           <Text className="text-lg font-inter-semibold">Sức khỏe</Text>
         </View>
-        <Ionicons name="scan-outline" size={25} color="#3CC18E" />
+        <TouchableOpacity onPress={handleScanPress}>
+          <Ionicons name="scan-outline" size={25} color="#3CC18E" />
+        </TouchableOpacity>
       </View>
+
+      {capturedImage && (
+        <View className="mt-2">
+          <Image
+            source={{ uri: capturedImage }}
+            className="w-full h-48 rounded-xl"
+            resizeMode="cover"
+          />
+          <View className="flex flex-row justify-center">
+            {isLoading || isLoadingPlantHealth ? (
+              <Loading content="Đang kiểm tra..." />
+            ) : (
+              <View className="flex flex-row gap-32">
+                <TouchableOpacity
+                  className="mt-2 flex-row items-center"
+                  onPress={() => {
+                    setCapturedImage(null);
+                    setCheckHealth(false);
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={18} color="#FF6B6B" />
+                  <Text className="ml-1 text-semantic-error">Xóa ảnh</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="mt-2 flex-row items-center"
+                  onPress={handleCheckPlantHealth}
+                  disabled={isLoading || isLoadingPlantHealth}
+                >
+                  <MaterialCommunityIcons
+                    name="image-auto-adjust"
+                    size={24}
+                    color="#3CC18E"
+                  />
+                  <Text className="ml-1 text-semantic-success">Kiểm tra</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      )}
+
       <TextInput
         className="mt-2 p-3 rounded-xl border border-neutral-300 text-lg"
-        placeholder="Mô tả tình trạng cây (tối đa 150 ký tự)..."
+        placeholder="Mô tả tình trạng cây (tối đa 500 ký tự)..."
         placeholderTextColor="#9CA3AF"
-        maxLength={150}
         multiline
         value={healthDescription}
         onChangeText={setHealthDescription}
       />
+
+      <Modal visible={cameraVisible} animationType="slide" transparent={false}>
+        <View style={styles.modalContainer}>
+          {permission?.granted && (
+            <>
+              <CameraView style={styles.camera} ref={cameraRef}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setCameraVisible(false)}
+                >
+                  <Ionicons name="close" size={24} color="white" />
+                </TouchableOpacity>
+              </CameraView>
+
+              <View style={styles.captureButtonContainer}>
+                <TouchableOpacity
+                  onPress={takePicture}
+                  style={styles.captureButton}
+                >
+                  <View style={styles.captureButtonInner} />
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "black",
+  },
+  camera: {
+    flex: 1,
+    width: "100%",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
+  captureButtonContainer: {
+    position: "absolute",
+    bottom: 40,
+    width: "100%",
+    alignItems: "center",
+  },
+  captureButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "transparent",
+    borderWidth: 5,
+    borderColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  captureButtonInner: {
+    width: 55,
+    height: 55,
+    borderRadius: 27.5,
+    backgroundColor: "white",
+  },
+});
 
 export default PlantHealthSection;

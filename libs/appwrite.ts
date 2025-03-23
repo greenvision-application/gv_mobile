@@ -49,7 +49,6 @@ export const login = async () => {
 
     return true;
   } catch (error) {
-    console.error(error);
     return false;
   }
 };
@@ -59,7 +58,6 @@ export const logout = async () => {
     const result = await account.deleteSession("current");
     return result;
   } catch (error) {
-    console.error(error);
     return false;
   }
 };
@@ -85,8 +83,7 @@ export const getCurrentUser = async () => {
 
 export const checkSession = async (onSessionFound?: () => void) => {
   try {
-    const session = await account.getSession("current");
-    console.log("✅ Session found:", session);
+    const session = await account.getSession("current")
 
     if (session && onSessionFound) {
       onSessionFound();
@@ -94,7 +91,6 @@ export const checkSession = async (onSessionFound?: () => void) => {
 
     return session;
   } catch (error) {
-    console.error("❌ No session found, redirecting to SignIn:", error);
     router.push("/sign-in");
     return null;
   }

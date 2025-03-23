@@ -1,5 +1,5 @@
 import variables from "@/constants/variables";
-import request from "@/libs/apiClient";
+import { request } from "@/libs/apiClient";
 import { UserPlant, CreatePlantRequest } from "@/libs/types";
 import { TaskType } from "@/libs/types";
 
@@ -60,7 +60,6 @@ const generatePhase = async (
   onSuccess?: (data: any) => void,
   onError?: (error: any) => void
 ) => {
-  console.log("data test::::", data);
   return request({
     method: variables.methods.post,
     url: variables.urls.generatePhase(id),
@@ -190,6 +189,19 @@ const handleFavorite = async (
   });
 };
 
+const checkFavorite = async (
+  plantId: string,
+  onSuccess?: (data: any) => void,
+  onError?: (error: any) => void
+) => {
+  return request({
+    method: variables.methods.get,
+    url: variables.urls.checkFavorite(plantId),
+    onSuccess,
+    onError,
+  });
+};
+
 const removeUserPlant = async (
   userPlantId: string,
   onSuccess?: (data: any) => void,
@@ -241,6 +253,7 @@ export {
   generateSchedule,
   generateTasks,
   getFavorite,
+  checkFavorite,
   getPlanted,
   getUnplanted,
   handleFavorite,

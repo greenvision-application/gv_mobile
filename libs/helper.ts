@@ -7,7 +7,6 @@ const getAllKeys = async () => {
     const keys = await AsyncStorage.getAllKeys();
     return keys;
   } catch (error) {
-    console.error("Error getting all keys:", error);
     return [];
   }
 };
@@ -17,7 +16,6 @@ const getItem = async (key: string) => {
     const value = await AsyncStorage.getItem(key);
     return value ? JSON.parse(value) : null;
   } catch (error) {
-    console.error(`Error getting item for key ${key}:`, error);
     return null;
   }
 };
@@ -28,7 +26,6 @@ const setItem = async (key: string, value: any) => {
     await AsyncStorage.setItem(key, jsonValue);
     return true;
   } catch (error) {
-    console.error(`Error setting item for key ${key}:`, error);
     return false;
   }
 };
@@ -38,7 +35,6 @@ const removeItem = async (key: string) => {
     await AsyncStorage.removeItem(key);
     return true;
   } catch (error) {
-    console.error(`Error removing item for key ${key}:`, error);
     return false;
   }
 };
@@ -48,7 +44,6 @@ const clearAll = async () => {
     await AsyncStorage.clear();
     return true;
   } catch (error) {
-    console.error("Error clearing storage:", error);
     return false;
   }
 };
@@ -62,7 +57,6 @@ const getAllItems = async () => {
       value: value ? JSON.parse(value) : null,
     }));
   } catch (error) {
-    console.error("Error getting all items:", error);
     return [];
   }
 };
@@ -76,10 +70,9 @@ const allKeyStorage = async () => {
       console.log("Key:", key, "Value:", value ? JSON.parse(value) : null);
     });
   } catch (error) {
-    console.error(error);
+    return null;
   }
 };
-
 const setToken = async (token: string) => {
   await setItem(variables.localStorage.accessToken, token);
 };
@@ -93,7 +86,6 @@ const removeToken = async () => {
     const result = await removeItem(variables.localStorage.accessToken);
     return result;
   } catch (error) {
-    console.error(error);
     return false;
   }
 };

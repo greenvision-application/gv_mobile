@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Pressable,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import {
   FontAwesome6,
   MaterialCommunityIcons,
   AntDesign,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { Header, Loading, SaveButton } from "@/components";
 import { getDetailUser } from "@/services/userService";
@@ -31,7 +33,11 @@ import { useGlobalStore } from "@/store/global";
 
 // Define types
 interface UserData {
-  address: string | null;
+  address: {
+    ward: string;
+    district: string;
+    province: string;
+  } | null;
   email: string;
   username: string | null;
   preferences: any | null;
@@ -59,14 +65,6 @@ interface UserStats {
   totalPlants: number;
   favorites: number;
   unplanted: number;
-}
-
-interface UserProfile {
-  name: string;
-  avatar: string;
-  coverImage: string;
-  email: string;
-  address: string;
 }
 
 type TabType = "all" | "favorites" | "unplanted";
@@ -112,13 +110,16 @@ const handleRemoveFavorite = async (plantId: string): Promise<void> => {
           color: "black",
         },
       });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.unplanted, queryKeys.similar, queryKeys.popular],
+      });
     });
   } catch (error) {
     Toast.show({
       type: "error",
       text1: "Lỗi",
       text2: "Không thể bỏ yêu thích, vui lòng thử lại sau",
-      position: "bottom",
+      position: "top",
       visibilityTime: 3000,
       topOffset: 50,
       text1Style: {
@@ -138,6 +139,9 @@ const handleRemoveFavorite = async (plantId: string): Promise<void> => {
 const handleRemovePlant = async (plantId: string): Promise<void> => {
   try {
     await removeUserPlant(plantId, () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.similar, queryKeys.popular, queryKeys.favorite],
+      });
       Toast.show({
         type: "success",
         text1: "Thành công",
@@ -161,7 +165,7 @@ const handleRemovePlant = async (plantId: string): Promise<void> => {
       type: "error",
       text1: "Lỗi",
       text2: "Không thể xóa cây, vui lòng thử lại sau",
-      position: "bottom",
+      position: "top",
       visibilityTime: 3000,
       topOffset: 50,
       text1Style: {
@@ -224,20 +228,14 @@ const Garden: React.FC = () => {
     unplanted: unplantedData?.length || 0,
   };
 
-  // Mock user data where API doesn't provide values
-  const userProfile: UserProfile = {
-    name: "Người làm vườn chỉnh chu",
-    avatar:
-      "https://f.hoatieu.vn/data/image/2022/08/25/avatar-cute-meo-con-than-chet.jpg",
-    coverImage:
-      "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1000&auto=format&fit=crop",
-    email: userData?.email || "",
-    address: userData?.address || "Chưa cập nhật địa chỉ",
-  };
-
   // Show loading state if any data is loading
   if (userLoading || plantedLoading || favoriteLoading || unplantedLoading) {
-    return <Loading />;
+    return (
+      <>
+        <Header title="Vườn cây" />
+        <Loading />
+      </>
+    );
   }
 
   const handlePress = (id?: string) => {
@@ -253,7 +251,7 @@ const Garden: React.FC = () => {
     await handleRemoveFavorite(plantId);
 
     // Cập nhật lại dữ liệu sau khi bỏ yêu thích
-    queryClient.setQueryData<PlantData[]>(["favorite"], (oldData) => {
+    queryClient.setQueryData<PlantData[]>([queryKeys.favorite], (oldData) => {
       return oldData ? oldData.filter((plant) => plant.id !== plantId) : [];
     });
 
@@ -285,18 +283,34 @@ const Garden: React.FC = () => {
             await handleRemovePlant(plantId);
 
             // Cập nhật lại dữ liệu sau khi xóa
-            queryClient.setQueryData<PlantData[]>(["unplanted"], (oldData) => {
-              return oldData
-                ? oldData.filter((plant) => plant.id !== plantId)
-                : [];
-            });
+            queryClient.setQueryData<PlantData[]>(
+              [queryKeys.unplanted],
+              (oldData) => {
+                return oldData
+                  ? oldData.filter((plant) => plant.id !== plantId)
+                  : [];
+              }
+            );
 
-            // Cập nhật lại số lượng cây chưa trồng
+            // Cập nhật lại dữ liệu favorite
+            queryClient.setQueryData<PlantData[]>(
+              [queryKeys.favorite],
+              (oldData) => {
+                return oldData
+                  ? oldData.filter((plant) => plant.id !== plantId)
+                  : [];
+              }
+            );
+
+            // Cập nhật lại số lượng cây chưa trồng và yêu thích
             queryClient.setQueryData<UserStats>(["userStats"], (oldStats) => {
               if (!oldStats) return userStats;
               return {
                 ...oldStats,
                 unplanted: oldStats.unplanted - 1,
+                favorites:
+                  oldStats.favorites -
+                  (favoriteData?.some((plant) => plant.id === plantId) ? 1 : 0),
               };
             });
           },
@@ -377,7 +391,7 @@ const Garden: React.FC = () => {
                       setUserPlantId(plant.id);
                       router.push(`/care-form/${plant.Plant.id}`);
                     }}
-                    style="p-2 rounded-3xl"
+                    style="p-2 rounded-3xl bg-primary"
                   />
                 ) : (
                   ""
@@ -396,23 +410,43 @@ const Garden: React.FC = () => {
       <ScrollView className="mb-20 bg-neutral">
         <View className="info-container bg-neutral">
           <Image
-            source={{ uri: userProfile.coverImage }}
+            source={{
+              uri: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc",
+            }}
             className="w-full h-48"
           />
+
           <View className="items-start mt-[-60] ml-5">
-            <Image
-              source={{ uri: userProfile.avatar }}
-              className="w-36 h-36 rounded-full border-4 border-neutral"
-            />
+            <Pressable
+              className="relative"
+              onPress={() => {
+                router.push("/user-infor");
+              }}
+            >
+              <Image
+                source={{
+                  uri: userData?.preferences?.avatar
+                    ? userData?.preferences?.avatar
+                    : "https://avatar.iran.liara.run/public/45",
+                }}
+                className="w-36 h-36 rounded-full border-4 border-neutral"
+              />
+              <View className="absolute bottom-2 right-3 bg-primary w-8 h-8 rounded-full justify-center items-center">
+                <MaterialIcons name="photo-library" size={18} color="white" />
+              </View>
+            </Pressable>
             <View className="mt-2">
               <Text className="text-2xl font-inter-bold text-left">
-                {userProfile.name}
+                {userData?.username}
               </Text>
               <Text className="text-lg text-gray-500 mt-1 text-left">
-                Email: {userProfile.email}
+                Email: {userData?.email}
               </Text>
               <Text className="text-lg text-gray-500 mt-1 text-left">
-                Địa chỉ: {userProfile.address}
+                Địa chỉ:{" "}
+                {userData?.address
+                  ? `${userData.address.ward}, ${userData.address.district}, ${userData.address.province}`
+                  : "Chưa cập nhật địa chỉ"}
               </Text>
             </View>
           </View>
@@ -460,5 +494,4 @@ const Garden: React.FC = () => {
     </SafeAreaProvider>
   );
 };
-
 export default Garden;

@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useGlobalStore } from "@/store/global";
 import { handleVerifyOTP, handleRegister } from "@/services/userService";
+import Toast from "react-native-toast-message";
 
 export default function VerifyOtp() {
   const { formData, resetForm } = useGlobalStore();
@@ -66,7 +67,23 @@ export default function VerifyOtp() {
         }
       );
     } catch (error) {
-      console.error("Unexpected error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Lỗi xác thực",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
     }
   };
 
@@ -89,10 +106,28 @@ export default function VerifyOtp() {
           }
         );
       } catch (error) {
-        console.error("Unexpected error:", error);
+        Toast.show({
+          type: "error",
+          text1: "Lỗi",
+          text2: "Lỗi đăng ký không thành công",
+          position: "top",
+          visibilityTime: 3000,
+          topOffset: 50,
+          text1Style: {
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "red",
+          },
+          text2Style: {
+            fontSize: 14,
+            color: "black",
+          },
+        });
       }
     }
   };
+
+  const isOtpComplete = !otp.some((digit) => digit === "");
 
   return (
     <View className="flex-1 w-full items-center justify-start bg-neutral pt-56">
@@ -124,7 +159,9 @@ export default function VerifyOtp() {
         ) : null}
 
         <TouchableOpacity
-          className="bg-neutral-300 p-4 rounded-full shadow-sm mb-8 mt-4 active:bg-primary"
+          className={`${
+            isOtpComplete ? "bg-primary" : "bg-neutral-300"
+          } p-4 rounded-full shadow-sm mb-8 mt-4 active:bg-primary`}
           onPress={callVerifyOTP}
         >
           <Text className="text-neutral text-center font-bold text-lg">

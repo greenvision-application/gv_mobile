@@ -6,6 +6,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -13,6 +14,7 @@ import { CheckBox } from "@rneui/themed";
 import { router } from "expo-router";
 import { handleRegister } from "@/services/userService";
 import { useGlobalStore } from "@/store/global";
+import Toast from "react-native-toast-message";
 
 type RegisterFormType = {
   email: string;
@@ -86,7 +88,23 @@ export default function SignUpForm() {
         }
       );
     } catch (error) {
-      console.error("Unexpected error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Lỗi khi đăng ký",
+        position: "top",
+        visibilityTime: 3000,
+        topOffset: 50,
+        text1Style: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "red",
+        },
+        text2Style: {
+          fontSize: 14,
+          color: "black",
+        },
+      });
     }
   };
 
@@ -111,7 +129,8 @@ export default function SignUpForm() {
               onChangeText={(text) => handleChange("email", text.trim())}
               keyboardType="email-address"
               autoCapitalize="none"
-              blurOnSubmit={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
           </View>
 
@@ -125,11 +144,12 @@ export default function SignUpForm() {
               value={registerForm.password}
               onChangeText={(text) => handleChange("password", text)}
               autoCapitalize="none"
-              blurOnSubmit={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
+                name={showPassword ? "eye" : "eye-off"}
                 size={25}
                 color="#B7BBC1"
               />
@@ -146,11 +166,12 @@ export default function SignUpForm() {
               value={registerForm.confirmPassword}
               onChangeText={(text) => handleChange("confirmPassword", text)}
               autoCapitalize="none"
-              blurOnSubmit={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
+                name={showPassword ? "eye" : "eye-off"}
                 size={25}
                 color="#B7BBC1"
               />

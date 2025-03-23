@@ -3,18 +3,24 @@ const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!;
 const PLATFORM = "greenvision.dev.com";
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const APPWRITE_PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!;
+const ADDRESS_API = "https://provinces.open-api.vn/api";
+const PROJECT_ID = process.env.EXPO_PROJECT_ID;
 
 const localStorage = {
   accessToken: "accessToken",
   onboarded: "onboarded",
+  expoPushToken: "expoPushToken",
 };
 
 const urls = {
   register: "/auth/register",
   login: "/auth/login",
   otp: "/auth/verify-otp",
+  province: "/p",
   status: "/auth/status",
   scan: "/gemini/upload-image",
+  uploadImage: "/file-upload/supabase",
+  checkHealth: "/gemini/check-health",
   popular: "/plants/client-plants",
   recommendations: "/plants/recommendations",
   category: "/categories",
@@ -23,7 +29,10 @@ const urls = {
   planted: "/user-plant/planted",
   unplanted: "/user-plant/unplanted",
   user: "/users/detail",
+  updateUser: "/users/update-client",
   plants: "/plants",
+  updatePushToken: "/update-push-token",
+  notification: "/notification/client",
   timeline: "/user-plant/client-schedule",
   plantDetail: (id: string | string[]) => `/plants/${id}`,
   updateTask: (id: string | string[]) => `/tasks/${id}`,
@@ -31,8 +40,13 @@ const urls = {
   generateSchedule: (id: string | string[]) => `/care-schedule/${id}`,
   generateTask: (id: string | string[]) => `/tasks/${id}`,
   changeFavorite: (id: string | string[]) => `/user-plant/like/${id}`,
+  checkFavorite: (id: string | string[]) =>
+    `/user-plant/check-exist-plant/${id}`,
   removeUserPlant: (id: string | string[]) => `/user-plant/${id}`,
   generatePhase: (id: string | string[]) => `/plants/generate-phase/${id}`,
+  district: (id: string | string[]) => `p/${id}?depth=2`,
+  ward: (id: string | string[]) => `d/${id}?depth=2`,
+  removeNotification: (id: string | string[]) => `/notification/${id}`,
 };
 
 const methods = {
@@ -84,6 +98,11 @@ const ENUM_TRANSLATIONS = {
     DO: "DO",
     DONE: "DONE",
     NOT_YET: "NOT_YET",
+  },
+  GENDER: {
+    MALE: "MALE",
+    FEMALE: "FEMALE",
+    OTHER: "OTHER",
   },
 };
 const placePlant = {
@@ -223,6 +242,8 @@ export default {
   APPWRITE_ENDPOINT,
   APPWRITE_PROJECT_ID,
   ENUM_TRANSLATIONS,
+  ADDRESS_API,
+  PROJECT_ID,
   localStorage,
   urls,
   methods,

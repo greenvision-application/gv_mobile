@@ -7,6 +7,7 @@ import { Plant } from "@/libs/types";
 import CustomModal from "./CustomModal";
 import { addToGarden } from "@/services/plantService";
 import { useGlobalStore } from "@/store/global";
+import { queryClient, queryKeys } from "@/libs/tanstackQuery";
 
 interface PlantCardProps {
   plant: Plant;
@@ -43,6 +44,7 @@ const PlantCard: React.FC<PlantCardProps> = ({
             color: "black",
           },
         });
+        queryClient.invalidateQueries({ queryKey: [queryKeys.unplanted] });
       });
     } catch (error) {
       Toast.show({
@@ -91,6 +93,9 @@ const PlantCard: React.FC<PlantCardProps> = ({
         }
       );
       setUserPlantId(result?.id);
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.similar, queryKeys.popular, queryKeys.unplanted],
+      });
       router.push(`/care-form/${plant.id}`);
     } catch (error) {
       Toast.show({
@@ -165,6 +170,9 @@ const PlantCard: React.FC<PlantCardProps> = ({
       {/* Custom Modal */}
       <CustomModal
         visible={isModalVisible}
+        onReject={() => {
+          setModalVisible(false);
+        }}
         onClose={handleClose}
         onConfirm={handleConfirm}
         title="Tạo lịch trình chăm sóc cây"
