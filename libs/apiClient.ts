@@ -30,7 +30,6 @@ AXIOS.interceptors.response.use(
     return response;
   },
   async (error) => {
-    Alert.alert("Lỗi", "Có lỗi xãy ra khi lấy dữ liệu");
     if (error.response?.status === 401) {
       await helper.removeToken();
     }

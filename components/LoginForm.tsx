@@ -47,6 +47,8 @@ export default function LoginForm() {
       (error) => {
         if (error.statusCode === 401) {
           Alert.alert("Lỗi", "Email hoặc mật khẩu không đúng");
+        } else if (error.statusCode === 403) {
+          Alert.alert("Lỗi", "Tài khoản của bạn đã bị vô hiệu hóa");
         } else {
           Alert.alert("Lỗi", "Đăng nhập thất bại");
         }
