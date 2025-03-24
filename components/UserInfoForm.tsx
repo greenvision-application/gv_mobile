@@ -53,12 +53,59 @@ export default function UserInfoForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const validateUsername = (value: string) => {
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!value) {
+      setUsernameError("Username không được để trống");
+      return false;
+    }
+    if (!usernameRegex.test(value)) {
+      setUsernameError("Username chỉ được chứa chữ cái, số và dấu gạch dưới");
+      return false;
+    }
+    setUsernameError("");
+    return true;
+  };
+
+  const validateEmail = (value: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!value) {
+      setEmailError("Email không được để trống");
+      return false;
+    }
+    if (!emailRegex.test(value)) {
+      setEmailError("Email không hợp lệ");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
+
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    validateUsername(value);
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    validateEmail(value);
+  };
 
   // Fetch user data
   const { data: userData, refetch: refetchUserData } = useQuery({
     queryKey: [queryKeys.user],
-    queryFn: () => {
-      return getDetailUser();
+    queryFn: async () => {
+      try {
+        return await getDetailUser();
+      } catch (error: any) {
+        if (error.response?.status === 409) {
+          alert("Email hoặc username đã tồn tại");
+        }
+        throw error;
+      }
     },
   });
 
@@ -319,25 +366,24 @@ export default function UserInfoForm() {
   };
   // Handle form submission
   const handleSubmit = async () => {
-    if (!username || !email) {
-      alert("Vui lòng nhập đầy đủ thông tin bắt buộc");
+    const isUsernameValid = validateUsername(username);
+    const isEmailValid = validateEmail(email);
+
+    if (!isUsernameValid || !isEmailValid) {
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // If there's a new image, upload it first
       if (newImageFile) {
         const formData = await transferImageData();
         if (formData) {
           uploadImageMutation.mutate(formData);
         } else {
-          // If formData creation failed, just update user info
           updateUserInfo(null);
         }
       } else {
-        // No new image, just update user info
         updateUserInfo(null);
       }
     } catch (error) {
@@ -345,6 +391,9 @@ export default function UserInfoForm() {
       alert("Có lỗi xảy ra khi xử lý biểu mẫu");
     }
   };
+
+  // ... rest of your component code ...
+
   return (
     <View className="flex-1 w-full items-center bg-neutral">
       <View className="px-6 mt-5 w-full">
@@ -372,141 +421,56 @@ export default function UserInfoForm() {
             </View>
 
             {/* Username Input */}
-            <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
-              <View className="flex flex-row items-center h-14">
-                <Ionicons name="id-card-sharp" size={25} color="#3CC18E" />
-                <TextInput
-                  placeholder="Nhập username của bạn"
-                  className="w-5/6 ml-2 text-neutral-500 font-inter-medium text-base"
-                  placeholderTextColor="#9CA3AF"
-                  value={username}
-                  onChangeText={setUsername}
-                />
+
+            <View className="flex flex-col gap-1">
+              <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
+                <View className="flex flex-row items-center h-14">
+                  <Ionicons name="id-card-sharp" size={25} color="#3CC18E" />
+                  <TextInput
+                    placeholder="Nhập username của bạn"
+                    className="w-5/6 ml-2 text-neutral-500 font-inter-medium text-base"
+                    placeholderTextColor="#9CA3AF"
+                    value={username}
+                    onChangeText={handleUsernameChange}
+                  />
+                </View>
+                <View>
+                  <Text className="text-semantic-error">*</Text>
+                </View>
               </View>
-              <View>
-                <Text className="text-semantic-error">*</Text>
-              </View>
+
+              {usernameError ? (
+                <Text className="text-semantic-error text-sm ml-2">
+                  {usernameError}
+                </Text>
+              ) : null}
             </View>
 
             {/* Email Input */}
-            <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
-              <View className="flex flex-row items-center h-14">
-                <MaterialIcons name="email" size={25} color="#3CC18E" />
-                <TextInput
-                  placeholder="Nhập email của bạn"
-                  className="w-5/6 ml-2 text-neutral-500 font-inter-medium text-base"
-                  placeholderTextColor="#9CA3AF"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                />
-              </View>
-              <View>
-                <Text className="text-semantic-error">*</Text>
-              </View>
-            </View>
 
-            {/* Province Dropdown */}
-            <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
-              <View className="flex flex-row items-center h-14 w-full">
-                <FontAwesome name="map" size={25} color="#3CC18E" />
-                <View className="flex-1 ml-2">
-                  <Dropdown
-                    style={{ width: "100%" }}
-                    placeholderStyle={{
-                      color: "#9CA3AF",
-                    }}
-                    selectedTextStyle={{}}
-                    data={provinces || []}
-                    labelField="name"
-                    valueField="code"
-                    search
-                    searchPlaceholder="Tìm kiếm..."
-                    placeholder="Chọn Tỉnh/Thành phố"
-                    value={
-                      userData.address?.province_code
-                        ? selectedProvince
-                        : selectedProvince?.code
-                    }
-                    onChange={(item) => {
-                      setSelectedProvince(item);
-                    }}
-                    disable={isLoadingProvinces || isSubmitting}
+            <View className="flex flex-col gap-1">
+              <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
+                <View className="flex flex-row items-center h-14">
+                  <MaterialIcons name="email" size={25} color="#3CC18E" />
+                  <TextInput
+                    placeholder="Nhập email của bạn"
+                    className="w-5/6 ml-2 text-neutral-500 font-inter-medium text-base"
+                    placeholderTextColor="#9CA3AF"
+                    value={email}
+                    onChangeText={handleEmailChange}
+                    keyboardType="email-address"
                   />
                 </View>
-              </View>
-            </View>
 
-            {/* District Dropdown */}
-            <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
-              <View className="flex flex-row items-center h-14 w-full">
-                <FontAwesome5 name="map-marked-alt" size={25} color="#3CC18E" />
-                <View className="flex-1 ml-2">
-                  <Dropdown
-                    style={{ width: "100%" }}
-                    placeholderStyle={{
-                      color: "#9CA3AF",
-                    }}
-                    selectedTextStyle={{}}
-                    data={districts}
-                    labelField="name"
-                    valueField="code"
-                    placeholder={
-                      selectedProvince
-                        ? "Chọn Quận/Huyện"
-                        : "Vui lòng chọn Tỉnh/Thành phố trước"
-                    }
-                    value={
-                      userData.address.district_code
-                        ? selectedDistrict
-                        : selectedDistrict?.code
-                    }
-                    onChange={(item) => {
-                      setSelectedDistrict(item);
-                    }}
-                    disable={
-                      !selectedProvince || isLoadingDistricts || isSubmitting
-                    }
-                  />
+                <View>
+                  <Text className="text-semantic-error">*</Text>
                 </View>
               </View>
-            </View>
-
-            {/* Ward Dropdown */}
-            <View className="flex flex-row items-center h-14 rounded-2xl px-4 border border-neutral-300 justify-between">
-              <View className="flex flex-row items-center h-14 w-full">
-                <Ionicons name="location-sharp" size={25} color="#3CC18E" />
-                <View className="flex-1 ml-2">
-                  <Dropdown
-                    style={{ width: "100%" }}
-                    placeholderStyle={{
-                      color: "#9CA3AF",
-                    }}
-                    selectedTextStyle={{
-                      fontFamily: "inter",
-                    }}
-                    data={wards}
-                    labelField="name"
-                    valueField="code"
-                    placeholder={
-                      selectedDistrict
-                        ? "Chọn Phường/Xã"
-                        : "Vui lòng chọn Quận/Huyện trước"
-                    }
-                    value={
-                      userData.address.ward_code
-                        ? selectedWard
-                        : selectedWard?.code
-                    }
-                    onChange={(item) => {
-                      setSelectedWard(item);
-                    }}
-                    disable={
-                      !selectedDistrict || isLoadingWards || isSubmitting
-                    }
-                  />
-                </View>
-              </View>
+              {emailError ? (
+                <Text className="text-semantic-error text-sm ml-2">
+                  {emailError}
+                </Text>
+              ) : null}
             </View>
 
             {/* Gender and Date of Birth */}

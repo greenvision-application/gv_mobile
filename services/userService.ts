@@ -130,14 +130,14 @@ const updateUser = async (
       gender: userInformation.gender,
       dateBirth: userInformation.dayOfBirth,
     },
-    address: {
-      ward: userInformation.address?.ward,
-      district: userInformation.address?.district,
-      province: userInformation.address?.province,
-      ward_code: userInformation.address?.ward_code,
-      district_code: userInformation.address?.district_code,
-      province_code: userInformation.address?.province_code,
-    },
+    // address: {
+    //   ward: userInformation.address?.ward,
+    //   district: userInformation.address?.district,
+    //   province: userInformation.address?.province,
+    //   ward_code: userInformation.address?.ward_code,
+    //   district_code: userInformation.address?.district_code,
+    //   province_code: userInformation.address?.province_code,
+    // },
   };
   return request({
     method: variables.methods.patch,
