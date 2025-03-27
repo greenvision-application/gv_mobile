@@ -41,7 +41,7 @@ export const dropdownData = {
       value: "OFFICE",
     },
     {
-      label: "Ngoài trời",
+      label: "OUTDOOR",
       value: variables.ENUM_TRANSLATIONS.PLANT_SITE.OUTDOOR,
     },
     {
