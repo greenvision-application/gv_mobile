@@ -18,7 +18,7 @@ const urls = {
   otp: "/auth/verify-otp",
   province: "/p",
   status: "/auth/status",
-  scan: "/gemini/upload-image",
+  scan: "/plants/scan",
   uploadImage: "/file-upload/supabase",
   checkHealth: "/gemini/check-health",
   popular: "/plants/client-plants",
